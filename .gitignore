@@ -1,0 +1,8 @@
+# This files tells which files to ignore
+# (just incase we accidently try to include them
+
+#All temp backup files
+*~
+
+#All auto-generated compiled out files
+*.out
