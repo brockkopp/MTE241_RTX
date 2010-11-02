@@ -16,6 +16,9 @@ initialize.o: initialize.cpp rtx.h
 timingServices.o: timingServices.cpp rtx.h
 	$(CC) $(CFLAGS) timingServices.cpp
 
+Msg_Env.o: Msg_Env.cpp rtx.h
+	$(CC) $(CFLAGS) Msg_Env.cpp
+
 clean:
 	rm -rf *.o
 
