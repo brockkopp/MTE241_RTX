@@ -19,6 +19,9 @@ signalHandler.o: signalHandler.cpp signalHandler.h
 timingServices.o: timingServices.cpp timingServices.h
 	$(CC) $(CFLAGS) timingServices.cpp
 
+Msg_Env.o: Msg_Env.cpp rtx.h
+	$(CC) $(CFLAGS) Msg_Env.cpp
+
 clean:
 	rm -rf *.o
 
