@@ -4,8 +4,8 @@ TITLE=MTE241_RTX
 
 all: $(TITLE)
 
-$(TITLE): debug.o initialize.o signalHandler.o timingServices.o
-	$(CC) debug.o initialize.o signalHandler.o timingServices.o
+$(TITLE): debug.o initialize.o signalHandler.o timingServices.o Msg_Env.o
+	$(CC) debug.o initialize.o signalHandler.o timingServices.o Msg_Env.o
 
 debug.o: debug.cpp rtx.h
 	$(CC) $(CFLAGS) debug.cpp

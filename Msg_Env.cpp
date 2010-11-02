@@ -27,7 +27,7 @@ int Msg_Env::getDestPid()
 	return -2;
 }
 
-int Msg_Env::setDestPid(string newDestPid)
+int Msg_Env::setDestPid(int newDestPid)
 {
 	//change destPID
 	return -2;
