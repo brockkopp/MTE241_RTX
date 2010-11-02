@@ -10,10 +10,11 @@ class Context
 {
     public:
 
-			save();
+			int save(); //Save context
 
-    restore();
+    	void restore(); //Restor context
    
-   		private():
-    	jmp_buf jump_buf();
+   	private:
+   		Context(); //Constructor
+    	jmp_buf local_jmp_buf; //Actual context, in the for of a jmp buffer
 };
