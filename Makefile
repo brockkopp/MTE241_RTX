@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-c -Wall
-TITLE=RTX
+TITLE=MTE241_RTX
 
 all: $(TITLE)
 
