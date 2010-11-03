@@ -39,6 +39,9 @@ MsgEnv.o: data_structures/MsgEnv.cpp data_structures/MsgEnv.h libs.h
 
 WallClock.o: data_structures/WallClock.cpp data_structures/WallClock.h libs.h
 	$(CC) $(CFLAGS) data_structures/WallClock.cpp
+	
+Queue.o: data_structures/Queue.cpp data_structures/Queue.h libs.h
+	$(CC) $(CFLAGS) data_structures/Queue.cpp
 
 clean:
 	rm -rf *.o
