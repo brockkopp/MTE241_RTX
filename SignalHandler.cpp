@@ -1,6 +1,21 @@
 #include "SignalHandler.h"
 
-void SignalHander::handler( int sigNum )
+SignalHandler::SignalHandler()
+{
+/*	sigset( SIGINT 	,die);
+	sigset( SIGBUS	,die);
+	sigset( SIGHUP	,die);
+	sigset( SIGILL	,die);
+	sigset( SIGQUIT	,die);
+	sigset( SIGABRT	,die);
+	sigset( SIGTERM	,die);
+	sigset( SIGSEGV	,die);*/
+	sigset( SIGUSR2	,SignalHandler::handler); 
+	sigset( SIGUSR1	,SignalHandler::handler); 
+	sigset( SIGALRM	,SignalHandler::handler);
+}
+
+void SignalHandler::handler( int sigNum )
 {
 /*	
 	sigaction sa = new sigaction(); 

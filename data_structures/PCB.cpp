@@ -9,19 +9,19 @@ using namespace std;
 /* Constructor */
 
 PCB::PCB ( int ProcessType, int priority) {
-	(*this).processType = processType;
+	_processType = processType;
 	
 	//Init stack <-- how to we do this?
 	//init fPtr <-- how to we do this?
 	Context context;
 	
-	(*this).atomicCount = 0;
+	_atomicCount = 0;
 	
 	//init List mailbox <-- class not written yet
 
 	//init id <-- how to we do this?
 	//init state <-- how to we do this?
-	(*this).priority = priority;
+	_priority = priority;
 
 }
 
