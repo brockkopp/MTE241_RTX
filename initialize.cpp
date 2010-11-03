@@ -1,5 +1,5 @@
 #include "rtx.h"
-#include "PcbInfo.h"
+#include "data_structures/PcbInfo.h"
 #include "signal.h"
 
 //Private method declarations
