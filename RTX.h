@@ -1,7 +1,7 @@
 #include "debug.h"
-#include "data_structures/PcbInfo.h"
-#include "data_structures/MsgEnv.h"
-#include "data_structures/PCB.h"
+#include "lib/PcbInfo.h"
+#include "lib/MsgEnv.h"
+#include "lib/PCB.h"
 
 //NOTE:Project Constants defined in "libs.h"
 

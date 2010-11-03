@@ -15,7 +15,7 @@ class PCB {
 		void* _fPtr;        
 		//Context context;     //Includes jmp_buf
 		int _atomicCount;
-		//List mailbox;     //Message mailbox
+		//Queue mailbox;     //Message mailbox
 
 	private:
 		/*Members*/

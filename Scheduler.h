@@ -2,8 +2,8 @@
 /*
 Dependencies are not yet complete.
 
-#include "data_structures/PCB.h"
-#include "data_structures/PQ.h"
+#include "lib/PCB.h"
+#include "lib/PQ.h"
 */
 using namespace std;
 

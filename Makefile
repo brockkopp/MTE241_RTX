@@ -16,7 +16,7 @@ $(TITLE): debug.o initialize.o RTX.o SignalHandler.o TimingServices.o MsgEnv.o W
 debug.o: debug.cpp debug.h libs.h
 	$(CC) $(CFLAGS) debug.cpp
 
-initialize.o: initialize.cpp RTX.h data_structures/PcbInfo.h
+initialize.o: initialize.cpp RTX.h lib/PcbInfo.h
 	$(CC) $(CFLAGS) initialize.cpp
 	
 iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h libs.h
@@ -28,7 +28,7 @@ RTX.o: RTX.cpp RTX.h libs.h
 SignalHandler.o: SignalHandler.cpp SignalHandler.h libs.h
 	$(CC) $(CFLAGS) SignalHandler.cpp
 	
-Scheduler.o: Scheduler.cpp data_structures/PQ.h data_structures/PCB.h
+Scheduler.o: Scheduler.cpp lib/PQ.h lib/PCB.h
 	$(CC) $(CFLAGS) Scheduler.cpp
 	
 CCI.o: CCI.cpp CCI.h libs.h
@@ -37,20 +37,20 @@ CCI.o: CCI.cpp CCI.h libs.h
 TimingServices.o: TimingServices.cpp TimingServices.h
 	$(CC) $(CFLAGS) TimingServices.cpp
 
-MsgEnv.o: data_structures/MsgEnv.cpp data_structures/MsgEnv.h libs.h
-	$(CC) $(CFLAGS) data_structures/MsgEnv.cpp
+MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h libs.h
+	$(CC) $(CFLAGS) lib/MsgEnv.cpp
 
-WallClock.o: data_structures/WallClock.cpp data_structures/WallClock.h libs.h
-	$(CC) $(CFLAGS) data_structures/WallClock.cpp
+WallClock.o: lib/WallClock.cpp lib/WallClock.h libs.h
+	$(CC) $(CFLAGS) lib/WallClock.cpp
 
-Queue.o: data_structures/Queue.cpp data_structures/Queue.h libs.h
-	$(CC) $(CFLAGS) data_structures/Queue.cpp
+Queue.o: lib/Queue.cpp lib/Queue.h libs.h
+	$(CC) $(CFLAGS) lib/Queue.cpp
 
-PCB.o: data_structures/PCB.cpp data_structures/PCB.h
-	$(CC) $(CFLAGS) data_structures/PCB.h
+PCB.o: lib/PCB.cpp lib/PCB.h
+	$(CC) $(CFLAGS) lib/PCB.h
 	
-Context.o: data_structures/Context.h data_structures/Context.cpp
-	$(CC) $(CFLAGS) data_structures/Context.h
+Context.o: lib/Context.h lib/Context.cpp
+	$(CC) $(CFLAGS) lib/Context.h
 
 clean:
 	rm -rf *.o

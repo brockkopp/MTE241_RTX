@@ -5,7 +5,10 @@ using namespace std;
 
 Queue::Queue()
 {
-	return;
+	QueueNode* _front = malloc( size ( QueueNode ));
+	QueueNode* _rear;
+	
+	_length = 0;
 }
 
 void Queue::enqueue( itemType value )
