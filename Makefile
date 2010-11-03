@@ -19,7 +19,7 @@ debug.o: debug.cpp debug.h libs.h
 initialize.o: initialize.cpp RTX.h data_structures/PcbInfo.h
 	$(CC) $(CFLAGS) initialize.cpp
 
-RTX.o: RTX.cpp RTX.h debug.h libs.h
+RTX.o: RTX.cpp RTX.h libs.h
 	$(CC) $(CFLAGS) RTX.cpp
 
 SignalHandler.o: SignalHandler.cpp SignalHandler.h libs.h

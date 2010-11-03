@@ -1,7 +1,6 @@
 #include "libs.h"
 #include "RTX.h"
 #include "debug.h"
-#include "data_structures/PcbInfo.h"
 #include "signal.h"
 
 //Private method declarations
@@ -10,55 +9,60 @@ int cleanupShmem();
 int createInitTable(PcbInfo* initTable[]);
 int cleanupInitTable();
 
+caddr_t shemFiles[2];
+
 int main()
 {
 	PcbInfo* initTable[PROCESS_COUNT];
 	int pidKB, pidCRT, pidMe;
 	pidMe = getpid();
 
-	debugMsg("\n------------------------------------\n           RTX INITIALIZED\n------------------------------------\n\n");	
+	debugMsg("------------------------------------\n           RTX INITIALIZED\n------------------------------------",1,2);	
 	
 	assure(inititalizeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, true);
 	assure(createInitTable(initTable) == EXIT_SUCCESS, "Init table failed to initialize", __FILE__, __LINE__, true);
 
+	RTX* rtx = new RTX(initTable);
+
 	if ((pidKB = fork()) == 0)
 	{
-		debugMsg("Keyboard forked\n");
+		debugMsg("Keyboard forked",0,1); //execl("./keyboard", "keyboard", pidMe, (char *)0);
 		sleep(1000000000);
 		assure(false, "Keyboard helper process failed to initialize", __FILE__, __LINE__, true);
 		exit(1);
 	}
 	if ((pidCRT = fork()) == 0)
 	{
-		debugMsg("CRT forked\n");
+		debugMsg("CRT forked",0,1); //execl("./crt", "crt", pidMe);
 		sleep(1000000000);
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, true);
 		exit(1);
 	}
 	sleep(1);
 
-	
-	//Rtx rtx = new RTX(initTable);
-
 	assure(cleanupInitTable() == EXIT_SUCCESS, "Init table cleanup failed", __FILE__, __LINE__, false);
 	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed", __FILE__, __LINE__, false);
-	
 	
 	kill(pidKB,SIGKILL);
 	wait();	
 	kill(pidCRT,SIGKILL);
 	wait();	
 
-	debugMsg("\n------------------------------------\n    RTX TERMINATED SUCCESSFULLY\n------------------------------------\n\n");	
+	debugMsg("------------------------------------\n    RTX TERMINATED SUCCESSFULLY\n------------------------------------",1,2);	
 	return EXIT_SUCCESS;
 }
 
 int inititalizeShmem()
 {
 /*
-	for(2 iterations)    //set up the file
-
+	for(int i=0; i < 2; i++)
 	{
+
+		shemFile[i] = mmap((caddr_t) 0, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fid, (off_t) 0);
+		ensure(shmemFile[i] != NULL,"Shared memory file failed to init",__FILE__,__LINE__,true);
+		  		
+		
+	}
 
 	create file with permissions for owner rwx access only
 		verify file created successfully
@@ -67,8 +71,8 @@ int inititalizeShmem()
 
 	}
 
-	    in_pid = fork keyboard process
-	    if(in_pid == 0)  //deal with child process
+	in_pid = fork keyboard process
+	if(in_pid == 0)  //deal with child process
 
 	{
 

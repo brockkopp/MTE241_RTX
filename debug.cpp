@@ -3,9 +3,20 @@
 void debugMsg(string message)
 {
 	//Assure that this is not in demonstration mode
-	#if DEBUG_MODE == 1
-		cout << message;
-	#endif
+#if DEBUG_MODE == 1
+	cout << message;
+#endif
+}
+
+void debugMsg(string message, int newLinesB, int newLinesA)
+{
+	stringstream msg;
+	for(int i=0; i < newLinesB; i++)
+		msg << "\n";
+	msg << message;
+	for(int i=0; i < newLinesA; i++)
+		msg << "\n";
+	debugMsg(msg.str());
 }
 
 int assure(bool condition, string message, string fileName, int lineNum, bool isFatal)
