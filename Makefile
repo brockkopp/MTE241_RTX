@@ -27,7 +27,10 @@ RTX.o: RTX.cpp RTX.h libs.h
 
 SignalHandler.o: SignalHandler.cpp SignalHandler.h libs.h
 	$(CC) $(CFLAGS) SignalHandler.cpp
-
+	
+Scheduler.o: Scheduler.cpp data_structures/PQ.h data_structures/PCB.h
+	$(CC) $(CFLAGS) Scheduler.cpp
+	
 CCI.o: CCI.cpp CCI.h libs.h
 	$(CC) $(CFLAGS) CCI.cpp
 
