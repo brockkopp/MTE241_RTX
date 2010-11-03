@@ -1,5 +1,6 @@
 /*This file implements the Priority Queue class*/
 #include "PQ.h"
+#include "PCB.h"
 
 using namespace std;
 

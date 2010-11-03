@@ -6,3 +6,6 @@
 
 #All auto-generated compiled out files
 *.out
+
+#Precompiled header files
+*.gch

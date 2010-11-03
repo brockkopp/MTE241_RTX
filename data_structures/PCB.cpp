@@ -11,16 +11,16 @@ using namespace std;
 PCB::PCB ( int ProcessType, int priority) {
 	(*this).processType = processType;
 	
-	//Init stack
-	//init fPtr
-	//init Context
+	//Init stack <-- how to we do this?
+	//init fPtr <-- how to we do this?
+	Context context;
 	
 	(*this).atomicCount = 0;
 	
-	//init List mailbox
+	//init List mailbox <-- class not written yet
 
-	//init id
-	//init state
+	//init id <-- how to we do this?
+	//init state <-- how to we do this?
 	(*this).priority = priority;
 
 }

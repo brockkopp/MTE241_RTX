@@ -4,7 +4,8 @@ using namespace std;
 
 class Scheduler {
     public:
-
+			Scheduler::Scheduler(); //Constructor!
+			
 			int release_processor( );   
 			int change_priority( PCB * target, new_priority );   
 			int process_switch( );
@@ -20,12 +21,14 @@ class Scheduler {
 			bool is_blocked_on_envelope( PCB * target );
 
     private:
+      int context_switch( PCB * next_proc );
+      int context_save( );
+
+			//Members
+			    
       PCB * current_process; // Executing state
 
 			PQ ready_procs; // Ready to execute state
       PQ blocked_env_procs; // Blocked on resource state
       LL_List blocked_msg_recieve;
-
-      int context_switch( PCB * next_proc );
-      int context_save( );
 }
