@@ -4,8 +4,8 @@ TITLE=MTE241_RTX
 
 all: $(TITLE)
 
-$(TITLE): debug.o initialize.o SignalHandler.o timingServices.o MsgEnv.o WallClock.o
-	$(CC) debug.o initialize.o SignalHandler.o timingServices.o MsgEnv.o WallClock.o
+$(TITLE): debug.o initialize.o SignalHandler.o TimingServices.o MsgEnv.o WallClock.o
+	$(CC) debug.o initialize.o SignalHandler.o TimingServices.o MsgEnv.o WallClock.o
 
 #### EXAMPLE #### 
 # <fileName>.o: <dependancies>
@@ -22,8 +22,8 @@ initialize.o: initialize.cpp rtx.h data_structures/PcbInfo.h
 SignalHandler.o: SignalHandler.cpp SignalHandler.h libs.h
 	$(CC) $(CFLAGS) SignalHandler.cpp
 
-timingServices.o: timingServices.cpp timingServices.h
-	$(CC) $(CFLAGS) timingServices.cpp
+timingServices.o: TimingServices.cpp TimingServices.h
+	$(CC) $(CFLAGS) TimingServices.cpp
 
 MsgEnv.o: data_structures/MsgEnv.cpp data_structures/MsgEnv.h libs.h
 	$(CC) $(CFLAGS) data_structures/MsgEnv.cpp
