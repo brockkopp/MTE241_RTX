@@ -2,9 +2,8 @@
 /*
 Dependencies are not yet complete.
 
-#include "../Scheduler.h"
-#include "PCB.h"
-#include "PQ.h"
+#include "data_structures/PCB.h"
+#include "data_structures/PQ.h"
 */
 using namespace std;
 

@@ -1,23 +1,20 @@
 //#include "PQ.h"
 //#include "Context.h"
-//#include "List.h"
+//#include "PQ.h"
 
-//#include "context.h"
-//#include "llist.h"
-using namespace std;
 
 class PCB {
 	public:
 		/*Functions*/
-		PCB( int processType, int priority );
+		PCB( int processType, int priority ); //Constructor
 		int set_priority( int pri );
 	
 		/*Members*/
-		int processType;
-		char* stack;
-		void* fPtr;        
+		int _processType;
+		char* _stack;
+		void* _fPtr;        
 		//Context context;     //Includes jmp_buf
-		int atomicCount;
+		int _atomicCount;
 		//List mailbox;     //Message mailbox
 
 	private:

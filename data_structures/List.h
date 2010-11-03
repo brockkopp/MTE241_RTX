@@ -1,20 +1,21 @@
-/*This class provides the Linked List functionality*/
+/*This class provides the Linked List functionality,
+it is based off of code writted for teh 1B MTE 140 - Data Structures
+course.*/
 
 #include <stdbool.h>
 
-/* Type Definitions
- * --------------- */
-typedef int itemType;
-
-typedef struct listTag *List;
-
-
-/* Function Declarations (prototypes)
- * --------------------------------- */
-
 using namespace std;
 
+typedef void* itemType;
+typedef struct node {
+  itemType data;
+  struct node *next;
+  struct node *previous;
+} nodeType;
+
 class List {
+
+
   public:
   	List list_create( );
 
@@ -46,6 +47,9 @@ class List {
   
   private:
 
+		nodeType *head;
+  	nodeType *tail;
+  	int size;
 };
 
 
