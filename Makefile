@@ -25,8 +25,8 @@ SignalHandler.o: SignalHandler.cpp SignalHandler.h libs.h
 timingServices.o: timingServices.cpp timingServices.h
 	$(CC) $(CFLAGS) timingServices.cpp
 
-MsgEnv.o: MsgEnv.cpp rtx.h
-	$(CC) $(CFLAGS) MsgEnv.cpp
+MsgEnv.o: data_structures/MsgEnv.cpp data_structures/MsgEnv.h libs.h
+	$(CC) $(CFLAGS) data_structures/MsgEnv.cpp
 
 WallClock.o: data_structures/WallClock.cpp data_structures/WallClock.h libs.h
 	$(CC) $(CFLAGS) data_structures/WallClock.cpp
