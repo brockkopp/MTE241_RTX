@@ -1,4 +1,7 @@
 #include "rtx.h"
+#include "PQ.h"
+#include "Context.h"
+#include "List.h"
 
 //#include "context.h"
 //#include "llist.h"
@@ -6,7 +9,11 @@ using namespace std;
 
 class PCB {
     public:
-
+		/*Functions*/
+		PCB::PCB( int processType, int priority );
+		int set_priority( int pri );
+	
+		/*Members*/
     int processType;
     char* stack;
     (void*) fPtr;        //Function pointer
@@ -15,12 +22,13 @@ class PCB {
 */
     int atomicCount;
 /*    
-    LL_List mailbox;     //Message mailbox
+    List mailbox;     //Message mailbox
 */    
-    int set_priority( int pri );
+    
 
 	private:
-
+		
+		/*Members*/
 		int id; //Process id   
 		int state;
 		int priority;   
