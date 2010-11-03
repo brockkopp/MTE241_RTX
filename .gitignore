@@ -9,3 +9,5 @@
 
 #Precompiled header files
 *.gch
+
+*.o
