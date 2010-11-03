@@ -1,4 +1,4 @@
-#include "rtx.h"
+#include "debug.h"
 
 void debugMsg(string message)
 {
@@ -23,7 +23,7 @@ int assure(bool condition, string message, string fileName, int lineNum, bool is
 			msg << "FATAL ERROR: " << fileName << ":" << lineNum << "(" << message << ")";
 			debugMsg(msg.str());
 			debugMsg("\nRTX FORCED TO TERMINATED\n\n");
-			exit(EXIT_ERROR);
+			exit(1);
 		}
 	}
 	return condition;

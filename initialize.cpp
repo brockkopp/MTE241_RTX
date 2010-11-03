@@ -1,4 +1,5 @@
-#include "rtx.h"
+#include "RTX.h"
+#include "debug.h"
 #include "data_structures/PcbInfo.h"
 #include "signal.h"
 

@@ -2,7 +2,6 @@
 #include "data_structures/MsgEnv.h"
 
 //Global Defines
-#define DEBUG_MODE	1
 #define EXIT_SUCCESS 	0
 #define EXIT_ERROR	1
 
