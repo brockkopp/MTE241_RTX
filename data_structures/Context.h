@@ -12,7 +12,7 @@ class Context
 
 			int save(); //Save context
 
-    	void restore(); //Restor context
+    	void restore(); //Restore context
    
    	private:
    		Context(); //Constructor
