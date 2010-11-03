@@ -1,6 +1,4 @@
-#include "rtx.h"
-#include <signal.h>
-#include "signalHandler.h"
+#include "iprocesses.h"
 
 void i_timing_process()
 {
