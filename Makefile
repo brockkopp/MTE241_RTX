@@ -45,6 +45,9 @@ WallClock.o: data_structures/WallClock.cpp data_structures/WallClock.h libs.h
 	
 PCB.o: data_structures/PCB.cpp data_structures/PCB.h
 	$(CC) $(CFLAGS) data_structures/PCB.h
+	
+Context.o: data_structures/Context.h data_structures/Context.cpp
+	$(CC) $(CFLAGS) data_structures/Context.h
 
 clean:
 	rm -rf *.o
