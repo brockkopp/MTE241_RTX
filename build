@@ -1,4 +1,5 @@
 #!/bin/sh
+rm a.out
 make
 make clean
 make run
