@@ -35,4 +35,3 @@ class Queue
 	 int replace( unsigned int position, itemType value );
 	 int get_length();
 };
-

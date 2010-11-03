@@ -27,7 +27,10 @@ RTX.o: RTX.cpp RTX.h libs.h
 
 SignalHandler.o: SignalHandler.cpp SignalHandler.h libs.h
 	$(CC) $(CFLAGS) SignalHandler.cpp
-
+	
+Scheduler.o: Scheduler.cpp data_structures/PQ.h data_structures/PCB.h
+	$(CC) $(CFLAGS) Scheduler.cpp
+	
 CCI.o: CCI.cpp CCI.h libs.h
 	$(CC) $(CFLAGS) CCI.cpp
 
@@ -39,9 +42,15 @@ MsgEnv.o: data_structures/MsgEnv.cpp data_structures/MsgEnv.h libs.h
 
 WallClock.o: data_structures/WallClock.cpp data_structures/WallClock.h libs.h
 	$(CC) $(CFLAGS) data_structures/WallClock.cpp
-	
+
 Queue.o: data_structures/Queue.cpp data_structures/Queue.h libs.h
 	$(CC) $(CFLAGS) data_structures/Queue.cpp
+
+PCB.o: data_structures/PCB.cpp data_structures/PCB.h
+	$(CC) $(CFLAGS) data_structures/PCB.h
+	
+Context.o: data_structures/Context.h data_structures/Context.cpp
+	$(CC) $(CFLAGS) data_structures/Context.h
 
 clean:
 	rm -rf *.o
