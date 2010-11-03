@@ -4,13 +4,13 @@ TITLE=MTE241_RTX
 
 all: $(TITLE)
 
-$(TITLE): debug.o initialize.o signalHandler.o timingServices.o Msg_Env.o
-	$(CC) debug.o initialize.o signalHandler.o timingServices.o Msg_Env.o
+$(TITLE): debug.o initialize.o signalHandler.o timingServices.o MsgEnv.o WallClock.o
+	$(CC) debug.o initialize.o signalHandler.o timingServices.o MsgEnv.o WallClock.o
 
 debug.o: debug.cpp rtx.h
 	$(CC) $(CFLAGS) debug.cpp
 
-initialize.o: initialize.cpp rtx.h PcbInfo.h
+initialize.o: initialize.cpp rtx.h data_structures/PcbInfo.h
 	$(CC) $(CFLAGS) initialize.cpp
 
 signalHandler.o: signalHandler.cpp signalHandler.h
@@ -19,8 +19,11 @@ signalHandler.o: signalHandler.cpp signalHandler.h
 timingServices.o: timingServices.cpp timingServices.h
 	$(CC) $(CFLAGS) timingServices.cpp
 
-Msg_Env.o: Msg_Env.cpp rtx.h
-	$(CC) $(CFLAGS) Msg_Env.cpp
+MsgEnv.o: MsgEnv.cpp rtx.h
+	$(CC) $(CFLAGS) MsgEnv.cpp
+
+WallClock.o: data_structures/WallClock.cpp data_structures/WallClock.h libs.h
+	$(CC) $(CFLAGS) data_structures/WallClock.cpp
 
 clean:
 	rm -rf *.o
