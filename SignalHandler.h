@@ -1,6 +1,7 @@
 #include "libs.h"
 
-class SignalHander{
+class SignalHander
+{
 	private:
 		sigset_t setBlocked;
 		sigset_t setHandled;

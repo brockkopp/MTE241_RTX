@@ -25,6 +25,9 @@ RTX.o: RTX.cpp RTX.h debug.h libs.h
 SignalHandler.o: SignalHandler.cpp SignalHandler.h libs.h
 	$(CC) $(CFLAGS) SignalHandler.cpp
 
+CCI.o: CCI.cpp CCI.h libs.h
+	$(CC) $(CFLAGS) CCI.cpp
+
 TimingServices.o: TimingServices.cpp TimingServices.h
 	$(CC) $(CFLAGS) TimingServices.cpp
 
