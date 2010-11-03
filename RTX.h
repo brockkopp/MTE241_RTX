@@ -1,10 +1,9 @@
 #include "libs.h"
 #include "data_structures/MsgEnv.h"
 
-//Global Defines
-#define EXIT_SUCCESS 	0
-#define EXIT_ERROR	1
+//NOTE:Project Constants defined in "libs.h"
 
+//RTX Global Constants
 #define PROCESS_COUNT 	6
 #define STACK_SIZE 	2034
 
