@@ -15,23 +15,49 @@ void Queue::enqueue( itemType value )
 {
 }
 
-void* Queue::dequeue()
+/* 
+Dequeues an object from the front of the queue.
+
+Returns a pointer to the dequeued object.
+
+Returns NULL if there is no node to dequeue.
+*/
+itemType* Queue::dequeue()
 {
 	QueueNode* currentNode = _rear;
-
-	//Loop through queue until we reach the second last entry
-	for( int i = 0; i < _length - 1; i++) {
-		currentNode = currentNode->link;
+	
+	//Special case: length = 0
+	if ( _length == 0 ) {
+		
+		//Throw error
+		return NULL;
 	}
-	//Now currentNode = second to last node 
 	
-	//Set head to equal the second to last node
-	_front = currentNode;
+	//Deal with special case of length = 1
+	else if ( _length == 1 ) {
+		_front = NULL;
+		_rear = NULL;
+		_length = 0;
+		
+		return currentNode;
+	} 
 	
-	_length --;
-
-	//Return old front of queue
-	return currentNode->link;
+	//Normal case
+	else {
+		//Loop through queue until we reach the second last entry
+		for( int i = 0; i < _length - 1; i++) {
+			currentNode = currentNode->link;
+		}
+		//Now currentNode = second to last node 
+	
+		//Set head to equal the second to last node
+		_front = currentNode;
+	
+		_length --;
+		
+		//Return old front of queue
+		return currentNode->link;
+	}	
 }
 
 int Queue::isEmpty()
@@ -41,7 +67,12 @@ int Queue::isEmpty()
 
 int Queue::contains( itemType value )
 {
-	return -2;
+	QueueNode* currentNode = _rear;
+
+	//Loop through queue until we reach the second last entry
+	for( int i = 0; i < _length - 1; i++) {
+		currentNode = currentNode->link;
+	}
 }
 
 itemType* Queue::select( unsigned int position )
