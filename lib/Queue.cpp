@@ -1,27 +1,45 @@
+/***** TO DO: ******/
+//IS ITEMTYPE AN INT? OR SHOULD IT BE A VOID POINTER!?!?!?
+
 /*This class provides the Queue functionality*/
 #include "Queue.h"
 
 using namespace std;
 
+//constructor
 Queue::Queue()
 {
 	_front = NULL;
-	_rear = NULL;
-	
+	_rear = NULL;	
 	_length = 0;
 }
 
+//adds a node to the queue containing the value parameter
 void Queue::enqueue( itemType value )
 {
+	QueueNode* Temp = (QueueNode*)malloc(sizeof(QueueNode));
+	assure(Temp == NULL, "System storage is exhausted - failed to allocate memory for queue",  __FILE__, __LINE__, true);
+
+	Temp->item = value;
+
+	if(_front == NULL) //adding first node
+	{ 
+		Temp->link = NULL;
+		_front = Temp;	
+		_rear	= Temp;
+	}
+	
+	else 
+	{
+		Temp->link = _rear; 
+		_rear = Temp;
+	}
+	_length++;	
 }
 
-/* 
-Dequeues an object from the front of the queue.
-
-Returns a pointer to the dequeued object.
-
-Returns NULL if there is no node to dequeue.
-*/
+//Dequeues an object from the front of the queue.
+//Returns a pointer to the dequeued object.
+//Returns NULL if there is no node to dequeue.
 itemType* Queue::dequeue()
 {
 	QueueNode* currentNode = _rear;
@@ -60,191 +78,63 @@ itemType* Queue::dequeue()
 	}	
 }
 
+//return 0 if queue is empty, return 1 otherwise
 int Queue::isEmpty()
 {
-	return -2;
+	if(_front == NULL)
+		return 0;
+		
+	return 1;
 }
 
+//Return position index of the node if the queue contains the value parameter
+//Return -1 if value is NOT contained in the queue
 int Queue::contains( itemType value )
 {
-	QueueNode* currentNode = _rear;
-
-	//Loop through queue until we reach the second last entry
-	for( int i = 0; i < _length - 1; i++) {
-		currentNode = currentNode->link;
+	QueueNode* Temp = _rear;
+	int position = _length - 1;
+	while(Temp != NULL)
+	{
+		if(Temp->item == value)
+			return position;
+		Temp = Temp->link;
+		position--;
 	}
+	return -1;
 }
 
+//Go to the position indicated in the input parameter and return a pointer to the node's item
+//Return NULL if position is invalid
 itemType* Queue::select( unsigned int position )
 {
+	if(position >= _length) //invalid reference position
+		return NULL;
+		
+	QueueNode* Temp = _rear;
+	int scanPos = _length - 1;
+	while(Temp != NULL)
+	{
+		if(scanPos == position)
+			return &(Temp->item);
+		Temp = Temp->link;
+		scanPos--;
+	}
 	return NULL;
 }
 
+//Go to the position indicated and change its item to value parameter
+//Return -1 if position is invalid; return 0 otherwise (if change is successful)
 int Queue::replace( unsigned int position, itemType value)
 {
-	return -2;
+	itemType* toChange = select(position);
+	if(toChange == NULL)
+		return -1;
+	
+	*toChange = value;
+	return 0;
 }
 
 int Queue::get_length()
 {
-	return -2;
+	return _length;
 }
-	 
-
-///* Functions Definitions (Implementation)
-// * **************************************/
-
-//List list_create() { 
-///*Creates a List item, initializes head and tail to null, and sets size = 0
-
-//Function Running Time: O(1)
-//*/
-//  struct listTag *L;
-//  
-//  L=(struct listTag*)malloc(sizeof(struct listTag));
-//  if( L!=NULL )  
-//  {
-//      L->head = NULL;
-//      L->tail = NULL;
-//      L->size=0;  
-//      return L;
-//  }
-//  
-//  return NULL;
-//}
-
-//bool list_isEmpty( const List L ) {
-///*Checks if list is empty based on the L->size variable
-
-//Function Running Time: O(1)
-//*/
-//  if (L->size==0)
-//    return true;
-//  return false;
-//}
-
-//int list_length( const List L ) {
-///*Returns the list length based on the L->size variable
-
-//Function Running Time: O(1)
-//*/
-//  return L->size;
-//}
-
-//bool list_insertBack( itemType value, List L ) { 
-///*inserts new element to last position (position 9 of a 10 member list). If the
-//new element is the only element of the list, it changes L's values to reflect
-//that
-
-//Function Running Time: O(1)
-//*/
-
-//  nodeType *newNode;
-//  newNode = (nodeType*)malloc(sizeof(nodeType));
-//  
-//  newNode->next = NULL;
-//  newNode->previous = L->tail;
-//  newNode->data = value;
-//  
-//  if ((L->tail)!=NULL)
-//    (L->tail)->next = newNode;
-//  
-//  else //else if L->tail==NULL, then this is the only element in the list
-//    L->head = newNode;
-//    
-//  L->tail = newNode;
-//  L->size++;
-
-//  return true;
-//}
-
-//bool list_deleteFront( List L ) {
-///*Frees memory allocated to first item in list, and changes the list nodes
-//around the deleted element to reflect the deletion.
-
-//running time = O(n)
-//*/
-
-//  nodeType *tempNode;
-//  tempNode = L->head;
-//  
-//  L->head = (L->head)->next;
-//  
-//  free(tempNode);
-//  
-//  (L->size)--;
-//  return true;
-//}
-
-//int list_search( itemType Value, List L ) {
-///*Searches the list for a particular value. Returns the position of the first
-//instance of that value. Returns -1 if the value was not found.
-
-//Function Running Time: O(n)
-//*/    
-//    
-//  nodeType *currentNode;
-//  
-//  currentNode=L->head; //Move to first node
-//  
-//  int i;
-//  for(i=0; i<(L->size); i++) {
-//        if ((currentNode->data) == Value) {
-//            return i;
-//        }
-//        
-//        else { //Move to next node
-//            currentNode = (currentNode->next);
-//        }
-//  }
-//  return -1;
-//}
-
-//itemType *list_select( unsigned int position, List L ) {
-///*Returns the value of the data item at the given position. Returns -1 if the
-//position is an invalid value.
-
-//Function Running Time: O(n)
-//*/
-//  nodeType *currentNode;
-//  currentNode = (nodeType*)malloc(sizeof(nodeType));
-
-//  currentNode=L->head; //Move to first node
-//  
-//  int i;
-//  for(i=0; i<(L->size); i++) {
-//        if (i==position) {
-//            return &(currentNode->data);
-//        }
-//        
-//        else { //Move to next node
-//            currentNode = (currentNode->next);
-//        }
-//  }
-
-//  return NULL;
-//}
-
-//bool list_replace( unsigned int position, itemType value, List L ) {
-///*Replaces the value of the data item at the given position.
-
-//Function Running Time: O(n)
-//*/
-//  nodeType *currentNode;
-//  
-//  currentNode=L->head; //Move to first node
-//  
-//  int i;
-//  for(i=0; i<(L->size); i++) {
-//        if (i == position) {
-//            currentNode->data = value;
-//            return true;
-//        }
-//        
-//        else { //Move to next node
-//            currentNode = (currentNode->next);
-//        }
-//  }
-//  
-//  return false;
-//}
