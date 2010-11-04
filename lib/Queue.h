@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "../debug.h"
 
 /* Type Definitions
  * --------------- */
@@ -9,7 +10,7 @@ typedef int itemType;
 
 typedef struct QueueNodeTag
 {
-	itemType Item;
+	itemType item;
 	struct QueueNodeTag *link;
 }QueueNode;
 
