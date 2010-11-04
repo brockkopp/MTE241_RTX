@@ -57,7 +57,7 @@ itemType* Queue::dequeue()
 		_rear = NULL;
 		_length = 0;
 		
-		return &currentNode->Item;
+		return &currentNode->item;
 	} 
 	
 	//Normal case
@@ -74,7 +74,7 @@ itemType* Queue::dequeue()
 		_length --;
 		
 		//Return old front of queue
-		return &currentNode->Item;
+		return &currentNode->item;
 	}	
 }
 
