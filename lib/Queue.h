@@ -5,12 +5,12 @@
 
 /* Type Definitions
  * --------------- */
-typedef int itemType;
+typedef void* itemType;
 
 typedef struct QueueNodeTag
 {
 	itemType Item;
-	struct QueueNodeTag *Link;
+	struct QueueNodeTag *link;
 }QueueNode;
 
 /* Class Definition
@@ -27,7 +27,7 @@ class Queue
 	 //need a destructor?
 	 
 	 void enqueue( itemType value ); //I'm not adding an insert function. If you want something on the list, enqueue it!
-	 int dequeue(); //I'm not adding a delete function. If you want something from the list, dequeue it!
+	 void* dequeue(); //I'm not adding a delete function. If you want something from the list, dequeue it!
 	 
 	 int isEmpty();
 	 int contains( itemType value );

@@ -5,8 +5,8 @@ using namespace std;
 
 Queue::Queue()
 {
-	QueueNode* _front = malloc( size ( QueueNode ));
-	QueueNode* _rear;
+	_front = NULL;
+	_rear = NULL;
 	
 	_length = 0;
 }
@@ -15,9 +15,23 @@ void Queue::enqueue( itemType value )
 {
 }
 
-int Queue::dequeue()
+void* Queue::dequeue()
 {
-	return -2;
+	QueueNode* currentNode = _rear;
+
+	//Loop through queue until we reach the second last entry
+	for( int i = 0; i < _length - 1; i++) {
+		currentNode = currentNode->link;
+	}
+	//Now currentNode = second to last node 
+	
+	//Set head to equal the second to last node
+	_front = currentNode;
+	
+	_length --;
+
+	//Return old front of queue
+	return currentNode->link;
 }
 
 int Queue::isEmpty()
