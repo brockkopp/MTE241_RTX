@@ -1,7 +1,7 @@
 #include "debug.h"
+#include "lib/PCB.h"
 #include "lib/PcbInfo.h"
 #include "lib/MsgEnv.h"
-#include "lib/PCB.h"
 
 //NOTE:Project Constants defined in "libs.h"
 
@@ -9,11 +9,16 @@
 #define PROCESS_COUNT 	6
 #define STACK_SIZE 	2034
 
+#define PROCESS_I	1	
+#define PROCESS_USER	2
+#define PROCESS_K	3
+
+
 class RTX
 {
 	public:
-		PCB* pcbList[];
 		RTX(PcbInfo* initTable[]);
+
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
 		MsgEnv* K_receive_message();
 		MsgEnv* K_request_msg_env();
@@ -26,6 +31,8 @@ class RTX
 		int K_send_console_chars(MsgEnv* msg_envelope);
 		int K_get_console_chars(MsgEnv* msg_envelope);
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
+
+		PCB* pcbList[PROCESS_COUNT];
 };
 
 //primitives

@@ -3,10 +3,13 @@
 RTX::RTX(PcbInfo* initTable[])
 {
 	for(int i=0; i < PROCESS_COUNT; i++)
+	{
 		debugMsg(initTable[i]->name,0,1);
-
+		pcbList[i] = new PCB(0,0);
+		
+	}
 	
-
+	//PCB* myPcb = new PCB(0,0);
 }
 
 int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
