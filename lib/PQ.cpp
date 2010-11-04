@@ -1,8 +1,18 @@
 /*This file implements the Priority Queue class*/
 #include "PQ.h"
-#include "PCB.h"
 
 using namespace std;
 
-void PQ::penqueue (PCB new_data, priority_level){return;}
+/*
+	Arguments: 
+		nPriority: the number of priority levels that will be used.
+*/
+PQ::PQ(int nPriority) {
+	Queue master[nPriority]
+};
+
+void PQ::penqueue (PCB newData, priorityLevel)
+{
+	master[ priorityLevel ];
+}
 PCB * PQ::pdequeue () {return -2;}       

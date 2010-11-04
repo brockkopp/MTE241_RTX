@@ -6,6 +6,12 @@
 #include "PcbInfo.h"
 #include "../debug.h"
 
+
+//Process state constant declarations.
+#define READY 0
+#define BLOCKED_ENV 1
+#define BLOCKED_MSG_RECIEVE 2
+
 class PCB 
 {
 	public:
