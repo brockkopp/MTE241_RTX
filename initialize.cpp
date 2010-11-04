@@ -1,10 +1,13 @@
 #include "libs.h"
 #include "RTX.h"
+#include "CCI.h"
 #include "debug.h"
 #include "signal.h"
 #include "SignalHandler.h"
+#include "tests.h"
 
 //Private method declarations
+void doTests();
 int inititalizeShmem();
 int cleanupShmem();
 int createInitTable(PcbInfo* initTable[]);
@@ -13,7 +16,7 @@ RTX* rtx;
 caddr_t shemFiles[2];
 int pidKB, pidCRT, pidMe;
 
-int main()
+int main(void)
 {
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
@@ -52,22 +55,45 @@ int main()
 		exit(1);
 	}
 	//wait to assure that keyboard and crt initialize properly
-	ualarm(1000,100);
 	sleep(1);
 	
-	//Test signal handler
-	sleep(5);
 	rtx->signalHandler->setSigMasked(false);
-	sleep(5);
+
+#if TESTS_MODE == 1
+	doTests();
+#endif
+
+	//Initialize Tick Signals
+	//ualarm(100,100);
+
+	CCI* cci = new CCI();
+	delete cci;
 
 	//Signal normal program completion
-	die(0);
+	die(EXIT_ERROR);
+}
+
+void doTests()
+{
+	debugMsg("Testing...",2,1);
+	debugMsg("\tParser Test:\t");    
+	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tSignal Test:\t");    
+	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tQueue Test: \t");    
+	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tMessaging Test:\t"); 
+	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 }
 
 void die(int sigNum)
 {
 	debugMsg("Terminate command initiated ",2,0);
-	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY",0,1);
+	debugMsg((sigNum == EXIT_SUCCESS) ? "normally" : "UNEXPECTEDLY",0,1);
 
 	//Force mask all signals 
 	rtx->signalHandler->setSigMasked(true);
