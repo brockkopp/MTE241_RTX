@@ -1,9 +1,6 @@
+/*The PQ class provides Priority Queue functionality*/
 #include "PCB.h"
 #include "Queue.h"
-
-using namespace std;
-
-/*The PQ class provides Priority Queue functionality*/
 
 typedef int itemType;
 
