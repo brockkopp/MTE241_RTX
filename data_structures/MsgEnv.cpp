@@ -2,44 +2,50 @@
 
 int MsgEnv::getDestPid()
 {
-	//return Dest PID
-	return -2;
+	return msgFields._destPid;
 }
 
 int MsgEnv::setDestPid(int newDestPid)
 {
-	//change destPID
-	return -2;
+	//check if a valid destPID was passed
+	if(newDestPid >=0 && newDestPid <=4)//need to confirm # of processes 																					that need to recieve
+	{
+		msgFields._destPid = newDestPid;
+		return EXIT_SUCCESS;
+	}
+	return EXIT_ERROR;
 }
 
 int MsgEnv::getOriginPid()
 {
-	//return origin PID
-	return -2;
+	return msgFields._originPid;
 }
 
-int MsgEnv::setOriginPid(int newOrignPid)
+int MsgEnv::setOriginPid(int newOriginPid)
 {
-	//set origin_PID
-	return -2;
+	//check if passed PID is valid
+	if(newOriginPid >=0 && newOriginPid <=4)//confirm # of processes
+	{
+		msgFields._originPid = newOriginPid;
+		return EXIT_SUCCESS;
+	}
+	return EXIT_ERROR;
 }	
 
-string MsgEnv::getMsgType()
+int MsgEnv::getMsgType()
 {
-	//return msg type
-	return "-2";
+	return msgFields._msgType;
 }
 
 int MsgEnv::setMsgType(string newMsgType)
 {
-	//set msgType
+	//need to determine all types of msg 
 	return -2;
 }
 
 string MsgEnv::getMsgData()
 {
-	//return msg_data
-	return "-2";
+	return msgFields._msgData;
 }
 
 int MsgEnv::setMsgData(string msgInfo)

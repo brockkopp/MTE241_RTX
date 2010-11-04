@@ -1,29 +1,31 @@
-#include "rtx.h"
-
-class MsgTrace
-{
-	public:
-		int addTrace(MsgEnv* msg, int callingFunction)
-		MsgEnv* getTraces(MsgEnv* msg)
-	private:
-		struct TraceElement
-		{
-			int _destPid
-			int _originPid
-			int _msgType
-			int _timeStamp
-		};
-
-		TraceElement _sendArray[16]
-		int _sendArrayPosition
-		TraceElement _recieveArray[16]
-		int _receiveArrayPosition
-}
+#include "MsgTrace.h"
 
 int MsgTrace::addTrace(MsgEnv* msg, int callingFunction)
 {
-	//adds trace to correct array, _sendArray if a send function called this function, or _recieveArray if a recieve fun called
-	return -2;
+	
+	if(msg != NULL)
+	{
+		if(callingFunction == SEND)
+		{
+			//transfer of data from msg env to trace element circular array
+			_sendArray[_sendArrayPosition%15]._destPid = msg->getDestPid();
+			_sendArray[_sendArrayPosition%15]._originPid = msg->getOriginPid();
+			_sendArray[_sendArrayPosition%15]._msgType = msg->getMsgType();
+			_sendArray[_sendArrayPosition%15]._timeStamp = 0;//calls timeing process for info, need to write still
+			_sendArrayPosition ++;
+		}
+		else if(callingFunction == RECEIVE)
+		{
+			//transfer of data from msg env to trace element circular array
+			_receiveArray[_receiveArrayPosition%15]._destPid = msg->getDestPid();
+			_receiveArray[_receiveArrayPosition%15]._originPid = msg->getOriginPid();
+			_receiveArray[_receiveArrayPosition%15]._msgType = msg->getMsgType();
+			_receiveArray[_receiveArrayPosition%15]._timeStamp = 0;//calls timeing process for info, need to write still
+			_receiveArrayPosition ++; 
+		}
+		return EXIT_SUCCESS;
+	}
+	return EXIT_ERROR;
 }
 
 MsgEnv* MsgTrace::getTraces(MsgEnv* msg)

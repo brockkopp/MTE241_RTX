@@ -5,6 +5,7 @@
 void i_timing_process()
 {
 	//increase count, call wall clock, check msgs, etc
+	return;
 }
 void i_keyboard_handler()
 {

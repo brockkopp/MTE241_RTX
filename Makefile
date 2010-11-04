@@ -33,6 +33,10 @@ TimingServices.o: TimingServices.cpp TimingServices.h
 
 MsgEnv.o: data_structures/MsgEnv.cpp data_structures/MsgEnv.h libs.h
 	$(CC) $(CFLAGS) data_structures/MsgEnv.cpp
+	
+MsgTrace.o: MsgTrace.cpp MsgTrace.h libs.h
+	$(CC) $(CFLAGS) MsgTrace.cpp
+
 
 WallClock.o: data_structures/WallClock.cpp data_structures/WallClock.h libs.h
 	$(CC) $(CFLAGS) data_structures/WallClock.cpp

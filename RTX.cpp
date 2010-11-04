@@ -42,6 +42,11 @@ int K_change_priority(int new_priority, int target_process_id)
 
 int K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
+	if(msg_envelope != NULL)
+	{
+		//msg_envelope->setMsgData(time_delay);
+		
+	}
 	return -2;
 }
 

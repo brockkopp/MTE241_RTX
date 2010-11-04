@@ -7,7 +7,7 @@ class MsgEnv
 		{
 			int _destPid;
 			int _originPid;
-			string _msgType;
+			int _msgType;
 			string _msgData;
 		}msgFields;
 
@@ -15,8 +15,8 @@ class MsgEnv
 		int getDestPid();
 		int setDestPid(int newDestPid);
 		int getOriginPid();
-		int setOriginPid(int newOrignPid);
-		string getMsgType();
+		int setOriginPid(int newOriginPid);
+		int getMsgType();
 		int setMsgType(string newMsgType);
 		string getMsgData();
 		int setMsgData(string msgInfo);
