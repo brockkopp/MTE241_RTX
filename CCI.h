@@ -1,8 +1,14 @@
-#include "debug.h"
+#ifndef H_CCI
+#define H_CCI
 
+#include "debug.h"
+#define SIGINT 2
 class CCI
 {
 	public:
-		static int parseString( string input, string *output[], string token, string maxCount);
-		int processCCI();
+		CCI();
+		static int parseString( string input, string output[], char token, int maxCount);
+		void processCCI();
 };
+
+#endif

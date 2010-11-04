@@ -5,14 +5,13 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* sigHandler)
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	signalHandler = sigHandler;
-	cci = new CCI();
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
 	{
 		pcbList[i] = new PCB(initTable[i]);
-		debugMsg("\tProcess Created: ");
-		debugMsg(pcbList[i]->name,0,1);	
+		//debugMsg("\tProcess Created: ");
+		//debugMsg(pcbList[i]->name,0,1);	
 	}
 	debugMsg("RTX Init Done",0,1);
 }
@@ -20,7 +19,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* sigHandler)
 RTX::~RTX()
 {
 	//Free resources held by each RTX member, allocated in the RTX constructor
-	delete cci;
+
 
 	//Signal handling no long exists
 	delete signalHandler;
