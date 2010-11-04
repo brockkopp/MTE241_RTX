@@ -7,6 +7,7 @@
 PCB::PCB(PcbInfo* info)
 {
 	_id = info->processId;
+	name = info->name;
 	_priority = info->priority;
 	_processType = info->processType;
 	_atomicCount = 0;

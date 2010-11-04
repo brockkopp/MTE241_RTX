@@ -9,9 +9,10 @@
 //NOTE:Project Constants defined in "libs.h"
 
 //RTX Global Constants
-#define PROCESS_COUNT 	7
-#define STACK_SIZE 	2034
+#define PROCESS_COUNT 	7	//Total number of processes existing in the RTX
+#define STACK_SIZE 	2034	//Stack size in bytes
 
+//Constants used to denote process types
 #define PROCESS_I	1	
 #define PROCESS_USER	2
 #define PROCESS_K	3

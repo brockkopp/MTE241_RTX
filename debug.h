@@ -1,3 +1,6 @@
+#ifndef H_DEBUG
+#define H_DEBUG
+
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
@@ -16,3 +19,4 @@ void debugMsg(string message);
 void debugMsg(string message, int newLinesB, int newLinesA);
 int assure(bool condition, string message, string fileName, int lineNum, bool isFatal);
 
+#endif
