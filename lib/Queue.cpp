@@ -4,8 +4,6 @@
 /*This class provides the Queue functionality*/
 #include "Queue.h"
 
-using namespace std;
-
 //constructor
 Queue::Queue()
 {
@@ -18,7 +16,7 @@ Queue::Queue()
 void Queue::enqueue( itemType value )
 {
 	QueueNode* Temp = (QueueNode*)malloc(sizeof(QueueNode));
-	assure(Temp == NULL, "System storage is exhausted - failed to allocate memory for queue",  __FILE__, __LINE__, true);
+	assure(Temp == NULL, "System storage is exhausted - failed to allocate memory for queue",  __FILE__, __LINE__, __func__, true);
 
 	Temp->item = value;
 

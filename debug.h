@@ -14,9 +14,8 @@ using namespace std;
 #define DEBUG_MODE	1
 
 void die(int sigNum);
-
 void debugMsg(string message);
 void debugMsg(string message, int newLinesB, int newLinesA);
-int assure(bool condition, string message, string fileName, int lineNum, bool isFatal);
+int assure(bool condition, string message, string fileName, int lineNum, string func, bool isFatal);
 
 #endif

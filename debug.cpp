@@ -19,7 +19,7 @@ void debugMsg(string message, int newLinesB, int newLinesA)
 	debugMsg(msg.str());
 }
 
-int assure(bool condition, string message, string fileName, int lineNum, bool isFatal)
+int assure(bool condition, string message, string fileName, int lineNum, string func, bool isFatal)
 {
 	if(!condition)
 	{		
@@ -31,10 +31,12 @@ int assure(bool condition, string message, string fileName, int lineNum, bool is
 		}
 		else
 		{
-			msg << "FATAL ERROR: " << fileName << ":" << lineNum << "(" << message << ")";
-			debugMsg(msg.str());
-			debugMsg("\nRTX FORCED TO TERMINATED\n\n");
-			exit(1);
+			msg << "FATAL ERROR: " << fileName << ":" << lineNum << "(" << func << "():" << message << ")";
+			debugMsg(msg.str(),1,1);
+			if(func != "die")
+				die(EXIT_ERROR);
+			else
+				debugMsg("             RTX Already Terminating",0,1);
 		}
 	}
 	return condition;
