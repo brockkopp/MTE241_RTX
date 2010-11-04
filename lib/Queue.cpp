@@ -39,7 +39,7 @@ itemType* Queue::dequeue()
 		_rear = NULL;
 		_length = 0;
 		
-		return currentNode;
+		return &currentNode->Item;
 	} 
 	
 	//Normal case
@@ -56,7 +56,7 @@ itemType* Queue::dequeue()
 		_length --;
 		
 		//Return old front of queue
-		return currentNode->link;
+		return &currentNode->Item;
 	}	
 }
 
@@ -73,6 +73,8 @@ int Queue::contains( itemType value )
 	for( int i = 0; i < _length - 1; i++) {
 		currentNode = currentNode->link;
 	}
+
+	return -2;
 }
 
 itemType* Queue::select( unsigned int position )

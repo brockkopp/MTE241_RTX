@@ -1,11 +1,11 @@
 CC=g++
-CFLAGS=-c -Wall
+CFLAGS= -c -Wall
 TITLE=MTE241_RTX
 
 all: $(TITLE)
 
-$(TITLE): debug.o initialize.o RTX.o SignalHandler.o TimingServices.o MsgEnv.o WallClock.o
-	$(CC) debug.o initialize.o RTX.o SignalHandler.o TimingServices.o MsgEnv.o WallClock.o
+$(TITLE): debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PCB.o Context.o
+	$(CC) debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PCB.o Context.o
 
 #### EXAMPLE #### 
 # <fileName>.o: <dependancies>
@@ -20,15 +20,15 @@ initialize.o: initialize.cpp RTX.h lib/PcbInfo.h
 	$(CC) $(CFLAGS) initialize.cpp
 	
 iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h libs.h
-	$(CC) $(CFLAGS) initialize.cpp
+	$(CC) $(CFLAGS) iprocesses.cpp
 
-RTX.o: RTX.cpp RTX.h libs.h
+RTX.o: RTX.cpp RTX.h lib/PcbInfo.h lib/PCB.h 
 	$(CC) $(CFLAGS) RTX.cpp
 
 SignalHandler.o: SignalHandler.cpp SignalHandler.h libs.h
 	$(CC) $(CFLAGS) SignalHandler.cpp
 	
-Scheduler.o: Scheduler.cpp lib/PQ.h lib/PCB.h
+Scheduler.o: Scheduler.cpp Scheduler.h lib/PQ.h lib/PCB.h
 	$(CC) $(CFLAGS) Scheduler.cpp
 	
 CCI.o: CCI.cpp CCI.h libs.h
@@ -46,11 +46,11 @@ WallClock.o: lib/WallClock.cpp lib/WallClock.h libs.h
 Queue.o: lib/Queue.cpp lib/Queue.h libs.h
 	$(CC) $(CFLAGS) lib/Queue.cpp
 
-PCB.o: lib/PCB.cpp lib/PCB.h
-	$(CC) $(CFLAGS) lib/PCB.h
+PCB.o: lib/PCB.cpp lib/PCB.h lib/PcbInfo.h
+	$(CC) $(CFLAGS) lib/PCB.cpp
 	
-Context.o: lib/Context.h lib/Context.cpp
-	$(CC) $(CFLAGS) lib/Context.h
+Context.o: lib/Context.cpp lib/Context.h
+	$(CC) $(CFLAGS) lib/Context.cpp
 
 clean:
 	rm -rf *.o

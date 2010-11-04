@@ -1,4 +1,4 @@
-#include "rtx.h"
+#include "RTX.h"
 /*
 Dependencies are not yet complete.
 
@@ -41,4 +41,4 @@ class Scheduler {
       PQ blocked_env_procs; // Blocked on resource state
       LL_List blocked_msg_recieve;
 */      
-}
+};

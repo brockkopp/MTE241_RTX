@@ -1,4 +1,4 @@
-#include "scheduler.h"
+#include "Scheduler.h"
 /*
 int PQ::release_processor( ) { return -2; }  
 int PQ::change_priority( PCB * target, new_priority ) { return -2; }   
