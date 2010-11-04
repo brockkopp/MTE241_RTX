@@ -2,6 +2,7 @@
 #include "RTX.h"
 #include "debug.h"
 #include "signal.h"
+#include "SignalHandler.h"
 
 //Private method declarations
 int inititalizeShmem();
@@ -9,24 +10,29 @@ int cleanupShmem();
 int createInitTable(PcbInfo* initTable[]);
 int cleanupInitTable();
 
+RTX* rtx;
 caddr_t shemFiles[2];
+int pidKB, pidCRT, pidMe;
 
 int main()
 {
 	PcbInfo* initTable[PROCESS_COUNT];
-	int pidKB, pidCRT, pidMe;
 	pidMe = getpid();
 
 	debugMsg("------------------------------------\n           RTX INITIALIZED\n------------------------------------",1,2);	
 	
+	SignalHandler* sigHandler = new SignalHandler();
+
 	assure(inititalizeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, true);
 	assure(createInitTable(initTable) == EXIT_SUCCESS, "Init table failed to initialize", __FILE__, __LINE__, true);
 
-	RTX* rtx = new RTX(initTable);
+	rtx = new RTX(initTable, sigHandler);
+
+	//delete[] initTable;
 
 	if ((pidKB = fork()) == 0)
 	{
-		debugMsg("Keyboard forked",0,1); //execl("./keyboard", "keyboard", pidMe, (char *)0);
+		debugMsg("Keyboard forked",1,1); //execl("./keyboard", "keyboard", pidMe, (char *)0);
 		sleep(1000000000);
 		assure(false, "Keyboard helper process failed to initialize", __FILE__, __LINE__, true);
 		exit(1);
@@ -38,7 +44,19 @@ int main()
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, true);
 		exit(1);
 	}
+
 	sleep(1);
+	rtx->signalHandler->setSigMasked(true);
+
+	die(0);
+}
+
+void die(int sigNum)
+{
+	debugMsg("Terminate command initiated ",2,0);
+	debugMsg((sigNum == 0) ? "naturally" : "UNEXPECTEDLY",0,1);
+
+	rtx->signalHandler->setSigMasked(false);
 
 	assure(cleanupInitTable() == EXIT_SUCCESS, "Init table cleanup failed", __FILE__, __LINE__, false);
 	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed", __FILE__, __LINE__, false);
@@ -48,8 +66,11 @@ int main()
 	kill(pidCRT,SIGKILL);
 	wait();	
 
+	delete rtx;
+
 	debugMsg("------------------------------------\n    RTX TERMINATED SUCCESSFULLY\n------------------------------------",1,2);	
-	return EXIT_SUCCESS;
+	
+	exit(SIGKILL);
 }
 
 int inititalizeShmem()

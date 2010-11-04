@@ -1,15 +1,25 @@
 #include "RTX.h"
 
-RTX::RTX(PcbInfo* initTable[])
+RTX::RTX(PcbInfo* initTable[], SignalHandler* sigHandler)
 {
+	debugMsg("RTX Initializing...",0,1);
+	signalHandler = sigHandler;
+	cci = new CCI();
+
 	for(int i=0; i < PROCESS_COUNT; i++)
 	{
-		debugMsg(initTable[i]->name,0,1);
-		pcbList[i] = new PCB(0,0);
-		
+		pcbList[i] = new PCB(initTable[i]);
+		debugMsg("\tProcess Created\n");	
 	}
-	
-	//PCB* myPcb = new PCB(0,0);
+	debugMsg("RTX Init Done",0,1);
+}
+
+RTX::~RTX()
+{
+	delete cci;
+
+
+	delete signalHandler;
 }
 
 int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
@@ -44,7 +54,8 @@ int RTX::K_request_process_status(MsgEnv* memory_block)
 
 int RTX::K_terminate()
 {
-	return -2;
+	die(0);
+	return 1;
 }
 
 int RTX::K_change_priority(int new_priority, int target_process_id)

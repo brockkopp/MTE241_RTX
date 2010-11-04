@@ -10,6 +10,9 @@ using namespace std;
 #define EXIT_ERROR	1
 #define DEBUG_MODE	1
 
+void die(int sigNum);
+
 void debugMsg(string message);
 void debugMsg(string message, int newLinesB, int newLinesA);
 int assure(bool condition, string message, string fileName, int lineNum, bool isFatal);
+
