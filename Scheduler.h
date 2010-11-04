@@ -1,11 +1,10 @@
-#include "RTX.h"
+#include "debug.h"
 /*
 Dependencies are not yet complete.
 
 #include "lib/PCB.h"
 #include "lib/PQ.h"
 */
-using namespace std;
 
 class Scheduler {
     public:
