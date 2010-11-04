@@ -12,7 +12,7 @@ class Scheduler {
 			Scheduler(PCB* currentProcess, PCB* readyProcs[]); //Constructor!
 			
 			void release_processor( );   
-/*			int change_priority( PCB * target, new_priority );   */
+			int change_priority( PCB * target, newPriority );
 			int process_switch( );
        
 
@@ -37,7 +37,7 @@ class Scheduler {
       PCB * _currentProcess; // Executing state
 
 			PQ _readyProcs; // Ready to execute state
-      PQ _blockedEnvProcs; // Blocked on resource state
+      Queue _blockedEnvProcs; // Blocked on resource state
       Queue _blockedMsgRecieve;
 */      
 };
