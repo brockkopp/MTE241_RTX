@@ -15,9 +15,12 @@
 class PCB 
 {
 	public:
+		/*Member functions*/
 		PCB(PcbInfo* tableEntry);
 		PCB( int processType, int priority ); //Constructor
 		int set_priority( int pri );
+		
+		/*Members*/
 		string name;
 
 		//Context context;     //Includes jmp_buf
