@@ -5,13 +5,17 @@
 #include <sstream>
 #include <stdlib.h>
 #include <string>
-//#include "lib/PCB.h" //<--- Was causing looping dependancy and redefinition issues during build. Uncomment it and give it a try -Karl
 using namespace std;
 
 //Project wide variables
 #define EXIT_SUCCESS 	0
 #define EXIT_ERROR	1
+
 #define DEBUG_MODE	1
+#define TESTS_MODE	1
+
+
+//#include "lib/PCB.h" //<--- Was causing looping dependancy and redefinition issues during build. Uncomment it and give it a try -Karl
 
 void die(int sigNum);
 void debugMsg(string message);

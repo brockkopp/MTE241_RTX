@@ -11,5 +11,5 @@ class PQ {
     itemType * pdequeue ();       
   
   private:
-    Queue master[];
+    Queue _master[];
 };

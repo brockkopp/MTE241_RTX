@@ -1,4 +1,8 @@
+#ifndef H_RTX
+#define H_RTX
+
 #include "debug.h"
+#include "RTX.h"
 #include "SignalHandler.h"
 #include "Scheduler.h"
 #include "CCI.h"
@@ -41,5 +45,5 @@ class RTX
 		CCI* cci;
 };
 
-//primitives
+#endif
 

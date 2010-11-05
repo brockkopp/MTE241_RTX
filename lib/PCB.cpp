@@ -1,7 +1,5 @@
 #include "PCB.h"
 
-//
-
 /* Constructor */
 
 PCB::PCB(PcbInfo* info)
@@ -35,5 +33,13 @@ PCB::PCB ( int processType, int priority)
 
 int PCB::set_priority( int pri ) 
 {
-	return -2;
+	//Check if priority level exists
+	if (pri < 0 || pri > 3) {
+		return 1; //error!
+	}
+	
+	else {
+		_priority = pri;
+		return 0;
+	}
 }

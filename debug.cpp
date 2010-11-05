@@ -36,7 +36,7 @@ int assure(bool condition, string message, string fileName, int lineNum, string 
 			if(func != "die")
 				die(EXIT_ERROR);
 			else
-				debugMsg("             RTX Already Terminating",0,1);
+				debugMsg("           : RTX Already Terminating",0,1);
 		}
 	}
 	return condition;
