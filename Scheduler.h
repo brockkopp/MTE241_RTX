@@ -37,7 +37,7 @@ class Scheduler {
       PCB * _currentProcess; // Executing state
 
 			PQ _readyProcs; // Ready to execute state
-      Queue _blockedEnvProcs; // Blocked on resource state
+      Queue _blockedEnv; // Blocked on resource state
       Queue _blockedMsgRecieve;
 */      
 };

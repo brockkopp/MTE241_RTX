@@ -164,9 +164,42 @@ int Scheduler::add_ready_process( PCB * target )
 //	if ( target->get_status() == )
 
 }
+
+
 /*
-int Scheduler::block_process (PCB * target, string reason ) {return -2; }
-int Scheduler::unblock_process( PCB * target ) {return -2; }
+
+arguments: 
+	reason: 1 - blocked on envelope
+					2 - blocked on message recieve
+					
+*/
+int Scheduler::block_process (PCB * target, int reason ) 
+{
+	int return_value = 0; //assume success
+
+	//Remove process from CPU
+	
+	//Put process on appropriate blocked queue
+	//and set its status
+	if (reason == BLOCKED_ENV)
+	{
+		target.set_status( BLOCKED_ENV );
+		return_value = _blockedEnv.penqueue( target );
+			
+	}	
+	else if (reason == BLOCKED_MSG_WAIT){
+		target.set_status( BLOCKED_MSG_WAIT );
+		return_value = _blockedMsgRecieve;
+	}
+
+	//Put the next available process on the ready queue
+	if ( return_value == 0 )
+		return process_switch();
+
+	else
+		return return_value;
+}
+/*int Scheduler::unblock_process( PCB * target ) {return -2; }
 */
 //Returns if a process is currently blocked on envelope
 /*
