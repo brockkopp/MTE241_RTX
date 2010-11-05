@@ -9,7 +9,7 @@ using namespace std;
 */
 PQ::PQ(int nPriority) {
 	Queue _master[nPriority];
-};
+}
 
 /*
 Enqueues newData into the queue with priorityLevel priority.
