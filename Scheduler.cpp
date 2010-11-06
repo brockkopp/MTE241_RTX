@@ -199,21 +199,51 @@ int Scheduler::block_process (PCB * target, int reason )
 	else
 		return return_value;
 }
-/*int Scheduler::unblock_process( PCB * target ) {return -2; }
-*/
-//Returns if a process is currently blocked on envelope
-/*
-int Scheduler::is_blocked_on_envelope( PCB * target ) {return -2; }
-*/
-/*
-PCB * Scheduler::current_process {return NULL;} // Executing state
 
-PQ * Scheduler::ready_procs() {return NULL;} // Ready to execute state
-PQ * Scheduler::blocked_env_procs() {return NULL;} // Blocked on resource state
-List Scheduler::blocked_msg_recieve() {return NULL;}
-*/
 /*
+Moves process from a blocked queue ack onto the ready queue
+and adjusts its status.
+
+
+return values:
+	0 - sucess
+	1 - Process was (inFakt!) not blocked
 
 */
-int context_save( ) { return -2; }
+int Scheduler::unblock_process( PCB * target )
+{
+	//If process is blocked on msg recieve
+	if (target->get_status() == BLOCKED_MSG){
+		_blockedMsgRecieve.dequeue();	
+		target->set_status( READY );
 
+		//Re-enqueue on ready queue
+		return _readyProcs.equeue( target );
+	}
+	//If process is blocked on envelope
+	else if (target->get_status() == BLOCKED_ENV) {
+		_blockedEnv.dequeue();
+		target->set_status( READY );
+
+		return _readyProcs.enqueue( target );
+	}
+	else //Process was not blocked in the firs place...
+		return 1;
+}
+
+//Indicates whether a process is currently blocked on envelope
+/*
+Return values: //Will return the state constant value depending on which type of blocked it is.
+	0: If *target is blocked on envelope
+	1: If *target is not blocked on envelope
+
+*/
+int Scheduler::is_blocked( PCB * target ) 
+{
+	return target->get_state();
+}
+
+PCB* get_current_process() {
+	return _currentProcess;
+
+}
