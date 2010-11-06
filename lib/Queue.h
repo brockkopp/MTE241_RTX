@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
+#include <string>
 
 /* Type Definitions
  * --------------- */
@@ -14,8 +14,6 @@ typedef struct QueueNodeTag
 	struct QueueNodeTag *link;
 }QueueNode;
 
-typedef string QueueType;
-
 /* Class Definition
  * --------------- */
 class Queue 
@@ -24,14 +22,14 @@ class Queue
 		QueueNode* _front;
 		QueueNode* _rear;
 		int _length;
-		int _queueType
+		std::string _queueType;
 		
 	public:
-	 Queue( QueueType type );
-	 ~Queue(); //TO IMPLEMENT
+	 Queue( std::string qtype );
+	 ~Queue();
 	 
 	 int enqueue( itemType value ); //I'm not adding an insert function. If you want something on the list, enqueue it!
-	 itemType* dequeue( ); //I'm not adding a delete function. If you want something from the list, dequeue it!
+	 itemType* dequeue( ); 
 	 
 	 int isEmpty();
 	 int contains( itemType value );
@@ -39,5 +37,5 @@ class Queue
 	 itemType* pluck ( itemType value );
 	 int replace( itemType currValue, itemType newValue );
 	 int get_length();
-	 string get_queueType();
+	 std::string get_queueType();
 };

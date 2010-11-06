@@ -1,17 +1,18 @@
 //TO DO 
-//ENQUEUE: VERIFYING ENQUEUING RIGHT QUEUETYPE?
+//ENQUEUE: VERIFYING ENQUEUING RIGHT string?
 //PLUCK
+//use constants for int, string, pcb, etc.
 
 /*This class provides the Queue functionality*/
 #include "Queue.h"
 
-//constructor
-Queue::Queue( QueueType type )
+//Constructors
+Queue::Queue(std::string qtype)
 {
 	_front = NULL;
 	_rear = NULL;	
 	_length = 0;
-	_queueType = type;
+	_queueType = qtype;
 }
 
 //Destructor: delete all memory used by the queue
@@ -31,35 +32,38 @@ Queue::~Queue()
  	}
 }
 
-//VERIFYING ENQUEUING RIGHT QUEUETYPE?
+//VERIFYING ENQUEUING RIGHT string?
 //Adds a node to the queue containing the value parameter
 //Returns 0 is enqueue is successful, returns 1 if unsuccessful (i.e. failed to allocate memory)
 int Queue::enqueue( itemType value )
 {
-	try{QueueNode* Temp = new QueueNode();}
-	catch{ return 1; }
+//	QueueNode* Temp;
+//	try{Temp = new QueueNode();}
+//	catch() { return 1; }
 
-	Temp->item = value;
+//	Temp->item = value;
 
-	if(_front == NULL) //adding first node
-	{ 
-		Temp->link = NULL;
-		_front = Temp;	
-		_rear	= Temp;
-	}
-	
-	else 
-	{
-		Temp->link = _rear; 
-		_rear = Temp;
-	}
-	_length++;	
+//	if(_front == NULL) //adding first node
+//	{ 
+//		Temp->link = NULL;
+//		_front = Temp;	
+//		_rear	= Temp;
+//	}
+//	
+//	else 
+//	{
+//		Temp->link = _rear; 
+//		_rear = Temp;
+//	}
+//	_length++;
+// return 0;
+	return -2;
 }
 
 //Dequeues an object from the front of the queue.
 //Returns a pointer to the dequeued object.
 //Returns NULL if there is no node to dequeue.
-itemType Queue::dequeue()
+itemType* Queue::dequeue()
 {
 	QueueNode* currentNode = _rear;
 	
@@ -90,7 +94,7 @@ itemType Queue::dequeue()
 		_length--;
 		
 		//Return old front of queue
-		return currentNode->item;	
+		return &(currentNode->item);	
 }
 
 //Return 0 if the value is contained in the queue; return 1 otherwise
@@ -137,11 +141,11 @@ itemType* Queue::pluck ( itemType value )
 //Return 1 if currValue does not exist in the queue; return 0 otherwise (if change is successful)
 int Queue::replace( itemType currValue, itemType newValue )
 {
-	itemType toChange = select(position);
+	itemType* toChange = select(currValue);
 	if(toChange == NULL)
-		return -1;
+		return 1;
 	
-	toChange = value;
+	*toChange = newValue;
 	return 0;
 }
 
@@ -150,10 +154,10 @@ int Queue::get_length()
 	return _length;
 }
 
-//Returns the queueType of the queue. If empty string (""), calling function MUST PERFORM CAST TYPING when a itemType* is being returned
-string Queue::get_queueType()
+//Returns the string of the queue. If empty string (""), calling function MUST PERFORM CAST TYPING when a itemType* is being returned
+std::string Queue::get_queueType()
 {
-	return _queueType.toString();
+	return _queueType;
 }
 
 //return 0 if queue is empty, return 1 otherwise
