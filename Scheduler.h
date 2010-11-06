@@ -8,11 +8,11 @@ Dependencies are not yet complete.
 
 class Scheduler {
     public:
-/*
-			Scheduler::Scheduler(); //Constructor!
-*/			
-			int release_processor( );   
-/*			int change_priority( PCB * target, new_priority );   */
+
+			Scheduler(PCB* currentProcess, PCB* readyProcs[]); //Constructor!
+			
+			void release_processor( );   
+			int change_priority( PCB * target, newPriority );
 			int process_switch( );
        
 
@@ -34,10 +34,10 @@ class Scheduler {
 
 			//Members
 /*			    
-      PCB * current_process; // Executing state
+      PCB * _currentProcess; // Executing state
 
-			PQ ready_procs; // Ready to execute state
-      PQ blocked_env_procs; // Blocked on resource state
-      LL_List blocked_msg_recieve;
+			PQ _readyProcs; // Ready to execute state
+      Queue _blockedEnv; // Blocked on resource state
+      Queue _blockedMsgRecieve;
 */      
 };
