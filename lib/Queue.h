@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "../debug.h"
+#include <string>
 
 /* Type Definitions
  * --------------- */
-typedef int itemType;
+typedef void* itemType;
 
 typedef struct QueueNodeTag
 {
@@ -22,17 +22,20 @@ class Queue
 		QueueNode* _front;
 		QueueNode* _rear;
 		int _length;
+		std::string _queueType;
 		
 	public:
-	 Queue();
-	 //need a destructor?
+	 Queue( std::string qtype );
+	 ~Queue();
 	 
-	 void enqueue( itemType value ); //I'm not adding an insert function. If you want something on the list, enqueue it!
-	 itemType* dequeue(); //I'm not adding a delete function. If you want something from the list, dequeue it!
+	 int enqueue( itemType value ); //I'm not adding an insert function. If you want something on the list, enqueue it!
+	 itemType* dequeue( ); 
 	 
 	 int isEmpty();
 	 int contains( itemType value );
-	 itemType* select( unsigned int position );
-	 int replace( unsigned int position, itemType value );
+	 itemType* select( itemType value );
+	 itemType* pluck ( itemType value );
+	 int replace( itemType currValue, itemType newValue );
 	 int get_length();
+	 std::string get_queueType();
 };
