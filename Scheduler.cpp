@@ -231,11 +231,12 @@ int Scheduler::unblock_process( PCB * target )
 		return 1;
 }
 
-//Indicates whether a process is currently blocked on envelope
+
 /*
 Return values: //Will return the state constant value depending on which type of blocked it is.
-	0: If *target is blocked on envelope
-	1: If *target is not blocked on envelope
+	0: 
+	1: If proc is blocked on enveloper
+	2: If proc is blocked on message recieve
 
 */
 int Scheduler::is_blocked( PCB * target ) 
