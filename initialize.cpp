@@ -46,7 +46,7 @@ int main(void)
 	//Create keyboad thread
 	if ((pidKB = fork()) == 0)
 	{
-		execl("./KB", myPid, (char*)NULL);
+		execl("./KB.out", myPid, (char*)NULL);
 
 		//if the execution reaches here, the keyboard thread failed to initialize
 		assure(false, "Keyboard helper process failed to initialize", __FILE__, __LINE__, __func__, true);
@@ -54,7 +54,7 @@ int main(void)
 	}
 	if ((pidCRT = fork()) == 0)
 	{
-		execl("./CRT", myPid, (char*)NULL);
+		execl("./CRT.out", myPid, (char*)NULL);
 
 		//if the execution reaches here, the crt thread failed to initialize
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
