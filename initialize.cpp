@@ -22,6 +22,13 @@ char* myPid;
 
 int main(void)
 {
+#if ANG_TEST == 0
+	debugMsg("\tQueue Test: \t");    
+	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+#endif
+
+
+#if ANG_TEST == 1
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
 
@@ -81,6 +88,7 @@ int main(void)
 
 	//Signal cci init failed, program should not normally reach this point
 	die(EXIT_ERROR);
+#endif
 }
 
 void doTests()

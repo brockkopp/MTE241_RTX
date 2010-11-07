@@ -1,4 +1,5 @@
 #include "tests.h"
+#include <sstream>
 
 #define PRINT_Q_RESULTS 0
 
@@ -19,6 +20,7 @@ int testQueues()
 {
 	int ret = EXIT_SUCCESS;
 	
+<<<<<<< Updated upstream
 	try
 	{
 		#if PRINT_Q_RESULTS == 1
