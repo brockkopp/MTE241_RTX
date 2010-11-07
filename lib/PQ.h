@@ -2,13 +2,13 @@
 #include "PCB.h"
 #include "Queue.h"
 
-typedef int itemType;
+typedef int itemTypePq;		//Why doesnt this use the Queue data type? (brock)
 
 class PQ {
   public:
   	PQ( itemType target, int nPriority );
-    void penqueue (PCB newData, int priorityLevel);
-    itemType * pdequeue ();       
+	    void penqueue (PCB newData, int priorityLevel);
+	    itemTypePq * pdequeue ();       
   
   private:
     Queue _master[];
