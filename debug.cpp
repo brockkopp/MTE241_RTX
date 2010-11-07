@@ -8,6 +8,14 @@ void debugMsg(string message)
 #endif
 }
 
+void debugMsg(int message)
+{
+	//Assure that this is not in demonstration mode
+#if DEBUG_MODE == 1
+	cout << message;
+#endif
+}
+
 void debugMsg(string message, int newLinesB, int newLinesA)
 {
 	stringstream msg;

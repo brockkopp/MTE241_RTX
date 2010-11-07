@@ -9,6 +9,7 @@
 #include "PCB.h"
 #include "MsgEnv.h"
 #include "../debug.h"
+#include "../tools.h"
 
 //These constants will be used for type-casting
 #define UNK_TYPE 0

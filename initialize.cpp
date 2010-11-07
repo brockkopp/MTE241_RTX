@@ -5,6 +5,8 @@
 #include "SignalHandler.h"
 #include "tests.h"
 
+#define ANG_TEST 0
+
 //Private method declarations
 void doTests();
 int inititalizeShmem();
@@ -64,7 +66,6 @@ int main(void)
 
 	//Initialize Tick Signals
 	//ualarm(100,100);
-
 	CCI* cci = new CCI(rtx);
 	delete cci;
 

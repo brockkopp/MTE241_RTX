@@ -92,8 +92,10 @@ itemType Queue::pluck_gen( itemType value )
 		prePluckee = pluckee;
 		pluckee = pluckee->link;
 		scanPos--;
-	}
-	return pluckee; //if value wasn't in queue, pluckee is NULL
+	}	
+	if(pluckee == NULL)
+		return NULL;
+	return pluckee->item; //if value wasn't in queue, pluckee is NULL
 }
 
 // Find the specified value in the queue and return a pointer to it
@@ -274,12 +276,30 @@ PCB* Queue::pluck(PCB* value)
 //Return true if currValue does not exist in the queue; return false otherwise (if change is successful)
 bool Queue::replace( itemType currValue, itemType newValue )
 {
-	itemType toChange = select(currValue);
+	QueueNode* toChange = _rear;
+	int scanPos = _length - 1;
+	while(toChange != NULL)
+	{
+		if( toChange->item == currValue )
+			break;
+		toChange = toChange->link;
+		scanPos--;
+	}
+
 	if(toChange == NULL)
-		return false;
-	
-	toChange = newValue;
-	return true;
+		return 0;	
+
+	if(_typeCastType == INT)
+		toChange->item = (int*)newValue;
+	else if(_typeCastType == STRING)
+		toChange->item = (std::string*)newValue;
+	else if(_typeCastType == PROCCONBLOCK)
+		toChange->item = (PCB*)newValue;	
+	else if(_typeCastType == MSG_ENV)
+		toChange->item = (MsgEnv*)newValue;
+	else
+		toChange->item = newValue;
+	return 1;
 }
 
 /*~*~*~*~*~*~*	  SELECT OVERLOADS   *~*~*~*~*~*~*~*~*/
@@ -306,5 +326,23 @@ MsgEnv* Queue::select(MsgEnv* value)
 PCB* Queue::select(PCB* value)
 {
 	return (PCB*)select_gen(value);
+}
+
+/*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
+ *~*~*~*~*~*~*	    FOR TESTING      *~*~*~*~*~*~*~*~*
+ *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*/
+void Queue::printIntQueue() //assume _typeCastType == INT
+{
+	QueueNode* Temp = _rear;
+	int position = _length - 1;
+	debugMsg("Queue: [ ");
+	while(Temp != NULL)
+	{
+		debugMsg(intToStr(*(int*)(Temp->item)));
+		debugMsg(" ");
+		Temp = Temp->link;
+		position--;
+	}
+	debugMsg("] \n");
 }
 
