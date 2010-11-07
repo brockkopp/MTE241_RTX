@@ -5,7 +5,6 @@
 #include "tools.h"
 #include "lib/Queue.h"
 
-
 int testParser();
 int testQueues();
 

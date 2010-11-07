@@ -5,6 +5,8 @@
 #include "SignalHandler.h"
 #include "tests.h"
 
+#define ANG_TEST 0
+
 //Private method declarations
 void doTests();
 int inititalizeShmem();

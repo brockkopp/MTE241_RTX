@@ -46,7 +46,7 @@ MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
 WallClock.o: lib/WallClock.cpp lib/WallClock.h
 	@$(CC) $(CFLAGS) lib/WallClock.cpp
 
-Queue.o: lib/Queue.cpp lib/Queue.h
+Queue.o: lib/Queue.cpp lib/Queue.h debug.h
 	@$(CC) $(CFLAGS) lib/Queue.cpp
 
 PCB.o: lib/PCB.cpp lib/PCB.h lib/PcbInfo.h

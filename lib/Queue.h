@@ -8,6 +8,8 @@
 #include <string>
 #include "PCB.h"
 #include "MsgEnv.h"
+#include "../debug.h"
+#include "../tools.h"
 
 //These constants will be used for type-casting
 #define UNK_TYPE 0
@@ -48,7 +50,7 @@ class Queue
 	 Queue( std::string qtype );
 	 ~Queue();
 	 
-	 int enqueue( itemType value ); 
+	 bool enqueue( itemType value ); 
 	 
 	 itemType 		dequeue_itemType();
 	 int* 				dequeue_int();
@@ -56,10 +58,10 @@ class Queue
 	 MsgEnv* 			dequeue_MsgEnv();
 	 PCB* 				dequeue_PCB();
 	 
-	 int 					contains( itemType value );	 
+	 bool 					contains( itemType value );	 
 	 int 					get_length();
 	 std::string 	get_queueType();
-	 int 					isEmpty();	
+	 bool 					isEmpty();	
 	  
 	 itemType 		pluck ( itemType value );
 	 int* 				pluck ( int* value );
@@ -67,13 +69,15 @@ class Queue
 	 MsgEnv* 			pluck ( MsgEnv* value );
 	 PCB* 				pluck ( PCB* value );
 	 
-	 int replace( itemType currValue, itemType newValue );
+	 bool replace( itemType currValue, itemType newValue );
 	 
 	 itemType 		select( itemType value );
 	 int* 				select( int* value );
 	 std::string* select( std::string* value );
 	 MsgEnv* 			select( MsgEnv* value );
 	 PCB* 				select( PCB* value );
+	 
+	 void printIntQueue(); //for testing purposes
 };
 
 #endif
