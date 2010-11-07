@@ -1,8 +1,3 @@
-//TO DO 
-//ENQUEUE: VERIFYING ENQUEUING RIGHT string?
-//PLUCK
-//use constants for int, string, pcb, etc.
-
 /*This class provides the Queue functionality*/
 #include "Queue.h"
 
@@ -36,7 +31,7 @@ itemType Queue::dequeue_gen()
 	QueueNode* currentNode = _rear;
 	
 	//Special case: length = 0
-	if (isEmpty()) //Throw error 
+	if (isEmpty()) //return null 
 		return NULL;
 	
 	//Deal with special case of length = 1
@@ -59,18 +54,46 @@ itemType Queue::dequeue_gen()
 		//Set head to equal the second to last node
 		_front = currentNode;
 	}
-		_length--;
+  _length--;
 		
-		//Return old front of queue
-		return &(currentNode->item);	
+	//Return old front of queue
+	return currentNode->item;	
 }
 
 //Remove the specified value from the queue and return a pointer to it
 //Return NULL if the value is not found in the queue
 itemType Queue::pluck_gen( itemType value )
 {
-//if doesn't exist
-	return NULL;
+	QueueNode* pluckee = _rear;
+	QueueNode* prePluckee = _rear;
+	int scanPos = _length - 1;
+	while(pluckee != NULL)
+	{
+		if( pluckee->item == value ) //remove pluckee from queue
+		{
+			if(_length == 1) //special case
+			{
+				_rear = NULL;
+				_front = NULL;
+			}
+			else //_length >= 2
+			{
+				if(scanPos == _length - 1) //plucking tail
+					_rear = pluckee->link;
+					
+				else if(scanPos == 0) //plucking head
+					_front = prePluckee;
+					
+				prePluckee->link = pluckee->link; //cut pluckee out
+			}
+			_length--;
+			break;
+		}
+		prePluckee = pluckee;
+		pluckee = pluckee->link;
+		scanPos--;
+	}
+	return pluckee; //if value wasn't in queue, pluckee is NULL
 }
 
 // Find the specified value in the queue and return a pointer to it
@@ -82,7 +105,7 @@ itemType Queue::select_gen( itemType value )
 	while(Temp != NULL)
 	{
 		if( Temp->item == value )
-			return &(Temp->item);
+			return Temp->item;
 		Temp = Temp->link;
 		scanPos--;
 	}

@@ -6,15 +6,16 @@
 #include "PCB.h"
 #include "MsgEnv.h"
 
-//these constants will be used for type-casting
+//These constants will be used for type-casting
 #define UNK_TYPE 0
 #define INT 1
 #define STRING 2
 #define MSG_ENV 3
 #define PROCCONBLOCK 4
 
-/* Type Definitions
- * --------------- */
+/*~*~*~*~*~*~*~*~*~*~*~*~*~*~
+ *~*~* Type Definitions *~*~*
+ ~*~*~*~*~*~*~*~*~*~*~*~*~*~*/
 typedef void* itemType;
 
 typedef struct QueueNodeTag
@@ -23,8 +24,9 @@ typedef struct QueueNodeTag
 	struct QueueNodeTag *link;
 }QueueNode;
 
-/* Class Definition
- * --------------- */
+/*~*~*~*~*~*~*~*~*~*~*~*~*~*~
+ *~*~* Class Definition *~*~*
+ ~*~*~*~*~*~*~*~*~*~*~*~*~*~*/
 class Queue 
 {
 	private:
@@ -43,7 +45,7 @@ class Queue
 	 Queue( std::string qtype );
 	 ~Queue();
 	 
-	 int enqueue( itemType value ); //I'm not adding an insert function. If you want something on the list, enqueue it!
+	 int enqueue( itemType value ); 
 	 
 	 itemType 		dequeue_itemType();
 	 int* 				dequeue_int();
