@@ -1,15 +1,4 @@
-#include "rtx.h"
-
-class MsgServ
-{
-	public:
-		int sendMsg(int destPid, MsgEnv* msg)
-		MsgEnv* recieveMsg()
-		int releaseEnv(MsgEnv* msg)
-		MsgEnv* requestEnv()
-	private:
-		LL_List freeEnvQ;
-};
+#include "MsgServ.h"
 
 int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 {
@@ -34,4 +23,3 @@ MsgEnv* MsgServ::requestEnv()
 	//returns msg env from freeEnvQ
 	return NULL;
 }
-

@@ -40,15 +40,15 @@ PCB::PCB ( int processType, int priority)
 	_priority = priority;
 }
 */
-int PCB::setPriority( int pri ) 
+int PCB::setPriority( int pri ) 		//SHOULD THIS RE-ENQUEUE PCB IF IN RPQ????
 {
 	//Check if priority level exists
 	if (pri < 0 || pri > 3) {
-		return 1; //error!
+		return EXIT_ERROR; //error!
 	}
 	
 	else {
 		_priority = pri;
-		return 0;
+		return EXIT_SUCCESS;
 	}
 }

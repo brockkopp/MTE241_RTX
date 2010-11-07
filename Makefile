@@ -37,6 +37,9 @@ CCI.o: CCI.cpp CCI.h
 TimingServices.o: TimingServices.cpp TimingServices.h
 	@$(CC) $(CFLAGS) TimingServices.cpp
 
+MsgServ.o:MsgServ.cpp MsgServ.h
+	@$(CC) $(CFLAGS) MsgServ.cpp
+
 MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
 	@$(CC) $(CFLAGS) lib/MsgEnv.cpp
 

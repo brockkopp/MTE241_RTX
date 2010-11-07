@@ -22,11 +22,12 @@ RTX::~RTX()
 	delete signalHandler;
 }
 
-int RTX::getPcb(int pid, PCB* pcb)
+int RTX::getPcb(int pid, PCB** pcb)
 {
 	int ret = EXIT_SUCCESS;
+
 	if(pid >= 0 && pid < PROCESS_COUNT)
-		pcb = pcbList[pid];
+		*pcb = pcbList[pid];
 	else
 		ret = EXIT_ERROR;
 	

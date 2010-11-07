@@ -65,6 +65,8 @@ int main(void)
 	//Initialize Tick Signals
 	//ualarm(100,100);
 
+	debugMsg("Type 'help' at any time to list possible CCI commands",0,2);	
+
 	CCI* cci = new CCI(rtx);
 	delete cci;
 
