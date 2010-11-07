@@ -1,7 +1,6 @@
-#include "libs.h"
+#include "debug.h"
 #include "RTX.h"
 #include "CCI.h"
-#include "debug.h"
 #include "signal.h"
 #include "SignalHandler.h"
 #include "tests.h"
@@ -66,7 +65,7 @@ int main(void)
 	//Initialize Tick Signals
 	//ualarm(100,100);
 
-	CCI* cci = new CCI();
+	CCI* cci = new CCI(rtx);
 	delete cci;
 
 	//Signal normal program completion
@@ -93,7 +92,7 @@ void doTests()
 void die(int sigNum)
 {
 	debugMsg("Terminate command initiated ",2,0);
-	debugMsg((sigNum == EXIT_SUCCESS) ? "normally" : "UNEXPECTEDLY",0,1);
+	debugMsg((sigNum == EXIT_SUCCESS) ? "normally" : "UNEXPECTEDLY: " + intToStr(sigNum) ,0,1);
 
 	//Force mask all signals 
 	rtx->signalHandler->setSigMasked(true);

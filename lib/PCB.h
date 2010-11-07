@@ -1,7 +1,7 @@
 #ifndef H_PCB
 #define H_PCB
 //#include "PQ.h"
-//#include "Context.h"
+#include "Context.h"
 //#include "PQ.h"
 #include "PcbInfo.h"
 #include "../debug.h"
@@ -17,13 +17,13 @@ class PCB
 	public:
 		/*Member functions*/
 		PCB(PcbInfo* tableEntry);
-		PCB( int processType, int priority ); //Constructor
-		int set_priority( int pri );
+		//PCB( int processType, int priority ); //Constructor
+		int setPriority( int pri );
 		
 		/*Members*/
 		string name;
 
-		//Context context;     //Includes jmp_buf
+		Context* context;     //Includes jmp_buf
 		
 		//Queue mailbox;     //Message mailbox
 

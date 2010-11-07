@@ -1,7 +1,7 @@
 #ifndef H_MSGENV
 #define H_MSGENV
 
-#include "../libs.h"
+#include "../debug.h"
 
 class MsgEnv
 {

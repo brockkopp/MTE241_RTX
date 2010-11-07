@@ -2,8 +2,9 @@
 #define	H_TESTS
 
 #include "debug.h"
-#include "CCI.h"
+#include "tools.h"
 #include "lib/Queue.h"
+
 
 int testParser();
 int testQueues();

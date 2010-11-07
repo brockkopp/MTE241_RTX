@@ -8,11 +8,8 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* sigHandler)
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
-	{
 		pcbList[i] = new PCB(initTable[i]);
-		//debugMsg("\tProcess Created: ");
-		//debugMsg(pcbList[i]->name,0,1);	
-	}
+
 	debugMsg("RTX Init Done",0,1);
 }
 
@@ -23,6 +20,17 @@ RTX::~RTX()
 
 	//Signal handling no long exists
 	delete signalHandler;
+}
+
+int RTX::getPcb(int pid, PCB* pcb)
+{
+	int ret = EXIT_SUCCESS;
+	if(pid >= 0 && pid < PROCESS_COUNT)
+		pcb = pcbList[pid];
+	else
+		ret = EXIT_ERROR;
+	
+	return ret;
 }
 
 int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)

@@ -3,97 +3,113 @@
 //REMOVE AFTER I/O IS IMPLEMENTED
 #include <stdio.h>
 
-CCI::CCI()
+CCI::CCI(RTX* rtx)
 {
+	_rtx = rtx;
+	wallClock = new WallClock();
+	//_rtx.start();
 	processCCI();
-}
-
-int CCI::parseString( string input, string output[], char token, int maxCount)
-{
-	unsigned int strPos = 0;
-	unsigned int prevPos = 0;
-	int tokenCnt = 0;
-
-	//Search until finished string or output[] is full
-	while(strPos <= input.length() && tokenCnt < maxCount)
-	{
-		//if token is found, or end of string
-		if(input[strPos] == token || strPos == input.length())
-		{
-			//Store string (without token)
-			output[tokenCnt] = input.substr(prevPos, strPos - prevPos);
-			tokenCnt ++;
-			//Loop until next non-token character in input string
-			while(input[strPos++] == token)
-			prevPos = strPos;
-		}
-		else
-			strPos++;
-	}
-	return tokenCnt;
 }
 
 void CCI::processCCI()
 {
 	string command;
-	string input[4];
-	bool valid;
+	string input[3];
+	string errMsg;
+	int params;
 
 	while(true)
 	{
 		command = "";
-		valid = true;
+		input[0] = input[1] = input[2] = "";
+		errMsg = "";
 		
-		while(command.length() == 0){
-			cout << "<RTX$";
-			cin >> command;
+		do
+		{
+			cout << ">RTX$ ";
+			getline(cin,command);
 		}
+		while(command.length() == 0);
 
-		if(parseString( command, input, ' ', 4) <= 3){
+		params = parseString( command, input, ' ', 3);
+
+		if(params > 0 && params < 4)
+		{
 
 			if(input[0] == "s")
 			{
-				cout << "sendMessage\n";
+				if(params > 1)
+					errMsg = "Too many parameters";
+				else
+					cout << "sendMessage\n";
 			}
 			else if(input[0] == "ps")
 			{
-				cout << "processStatus\n";
+				if(params > 1)
+					errMsg = "Too many parameters";
+				else
+					cout << "processStatus\n";
 			}
-			else if(input[0] == "c")		//00:00:00
+			else if(input[0] == "c")
 			{
-				cout << "setWallClock\n";
+				string time[4];				
+				if(params > 2)
+					errMsg = "Too many parameters";
+				else if(!parseString(input[1],time,':',3) != 3 || wallClock->setTime(time) != EXIT_SUCCESS)
+					errMsg = "Invalid time format";
 			}
 			else if(input[0] == "cd")
 			{
-				cout << "displayWallClock\n";
+				if(params > 1)
+					errMsg = "Too many parameters";
+				else
+					wallClock->setDisplayed(true);
 			}
 			else if(input[0] == "ct")
 			{
-				cout << "hideWallClock\n";
+				if(params > 1)
+					errMsg = "Too many parameters";
+				else
+					wallClock->setDisplayed(false);
 			}
 			else if(input[0] == "b")
 			{
-				cout << "displayTraceBuffers\n";
+				if(params > 1)
+					errMsg = "Too many parameters";
+				else
+					cout << "displayTraceBuffers\n";
 			}
 			else if(input[0] == "t"){
-				//rtx->signalHandler->handler(SIGINT);
-				die(EXIT_SUCCESS);
+				if(params > 1)
+					errMsg = "Too many parameters";
+				else
+					_rtx->signalHandler->handler(SIGINT);
 			}
 			else if(input[0] == "b")
 			{
-				cout << "displayTraceBuffers\n";
+				if(params > 1)
+					errMsg = "Too many parameters";
+				else
+					cout << "displayTraceBuffers\n";
 			}
 			else if(input[0] == "n")
 			{
-				cout << "changeProcessPriority\n";		//new_pri  pid
+				int pid,priority;
+				PCB* pcb = NULL;
+				if(strToInt(input[1],&priority) != EXIT_SUCCESS || strToInt(input[2],&pid) != EXIT_SUCCESS)
+					errMsg = "invalid parameters";
+				else if(_rtx->getPcb(pid,pcb) != EXIT_SUCCESS)
+					errMsg = "Invalid process id";
+				else if(pcb->setPriority(priority) != EXIT_SUCCESS)
+					errMsg = "Invalid priority";
 			}			
 			else
-				cout << "fuck off and type something proper\n";
+				errMsg = "Invalid Command Identifier: '" + input[0] + "'";
 		}
 		else
-			valid = false;
+			errMsg = "Invalid Command String";
 		
-		if(!valid)
-			cout << "Invalid command";
+		if(errMsg.length() > 0)
+			cout << (errMsg + "\n");
 	}	
 }
