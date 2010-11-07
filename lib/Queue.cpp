@@ -5,6 +5,10 @@
 
 /*This class provides the Queue functionality*/
 #include "Queue.h"
+/*
+Please explain what values the qtype can be.
+*/
+
 
 //Constructors
 Queue::Queue(std::string qtype)

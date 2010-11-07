@@ -19,6 +19,7 @@ class PCB
 		PCB(PcbInfo* tableEntry);
 		PCB( int processType, int priority ); //Constructor
 		int set_priority( int pri );
+		int get_priority( );
 		
 		/*Members*/
 		string name;

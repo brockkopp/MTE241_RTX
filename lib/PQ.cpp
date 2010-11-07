@@ -29,12 +29,12 @@ void PQ::penqueue (PCB newData, priorityLevel)
 }
 
 /*
-Dequeues a pointer to an itemType. Returns null if there is nothing to dequeue.
+Dequeues a pointer to an pItemType. Returns null if there is nothing to dequeue.
 */
-itemType * PQ::pdequeue () 
+pItemType * PQ::pdequeue () 
 {
 	masterLength = sizeof( master ) / sizeof( master[0] );
-	itemType* returnVal;
+	pItemType* returnVal;
 	for( int i; i < masterLength; i++) {
 		//Try dequeuing
 		if (returnVal = _master[i].dequeue) {

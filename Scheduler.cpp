@@ -1,23 +1,25 @@
-//#include "Scheduler.h"
+#include "Scheduler.h"
 
-///*
-//Constructor
+/*
+Constructor
 
-//arguments: 
-//	currentProcess will be the first process to execute
-//	readyProcs[]: An array of PCB pointers that point to all the procs that will start on the ready queue
-//	
-//*/
+arguments: 
+	currentProcess will be the first process to execute
+	readyProcs: A queue of PCB pointers that point to all the procs that will start on the ready queue
+	
+*/
 
-//Scheduler::Scheduler(PCB* currentProcess, PCB* readyProcs[]) {
-//	
+//Scheduler::Scheduler(PCB* currentProcess, Queue readyProcs):
+//_readyProcs(4), _blockedEnv( "int" ), _blockedMsgRecieve( "int" )
+// {
 //	_currentProcess = currentProcess;
+//	//PQ _readyProcs( 4 );
+//	
 //	
 //	//Add all readyProcs to the ready queue.
-//	int sizeOfReadyProcs = sizeof( readyProcs ) / sizeof( readyProcs[0] );
-//	
-//	for(int i=0; i<sizeOfReadyProcs; i++) {
-//		_readyProcs.penqueue( readyProcs[i] );
+//	for(int i=0; i<readyProcs.get_length(); i++) {
+//		PCB* temp = static_cast<PCB*>(readyProcs.dequeue());
+//		_readyProcs.penqueue( temp, temp->get_priority() );
 //	}
 
 //}

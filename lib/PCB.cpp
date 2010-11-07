@@ -43,3 +43,8 @@ int PCB::set_priority( int pri )
 		return 0;
 	}
 }
+
+int PCB::get_priority( ) 
+{
+return _priority;
+}

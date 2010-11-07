@@ -2,13 +2,13 @@
 #include "PCB.h"
 #include "Queue.h"
 
-typedef int itemType;
+typedef int pItemType;
 
 class PQ {
   public:
-  	PQ( itemType target, int nPriority );
+  	PQ( int nPriority );
     void penqueue (PCB newData, int priorityLevel);
-    itemType * pdequeue ();       
+    pItemType * pdequeue ();       
   
   private:
     Queue _master[];
