@@ -1,3 +1,6 @@
+#ifndef H_MSGENV
+#define H_MSGENV
+
 #include "../libs.h"
 
 class MsgEnv
@@ -21,3 +24,5 @@ class MsgEnv
 		string getMsgData();
 		int setMsgData(string msgInfo);
 };
+
+#endif	

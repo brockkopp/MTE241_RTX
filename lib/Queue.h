@@ -1,3 +1,6 @@
+#ifndef H_QUEUE
+#define H_QUEUE
+
 /*This class provides the Queue functionality*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -72,3 +75,5 @@ class Queue
 	 MsgEnv* 			select( MsgEnv* value );
 	 PCB* 				select( PCB* value );
 };
+
+#endif
