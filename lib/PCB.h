@@ -1,11 +1,11 @@
 #ifndef H_PCB
 #define H_PCB
-//#include "PQ.h"
-#include "Context.h"
-//#include "PQ.h"
-#include "PcbInfo.h"
-#include "../debug.h"
 
+#include "../debug.h"
+#include <stdlib.h>
+#include "Context.h"
+#include "PcbInfo.h"
+//#include "PQ.h"
 
 //Process state constant declarations.
 #define READY 0

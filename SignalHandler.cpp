@@ -77,20 +77,19 @@ void SignalHandler::handler( int sigNum )
 	switch(sigNum)
 	{
 		case SIGINT:
-			debugMsg("Signal Received: SIGINT",0,1);
 			die(EXIT_SUCCESS);
 			break;
 
 		case SIGALRM:
-			//debugMsg("Signal Received: SIGALRM",0,1);
+			i_timing_process();
 			break;
 
 		case SIGUSR1:	//Keyboard
-			debugMsg("Signal Received: SIGUSR1: KB",0,1);
+			i_keyboard_handler();
 			break;
 
 		case SIGUSR2:	//Crt
-			debugMsg("Signal Received: SIGUSR2: CRT",0,1);
+			i_crt_handler();
 			break;
 		default:
 			assure(false,"Unknown Signal Received",__FILE__,__LINE__,__func__,false);

@@ -5,6 +5,7 @@
 #include "RTX.h"
 #include "SignalHandler.h"
 #include "Scheduler.h"
+#include "MsgServ.h"
 #include "lib/PCB.h"
 #include "lib/PcbInfo.h"
 #include "lib/MsgEnv.h"
@@ -20,12 +21,14 @@
 #define PROCESS_USER	2
 #define PROCESS_K	3
 
+#define USER_PROC_A	4
+
 class RTX
 {
 	public:
 		RTX(PcbInfo* initTable[], SignalHandler* sigHandler);
 		~RTX();
-		int getPcb(int pid, PCB* pcb);
+		int getPcb(int pid, PCB** pcb);
 		
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
 		MsgEnv* K_receive_message();
@@ -43,6 +46,7 @@ class RTX
 		PCB* pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
 		Scheduler* scheduler;
 		SignalHandler* signalHandler;
+		MsgServ* mailMan;
 };
 
 #endif
