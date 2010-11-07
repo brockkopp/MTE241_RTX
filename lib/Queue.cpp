@@ -119,6 +119,16 @@ itemType Queue::select_gen( itemType value )
  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*/
 
 /*~*~*~*~*~*~* CONSTRUCTOR/DESTRUCTOR *~*~*~*~*~*~*~*~*/
+Queue::Queue()
+{
+	_front = NULL;
+	_rear = NULL;	
+	_length = 0;
+	_queueType = "";
+	_typeCastType = determineCastType();
+}
+
+
 Queue::Queue(std::string qtype)
 {
 	_front = NULL;
@@ -234,6 +244,17 @@ int Queue::get_length()
 std::string Queue::get_queueType()
 {
 	return _queueType;
+}
+
+//Sets the queueType of the queue. May only be done if the _queueType was not previously defined
+void Queue::set_queueType( std::string type )
+{
+	if(_typeCastType == UNK_TYPE)
+	{
+		_queueType = type;
+  	_typeCastType = determineCastType();
+	}
+	return;
 }
 
 //return true if queue is empty, return false otherwise

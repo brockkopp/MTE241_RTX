@@ -3,9 +3,7 @@
 
 /*This class provides the Queue functionality*/
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
-#include <string>
 #include "PCB.h"
 #include "MsgEnv.h"
 #include "../debug.h"
@@ -47,6 +45,7 @@ class Queue
 	  itemType 		select_gen(itemType value);
 		
 	public:
+	 Queue( );
 	 Queue( std::string qtype );
 	 ~Queue();
 	 
@@ -59,8 +58,9 @@ class Queue
 	 PCB* 				dequeue_PCB();
 	 
 	 bool 					contains( itemType value );	 
-	 int 					get_length();
-	 std::string 	get_queueType();
+	 int 						get_length();
+	 std::string 		get_queueType();
+	 void 					set_queueType( std::string type ); //may only be done if _queueType not already defined
 	 bool 					isEmpty();	
 	  
 	 itemType 		pluck ( itemType value );

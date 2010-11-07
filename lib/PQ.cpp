@@ -1,46 +1,71 @@
 /*This file implements the Priority Queue class*/
 #include "PQ.h"
 
-using namespace std;
-
 /*
 	Arguments: 
 		nPriority: the number of priority levels that will be used.
 */
-PQ::PQ(int nPriority) {
-	Queue _master[nPriority];
+PQ::PQ( int nPriority ) 
+{
+//	Queue* _master = new Queue[nPriority];
+//	
+//	try
+//	{
+//		for(int i = 0; i < nPriority; i++)
+//		{
+//			_master[i] = new Queue();
+//			_master[i].set_queueType("PCB");
+//		}
+//	}
+//	catch(char* c)
+//	{
+//		assure(false, "Failed to create queues for the Priority Queue", __FILE__, __LINE__, __func__, true);
+//	}
+}
+
+PQ::~PQ()
+{
+	try
+	{
+		delete[] _master;
+	}
+	catch(char* c)
+	{
+		assure(false, "Failed to delete Priority Queue", __FILE__, __LINE__, __func__, true);
+	}
 }
 
 /*
 Enqueues newData into the queue with priorityLevel priority.
+Return true if enqueue is successful, return false otherwise
 */
-void PQ::penqueue (PCB newData, priorityLevel)
+bool PQ::pq_enqueue (PCB* newData, int priorityLevel)
 {
 	//Check to make sure that the priority level exists
-	masterLength = sizeof( _master ) / sizeof( _master[0] );
-	if (priorityLevel >= masterLength) {
+	int masterLength = sizeof(_master);
+	if (priorityLevel >= masterLength) 
+	{
 		//Then the priorityLevel is too high, so return error
-		return 1;
+		return false;
 	}
 	
 	//Enqueue the data at the requested priority level.	
-	return _master[ priorityLevel ].enqueue( newData );
-	
+	return (_master[priorityLevel].enqueue(newData));	
 }
 
 /*
 Dequeues a pointer to an itemType. Returns null if there is nothing to dequeue.
 */
-itemType * PQ::pdequeue () 
+itemType PQ::pq_dequeue() 
 {
-	masterLength = sizeof( master ) / sizeof( master[0] );
-	itemType* returnVal;
-	for( int i; i < masterLength; i++) {
-		//Try dequeuing
-		if (returnVal = _master[i].dequeue) {
-			return returnVal;
-		}	
-	}
+//	int masterLength = sizeof(_master);
+//	itemType returnVal;
+//	for( int i; i < masterLength; i++) 
+//	{
+//		//Try dequeuing
+//		if (returnVal = _master[i].dequeue_PCB)
+//			return returnVal;
+//	}
 	
 	return NULL; //The dequeue has failed, nothing to dequeue.	
 }

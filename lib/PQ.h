@@ -1,15 +1,20 @@
+#ifndef H_PQ
+#define H_PQ
+
 /*The PQ class provides Priority Queue functionality*/
 #include "PCB.h"
 #include "Queue.h"
-
-typedef int itemTypePq;		//Why doesnt this use the Queue data type? (brock)
+#include "../debug.h"
 
 class PQ {
   public:
-  	PQ( itemType target, int nPriority );
-	    void penqueue (PCB newData, int priorityLevel);
-	    itemTypePq * pdequeue ();       
+  	PQ( int nPriority );
+  	~PQ( );
+	  bool pq_enqueue ( PCB* newData, int priorityLevel );
+	  itemType pq_dequeue( );       
   
   private:
     Queue _master[];
 };
+
+#endif

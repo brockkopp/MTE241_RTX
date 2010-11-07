@@ -1,5 +1,4 @@
 #include "tests.h"
-#include <sstream>
 
 #define PRINT_Q_RESULTS 0
 
