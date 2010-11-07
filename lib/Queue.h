@@ -3,6 +3,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string>
+#include "PCB.h"
+#include "MsgEnv.h"
+
+//these constants will be used for type-casting
+#define UNK_TYPE 0
+#define INT 1
+#define STRING 2
+#define MSG_ENV 3
+#define PROCCONBLOCK 4
 
 /* Type Definitions
  * --------------- */
@@ -23,19 +32,41 @@ class Queue
 		QueueNode* _rear;
 		int _length;
 		std::string _queueType;
+		int _typeCastType;
+		
+		int determineCastType();		
+	  itemType 		dequeue_gen();  
+	  itemType 		pluck_gen(itemType value);
+	  itemType 		select_gen(itemType value);
 		
 	public:
 	 Queue( std::string qtype );
 	 ~Queue();
 	 
 	 int enqueue( itemType value ); //I'm not adding an insert function. If you want something on the list, enqueue it!
-	 itemType* dequeue( ); 
 	 
-	 int isEmpty();
-	 int contains( itemType value );
-	 itemType* select( itemType value );
-	 itemType* pluck ( itemType value );
+	 itemType 		dequeue_itemType();
+	 int* 				dequeue_int();
+	 std::string* dequeue_string();
+	 MsgEnv* 			dequeue_MsgEnv();
+	 PCB* 				dequeue_PCB();
+	 
+	 int 					contains( itemType value );	 
+	 int 					get_length();
+	 std::string 	get_queueType();
+	 int 					isEmpty();	
+	  
+	 itemType 		pluck ( itemType value );
+	 int* 				pluck ( int* value );
+	 std::string* pluck ( std::string* value );
+	 MsgEnv* 			pluck ( MsgEnv* value );
+	 PCB* 				pluck ( PCB* value );
+	 
 	 int replace( itemType currValue, itemType newValue );
-	 int get_length();
-	 std::string get_queueType();
+	 
+	 itemType 		select( itemType value );
+	 int* 				select( int* value );
+	 std::string* select( std::string* value );
+	 MsgEnv* 			select( MsgEnv* value );
+	 PCB* 				select( PCB* value );
 };
