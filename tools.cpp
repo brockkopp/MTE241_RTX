@@ -1,4 +1,5 @@
 #include "tools.h"
+#include "debug.h"
 
 string intToStr(int num)
 {
@@ -12,6 +13,23 @@ string intToStr(int num, unsigned int length)
 	string ret = intToStr(num);
 	while(ret.length() < length)
 		ret = "0" + ret;
+	return ret;
+}
+
+int strToInt(string input, int* output)
+{
+	int ret = EXIT_SUCCESS;	
+	istringstream buffer(input);
+	
+	try
+	{
+		buffer >> *output;
+	}
+	catch (int e)
+	{
+		ret = EXIT_ERROR;
+	}
+
 	return ret;
 }
 
@@ -32,10 +50,14 @@ int parseString( string input, string output[], char token, int maxCount)
 			tokenCnt ++;
 			//Loop until next non-token character in input string
 			while(input[strPos++] == token)
-			prevPos = strPos;
+				prevPos = strPos;
 		}
 		else
 			strPos++;
 	}
-	return tokenCnt;
+
+	if(strPos < input.length())
+		return -1;
+	else
+		return tokenCnt;
 }

@@ -41,6 +41,17 @@ int WallClock::setTime( int hours, int minutes, int seconds )
 	return ret;
 }
 
+int WallClock::setTime(string time[])
+{
+	int ret = EXIT_ERROR;
+	int hours = 0, minutes = 0, seconds = 0;
+
+	if (strToInt(time[0],&hours) == EXIT_SUCCESS && strToInt(time[1],&minutes) == EXIT_SUCCESS && strToInt(time[2],&seconds) == EXIT_SUCCESS)
+		ret = setTime(hours, minutes, seconds);
+
+	return ret;
+}
+
 string WallClock::toString()
 {
 	stringstream ret;

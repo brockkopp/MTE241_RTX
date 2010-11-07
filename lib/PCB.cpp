@@ -40,7 +40,7 @@ PCB::PCB ( int processType, int priority)
 	_priority = priority;
 }
 */
-int PCB::set_priority( int pri ) 
+int PCB::setPriority( int pri ) 
 {
 	//Check if priority level exists
 	if (pri < 0 || pri > 3) {

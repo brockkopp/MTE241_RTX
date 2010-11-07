@@ -9,7 +9,7 @@ using namespace std;
 
 //Project wide variables
 #define EXIT_SUCCESS 	0
-#define EXIT_ERROR	1
+#define EXIT_ERROR	-1
 
 #define DEBUG_MODE	1
 #define TESTS_MODE	1

@@ -14,23 +14,27 @@ CCI::CCI(RTX* rtx)
 void CCI::processCCI()
 {
 	string command;
-	string input[4];
+	string input[3];
 	string errMsg;
 	int params;
 
 	while(true)
 	{
 		command = "";
+		input[0] = input[1] = input[2] = "";
 		errMsg = "";
 		
-		while(command.length() == 0){
-			cout << "<RTX$";
-			cin >> command;
+		do
+		{
+			cout << ">RTX$ ";
+			getline(cin,command);
 		}
-		
-		params = parseString( command, input, ' ', 4);
-		
-		if(params <= 3){
+		while(command.length() == 0);
+
+		params = parseString( command, input, ' ', 3);
+
+		if(params > 0 && params < 4)
+		{
 
 			if(input[0] == "s")
 			{
@@ -44,12 +48,13 @@ void CCI::processCCI()
 					errMsg = "Too many parameters";
 				cout << "processStatus\n";
 			}
-			else if(input[0] == "c")		//00:00:00
+			else if(input[0] == "c")
 			{
+				string time[4];				
 				if(params > 2)
 					errMsg = "Too many parameters";
-				
-				cout << "setWallClock\n";
+				else if(!parseString(input[1],time,':',3) != 3 || _rtx->wallClock->setTime(time) != EXIT_SUCCESS)
+					errMsg = "Invalid time format";
 			}
 			else if(input[0] == "cd")
 			{
@@ -72,8 +77,7 @@ void CCI::processCCI()
 			else if(input[0] == "t"){
 				if(params > 1)
 					errMsg = "Too many parameters";
-				//rtx->signalHandler->handler(SIGINT);
-				die(EXIT_SUCCESS);
+				_rtx->signalHandler->handler(SIGINT);
 			}
 			else if(input[0] == "b")
 			{
@@ -83,14 +87,23 @@ void CCI::processCCI()
 			}
 			else if(input[0] == "n")
 			{
-
-				cout << "changeProcessPriority\n";		//new_pri  pid
+				int pid,priority;
+				PCB* pcb = NULL;
+				if(strToInt(input[1],&priority) != EXIT_SUCCESS || strToInt(input[2],&pid) != EXIT_SUCCESS)
+					errMsg = "invalid parameters";
+				else if(_rtx->getPcb(pid,pcb) != EXIT_SUCCESS)
+					errMsg = "Invalid process id";
+				else if(pcb->setPriority(priority) != EXIT_SUCCESS)
+					errMsg = "Invalid priority";
 			}			
 			else
-				errMsg = "Invalid Command";
+			{
+				errMsg = "Invalid Command Identifier: '" + command + "'";
+				//cout << "1>" << input[0]  << "   2>" << input[1] << "   3>" << input[2] << "\n";
+			}
 		}
 		else
-			errMsg = "Invalid Command";
+			errMsg = "Invalid Command String";
 		
 		if(errMsg.length() > 0)
 			cout << (errMsg + "\n");

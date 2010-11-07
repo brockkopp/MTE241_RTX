@@ -8,6 +8,7 @@
 #include "lib/PCB.h"
 #include "lib/PcbInfo.h"
 #include "lib/MsgEnv.h"
+#include "lib/WallClock.h"
 
 //NOTE:Project Constants defined in "libs.h"
 
@@ -25,6 +26,8 @@ class RTX
 	public:
 		RTX(PcbInfo* initTable[], SignalHandler* sigHandler);
 		~RTX();
+		int getPcb(int pid, PCB* pcb);
+		
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
 		MsgEnv* K_receive_message();
 		MsgEnv* K_request_msg_env();
@@ -38,9 +41,10 @@ class RTX
 		int K_get_console_chars(MsgEnv* msg_envelope);
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
 
-		PCB* pcbList[PROCESS_COUNT];
+		PCB* pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
 		Scheduler* scheduler;
 		SignalHandler* signalHandler;
+		WallClock* wallClock;
 };
 
 #endif

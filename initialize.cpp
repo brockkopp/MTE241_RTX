@@ -93,7 +93,7 @@ void doTests()
 void die(int sigNum)
 {
 	debugMsg("Terminate command initiated ",2,0);
-	debugMsg((sigNum == EXIT_SUCCESS) ? "normally" : "UNEXPECTEDLY",0,1);
+	debugMsg((sigNum == EXIT_SUCCESS) ? "normally" : "UNEXPECTEDLY: " + intToStr(sigNum) ,0,1);
 
 	//Force mask all signals 
 	rtx->signalHandler->setSigMasked(true);

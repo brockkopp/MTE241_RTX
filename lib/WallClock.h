@@ -1,3 +1,6 @@
+#ifndef H_WALL_CLOCK
+#define H_WALL_CLOCK
+
 #include "../debug.h"
 #include "../tools.h"
 #include <sstream>
@@ -15,5 +18,7 @@ class WallClock
 		WallClock();
 		void increment();
 		int setTime( int hours, int minutes, int seconds );
+		int setTime(string time[]);
 		string toString();
 };
+#endif
