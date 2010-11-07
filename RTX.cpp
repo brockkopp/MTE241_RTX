@@ -8,11 +8,8 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* sigHandler)
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
-	{
 		pcbList[i] = new PCB(initTable[i]);
-		//debugMsg("\tProcess Created: ");
-		//debugMsg(pcbList[i]->name,0,1);	
-	}
+
 	debugMsg("RTX Init Done",0,1);
 }
 

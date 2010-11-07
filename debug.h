@@ -16,7 +16,6 @@ using namespace std;
 
 
 //#include "lib/PCB.h" //<--- Was causing looping dependancy and redefinition issues during build. Uncomment it and give it a try -Karl
-
 void die(int sigNum);
 void debugMsg(string message);
 void debugMsg(string message, int newLinesB, int newLinesA);

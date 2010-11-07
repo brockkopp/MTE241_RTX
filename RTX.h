@@ -5,7 +5,6 @@
 #include "RTX.h"
 #include "SignalHandler.h"
 #include "Scheduler.h"
-#include "CCI.h"
 #include "lib/PCB.h"
 #include "lib/PcbInfo.h"
 #include "lib/MsgEnv.h"
@@ -42,7 +41,6 @@ class RTX
 		PCB* pcbList[PROCESS_COUNT];
 		Scheduler* scheduler;
 		SignalHandler* signalHandler;
-		CCI* cci;
 };
 
 #endif

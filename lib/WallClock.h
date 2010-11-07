@@ -1,4 +1,6 @@
-#include "../libs.h"
+#include "../debug.h"
+#include "../tools.h"
+#include <sstream>
 
 class WallClock
 {
@@ -10,7 +12,8 @@ class WallClock
 		bool _isNewTime;
 
 	public:
-		unsigned int increment();
-		unsigned int setTime( int hours, int mins, int seconds );
+		WallClock();
+		void increment();
+		int setTime( int hours, int minutes, int seconds );
 		string toString();
 };

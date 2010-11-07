@@ -4,8 +4,8 @@ TITLE=MTE241_RTX
 
 all: $(TITLE)
 
-$(TITLE):     debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PCB.o Context.o tests.o
-	@$(CC) debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PCB.o Context.o tests.o
+$(TITLE):     debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PCB.o Context.o tests.o tools.o
+	@$(CC) debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PCB.o Context.o tests.o tools.o
 
 #### EXAMPLE #### 
 # <fileName>.o: <dependancies>
@@ -54,6 +54,9 @@ Context.o: lib/Context.cpp lib/Context.h
 
 userProcesses.o: userProcesses.cpp userProcesses.h
 	@$(CC) $(CFLAGS) userProcesses.cpp
+
+tools.o: tools.cpp tools.h
+	@$(CC) $(CFLAGS) tools.cpp
 
 #Test Files
 tests.o: tests.cpp tests.h debug.h

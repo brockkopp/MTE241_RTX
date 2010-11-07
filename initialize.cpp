@@ -66,7 +66,7 @@ int main(void)
 	//Initialize Tick Signals
 	//ualarm(100,100);
 
-	CCI* cci = new CCI();
+	CCI* cci = new CCI(rtx);
 	delete cci;
 
 	//Signal normal program completion
