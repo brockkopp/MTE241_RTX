@@ -9,6 +9,12 @@ WallClock::WallClock()
 	_isNewTime = false;
 }
 
+void WallClock::setDisplayed(bool isDisplayed)
+{
+	_isDisplayed = isDisplayed;
+	_isNewTime = isDisplayed;
+}
+
 void WallClock::increment()
 {
 	_seconds ++;

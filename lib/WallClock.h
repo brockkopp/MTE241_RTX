@@ -19,6 +19,7 @@ class WallClock
 		void increment();
 		int setTime( int hours, int minutes, int seconds );
 		int setTime(string time[]);
+		void setDisplayed(bool isDisplayed);
 		string toString();
 };
 #endif

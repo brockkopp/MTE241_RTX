@@ -8,7 +8,6 @@
 #include "lib/PCB.h"
 #include "lib/PcbInfo.h"
 #include "lib/MsgEnv.h"
-#include "lib/WallClock.h"
 
 //NOTE:Project Constants defined in "libs.h"
 
@@ -44,7 +43,6 @@ class RTX
 		PCB* pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
 		Scheduler* scheduler;
 		SignalHandler* signalHandler;
-		WallClock* wallClock;
 };
 
 #endif

@@ -6,7 +6,7 @@
 CCI::CCI(RTX* rtx)
 {
 	_rtx = rtx;
-	//wallClock = new WallClock();
+	wallClock = new WallClock();
 	//_rtx.start();
 	processCCI();
 }
@@ -40,50 +40,57 @@ void CCI::processCCI()
 			{
 				if(params > 1)
 					errMsg = "Too many parameters";
-				cout << "sendMessage\n";
+				else
+					cout << "sendMessage\n";
 			}
 			else if(input[0] == "ps")
 			{
 				if(params > 1)
 					errMsg = "Too many parameters";
-				cout << "processStatus\n";
+				else
+					cout << "processStatus\n";
 			}
 			else if(input[0] == "c")
 			{
 				string time[4];				
 				if(params > 2)
 					errMsg = "Too many parameters";
-				else if(!parseString(input[1],time,':',3) != 3 || _rtx->wallClock->setTime(time) != EXIT_SUCCESS)
+				else if(!parseString(input[1],time,':',3) != 3 || wallClock->setTime(time) != EXIT_SUCCESS)
 					errMsg = "Invalid time format";
 			}
 			else if(input[0] == "cd")
 			{
 				if(params > 1)
 					errMsg = "Too many parameters";
-				cout << "displayWallClock\n";
+				else
+					wallClock->setDisplayed(true);
 			}
 			else if(input[0] == "ct")
 			{
 				if(params > 1)
 					errMsg = "Too many parameters";
-				cout << "hideWallClock\n";
+				else
+					wallClock->setDisplayed(false);
 			}
 			else if(input[0] == "b")
 			{
 				if(params > 1)
 					errMsg = "Too many parameters";
-				cout << "displayTraceBuffers\n";
+				else
+					cout << "displayTraceBuffers\n";
 			}
 			else if(input[0] == "t"){
 				if(params > 1)
 					errMsg = "Too many parameters";
-				_rtx->signalHandler->handler(SIGINT);
+				else
+					_rtx->signalHandler->handler(SIGINT);
 			}
 			else if(input[0] == "b")
 			{
 				if(params > 1)
 					errMsg = "Too many parameters";
-				cout << "displayTraceBuffers\n";
+				else
+					cout << "displayTraceBuffers\n";
 			}
 			else if(input[0] == "n")
 			{
@@ -97,10 +104,7 @@ void CCI::processCCI()
 					errMsg = "Invalid priority";
 			}			
 			else
-			{
-				errMsg = "Invalid Command Identifier: '" + command + "'";
-				//cout << "1>" << input[0]  << "   2>" << input[1] << "   3>" << input[2] << "\n";
-			}
+				errMsg = "Invalid Command Identifier: '" + input[0] + "'";
 		}
 		else
 			errMsg = "Invalid Command String";

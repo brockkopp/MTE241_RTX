@@ -5,7 +5,6 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* sigHandler)
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	signalHandler = sigHandler;
-	wallClock = new WallClock();
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
