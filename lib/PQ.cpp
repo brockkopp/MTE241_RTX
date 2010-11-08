@@ -11,7 +11,7 @@ PQ::PQ( int nPriority )
 	
 	try
 	{
-		Queue q("PCB"); //create empty queue
+		Queue q(q.PROCCONBLOCK); //create empty queue
 		
 		for(int i = 0; i < nPriority; i++)
 			_master[i] = q;
@@ -60,10 +60,11 @@ itemType PQ::pq_dequeue()
 {
 	int masterLength = sizeof(_master);
 	itemType returnVal;
-	for( int i; i < masterLength; i++) 
+	for( int i = 0; i < masterLength; i++) 
 	{
 		//Try dequeuing
-		if (returnVal = _master[i].dequeue_PCB())
+		returnVal = _master[i].dequeue_PCB();
+	  if (returnVal != NULL)
 			return returnVal;
 	}
 	

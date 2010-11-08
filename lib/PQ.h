@@ -8,7 +8,6 @@
 
 typedef int pItemType;
 
-
 class PQ {
   public:
   	PQ( int nPriority );

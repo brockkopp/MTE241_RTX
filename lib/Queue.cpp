@@ -195,10 +195,10 @@ MsgEnv* Queue::dequeue_MsgEnv()
 	return (MsgEnv*)(dequeue_gen());
 }
 
-//PCB* Queue::dequeue_PCB()
-//{
-//	return (PCB*)(dequeue_gen());
-//}
+PCB* Queue::dequeue_PCB()
+{
+	return (PCB*)(dequeue_gen());
+}
 
 /*~*~*~*~*~*~*	  CONTAINS   *~*~*~*~*~*~*~*~*/
 //Return true if the value is contained in the queue; return false otherwise
@@ -267,10 +267,10 @@ MsgEnv* Queue::pluck(MsgEnv* value)
 	return (MsgEnv*)pluck_gen(value);
 }
 
-//PCB* Queue::pluck(PCB* value)
-//{
-//	return (PCB*)pluck_gen(value);
-//}
+PCB* Queue::pluck(PCB* value)
+{
+	return (PCB*)pluck_gen(value);
+}
 
 /*~*~*~*~*~*~*	  REPLACE   *~*~*~*~*~*~*~*~*/
 //Find the currValue object in the queue and replace its item with newValue
@@ -324,10 +324,10 @@ MsgEnv* Queue::select(MsgEnv* value)
 	return (MsgEnv*)select_gen(value);
 }
 
-//PCB* Queue::select(PCB* value)
-//{
-//	return (PCB*)select_gen(value);
-//}
+PCB* Queue::select(PCB* value)
+{
+	return (PCB*)select_gen(value);
+}
 
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
  *~*~*~*~*~*~*	    FOR TESTING      *~*~*~*~*~*~*~*~*
