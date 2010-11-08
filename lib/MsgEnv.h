@@ -17,7 +17,7 @@ class MsgEnv
 		int getOriginPid();
 		int setOriginPid(int newOriginPid);
 		int getMsgType();
-		int setMsgType(string newMsgType);
+		int setMsgType(int newMsgType);
 		string getMsgData();
 		int setMsgData(string msgInfo);
 };

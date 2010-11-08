@@ -1,12 +1,19 @@
-#include "libs.h"
+#ifndef H_SIGHANDLER
+#define H_SIGHANDLER
 
-class SignalHander
+#include "debug.h"
+#include "signal.h"
+
+class SignalHandler
 {
 	private:
-		sigset_t setBlocked;
-		sigset_t setHandled;
+		sigset_t _sigSetBlocked;
+		sigset_t _sigSetHandled;
 	
 	public:
-		static void handler( int sigNum );
+		SignalHandler();
+		static void handler(int sigNum );
 		int setSigMasked (bool masked );
+		int atomic(bool on);
 };
+#endif

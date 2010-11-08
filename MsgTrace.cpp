@@ -20,7 +20,7 @@ int MsgTrace::addTrace(MsgEnv* msg, int callingFunction)
 			_receiveArray[_receiveArrayPosition%15]._destPid = msg->getDestPid();
 			_receiveArray[_receiveArrayPosition%15]._originPid = msg->getOriginPid();
 			_receiveArray[_receiveArrayPosition%15]._msgType = msg->getMsgType();
-			_receiveArray[_receiveArrayPosition%15]._timeStamp = 0;//calls timeing process for info, need to write still
+			_receiveArray[_receiveArrayPosition%15]._timeStamp = 0;// use global var for count need to write
 			_receiveArrayPosition ++; 
 		}
 		return EXIT_SUCCESS;

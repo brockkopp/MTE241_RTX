@@ -1,3 +1,6 @@
+#ifndef H_PCB_INFO
+#define H_PCB_INFO
+#include <string>
 struct PcbInfo
 {
 	std::string	name;
@@ -7,3 +10,4 @@ struct PcbInfo
 	unsigned int    processType;
 	void*         	address;
 };
+#endif

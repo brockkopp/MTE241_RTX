@@ -1,64 +1,108 @@
 #include "libs.h"
 #include "RTX.h"
 #include "debug.h"
-#include "data_structures/PcbInfo.h"
 #include "signal.h"
+#include "SignalHandler.h"
 
 //Private method declarations
 int inititalizeShmem();
 int cleanupShmem();
 int createInitTable(PcbInfo* initTable[]);
-int cleanupInitTable();
+
+RTX* rtx;
+caddr_t shemFiles[2];
+int pidKB, pidCRT, pidMe;
 
 int main()
 {
+	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
-	int pidKB, pidCRT, pidMe;
+	//Retrieve RTX's main process id
 	pidMe = getpid();
 
-	debugMsg("\n------------------------------------\n           RTX INITIALIZED\n------------------------------------\n\n");	
-	
-	assure(inititalizeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, true);
-	assure(createInitTable(initTable) == EXIT_SUCCESS, "Init table failed to initialize", __FILE__, __LINE__, true);
+	debugMsg("------------------------------------\n           RTX INITIALIZED\n------------------------------------",1,2);	
 
+	//Create and initialize signal handler
+	//Signals are masked by default
+	SignalHandler* sigHandler = new SignalHandler();
+
+	//Create shared memory and assure that initialization is successful
+	assure(inititalizeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, true);
+	//Initialize init table and assure initialization is successful
+	assure(createInitTable(initTable) == EXIT_SUCCESS, "Init table failed to initialize", __FILE__, __LINE__, __func__, true);
+
+	//Create and initialize rtx and its child members (schedling services etc)
+	rtx = new RTX(initTable, sigHandler);
+
+	//Create keyboad thread
 	if ((pidKB = fork()) == 0)
 	{
-		debugMsg("Keyboard forked\n");
+		debugMsg("Keyboard forked",1,1); //execl("./keyboard", "keyboard", pidMe, (char *)0);
 		sleep(1000000000);
-		assure(false, "Keyboard helper process failed to initialize", __FILE__, __LINE__, true);
+		//if the execution reaches here, the keyboard thread failed to initialize
+		assure(false, "Keyboard helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
 	if ((pidCRT = fork()) == 0)
 	{
-		debugMsg("CRT forked\n");
+		debugMsg("CRT forked",0,1); //execl("./crt", "crt", pidMe);
 		sleep(1000000000);
-		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, true);
+		//if the execution reaches here, the crt thread failed to initialize
+		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
+	//wait to assure that keyboard and crt initialize properly
+	ualarm(1000,100);
 	sleep(1);
+	
+	//Test signal handler
+	sleep(5);
+	rtx->signalHandler->setSigMasked(false);
+	sleep(5);
 
-	
-	//Rtx rtx = new RTX(initTable);
+	//Signal normal program completion
+	die(0);
+}
 
-	assure(cleanupInitTable() == EXIT_SUCCESS, "Init table cleanup failed", __FILE__, __LINE__, false);
-	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed", __FILE__, __LINE__, false);
+void die(int sigNum)
+{
+	debugMsg("Terminate command initiated ",2,0);
+	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY",0,1);
+
+	//Force mask all signals 
+	rtx->signalHandler->setSigMasked(true);
+
+	//Cleanup shared memeory and assure that cleanup is successful
+	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed", __FILE__, __LINE__, __func__, false);
 	
-	
+	//Kill keyboard and wait until thread dies
 	kill(pidKB,SIGKILL);
 	wait();	
+
+	//Kill crt and wait until thread dies
 	kill(pidCRT,SIGKILL);
 	wait();	
 
-	debugMsg("\n------------------------------------\n    RTX TERMINATED SUCCESSFULLY\n------------------------------------\n\n");	
-	return EXIT_SUCCESS;
+	//Cleanup rtx, including signal handler
+	delete rtx;
+
+	debugMsg("------------------------------------\n    RTX TERMINATED SUCCESSFULLY\n------------------------------------",1,2);	
+	
+	//Finally exit program
+	exit(EXIT_SUCCESS);
 }
 
 int inititalizeShmem()
 {
 /*
-	for(2 iterations)    //set up the file
-
+	for(int i=0; i < 2; i++)
 	{
+
+		shemFile[i] = mmap((caddr_t) 0, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fid, (off_t) 0);
+		ensure(shmemFile[i] != NULL,"Shared memory file failed to init",__FILE__,__LINE__,true);
+		  		
+		
+	}
 
 	create file with permissions for owner rwx access only
 		verify file created successfully
@@ -67,8 +111,8 @@ int inititalizeShmem()
 
 	}
 
-	    in_pid = fork keyboard process
-	    if(in_pid == 0)  //deal with child process
+	in_pid = fork keyboard process
+	if(in_pid == 0)  //deal with child process
 
 	{
 
@@ -118,19 +162,45 @@ int inititalizeShmem()
 
 int cleanupShmem()
 {
+/*	int ret = EXIT_SUCCESS;
+	try
+	{
+		munmap (rx_memmap_pt)        //unmap the memory buffers
+		munmap (tx_memmap_pt)
+
+		close(rx_shared_mem_f_id)    //close temporary files
+		close(tx_shared_mem_f_id)
+
+		unlink(rx_shared_mem_f)    //delete temporary files
+		unlink(tx_shared_mem_f)
+	}
+	catch(Exception e)
+	{
+		ret = EXIT_ERROR;
+	}
+	return ret;
+*/
+	return -2;
 	return EXIT_SUCCESS;
 }
 
 int createInitTable(PcbInfo* initTable[])
 {	
+	//Loop through each init table entry and allocate memory
 	for(int i = 0; i <= PROCESS_COUNT; i++){
+		//Do not throw error upon failure, use own validation
 		initTable[i] = new(std::nothrow) PcbInfo();
-		if (initTable[i] == NULL)	
+		if (initTable[i] == NULL)				//#Do we need this???	
+		{
+			delete[] initTable;		
 			return EXIT_ERROR;
+		}
 		
+		//Initialize fields which are consistent across processes
 		initTable[i]->processId = i;
 		initTable[i]->stackSize = STACK_SIZE;
 	}
+
 //Kernel Processes
 	initTable[0]->name =		"i_timing";	
 	initTable[0]->priority =        0;
@@ -168,26 +238,5 @@ int createInitTable(PcbInfo* initTable[])
 	initTable[6]->processType = 	0;
 	initTable[6]->address = 	NULL;
 	
-	return EXIT_SUCCESS;
-}
-
-int cleanupInitTable()
-{
-/*
-	
-	kill(keyboard_process, TERMINATE)
-	wait();
-	kill(crt_process, TERMINATE)
-	wait();
-
-	munmap (rx_memmap_pt)        //unmap the memory buffers
-	munmap (tx_memmap_pt)
-
-	close(rx_shared_mem_f_id)    //close temporary files
-	close(tx_shared_mem_f_id)
-
-	unlink(rx_shared_mem_f)    //delete temporary files
-	unlink(tx_shared_mem_f)
-*/
 	return EXIT_SUCCESS;
 }

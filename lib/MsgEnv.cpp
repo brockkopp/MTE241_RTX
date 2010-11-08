@@ -37,10 +37,14 @@ int MsgEnv::getMsgType()
 	return msgFields._msgType;
 }
 
-int MsgEnv::setMsgType(string newMsgType)
+int MsgEnv::setMsgType(int newMsgType)
 {
-	//need to determine all types of msg 
-	return -2;
+	if(newMsgType >=0 && newMsgType <=3)
+	{
+		msgFields._msgType = newMsgType;
+		return EXIT_SUCCESS;
+	}
+	return EXIT_ERROR;
 }
 
 string MsgEnv::getMsgData()
@@ -50,7 +54,7 @@ string MsgEnv::getMsgData()
 
 int MsgEnv::setMsgData(string msgInfo)
 {
-	//inputs data into msg_data field
-	return -2;
+	msgFields._msgData = msgInfo;
+	return EXIT_SUCCESS;
 }
 
