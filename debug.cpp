@@ -8,6 +8,14 @@ void debugMsg(string message)
 #endif
 }
 
+void debugMsg(int message)
+{
+	//Assure that this is not in demonstration mode
+#if DEBUG_MODE == 1
+	cout << message;
+#endif
+}
+
 void debugMsg(string message, int newLinesB, int newLinesA)
 {
 	stringstream msg;
@@ -36,7 +44,7 @@ int assure(bool condition, string message, string fileName, int lineNum, string 
 			if(func != "die")
 				die(EXIT_ERROR);
 			else
-				debugMsg("             RTX Already Terminating",0,1);
+				debugMsg("           : RTX Already Terminating",0,1);
 		}
 	}
 	return condition;

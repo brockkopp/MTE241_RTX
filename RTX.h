@@ -1,7 +1,11 @@
+#ifndef H_RTX
+#define H_RTX
+
 #include "debug.h"
+#include "RTX.h"
 #include "SignalHandler.h"
 #include "Scheduler.h"
-#include "CCI.h"
+#include "MsgServ.h"
 #include "lib/PCB.h"
 #include "lib/PcbInfo.h"
 #include "lib/MsgEnv.h"
@@ -17,11 +21,17 @@
 #define PROCESS_USER	2
 #define PROCESS_K	3
 
+#define USER_PROC_A	4
+#define USER_PROC_B	5
+#define USER_PROC_C	6
+
 class RTX
 {
 	public:
 		RTX(PcbInfo* initTable[], SignalHandler* sigHandler);
 		~RTX();
+		int getPcb(int pid, PCB** pcb);
+		
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
 		MsgEnv* K_receive_message();
 		MsgEnv* K_request_msg_env();
@@ -35,11 +45,11 @@ class RTX
 		int K_get_console_chars(MsgEnv* msg_envelope);
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
 
-		PCB* pcbList[PROCESS_COUNT];
+		PCB* pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
 		Scheduler* scheduler;
 		SignalHandler* signalHandler;
-		CCI* cci;
+		MsgServ* mailMan;
 };
 
-//primitives
+#endif
 

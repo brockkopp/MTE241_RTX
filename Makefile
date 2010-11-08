@@ -1,62 +1,103 @@
-CC=g++
-CFLAGS= -c -Wall
-TITLE=MTE241_RTX
+CMP=g++
+CMPFLGS= -c -Wall	#compile only, show all warnings
+LNKFLGS= -o
+TITLE=RTX.out
+OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
+KB=KB.out
+KB_OBJ=keyboard.o
+CRT=CRT.out
+CRT_OBJ=crt.o
 
-all: $(TITLE)
+##Command List
+all: preclean $(KB) $(CRT) $(TITLE) clean run
 
-$(TITLE):     debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PCB.o Context.o
-	@$(CC) debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PCB.o Context.o
+preclean:
+	@rm -f $(TITLE) $(KB) $(CRT)
+
+clean:
+	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ)	#Delete all object files
+
+run:
+	@./$(TITLE)				#Run main executable after build
+
+##Linking
+$(TITLE):  $(OBJ)					
+	@$(CMP) $(LNKFLGS) $(TITLE) $(OBJ)
+
+$(KB): $(KB_OBJ)
+	@$(CMP) $(LNKFLGS) $(KB) $(KB_OBJ)
+
+$(CRT): $(CRT_OBJ)
+	@$(CMP) $(LNKFLGS) $(CRT) $(CRT_OBJ)
+
+##Compiling
 
 #### EXAMPLE #### 
 # <fileName>.o: <dependancies>
-#	@$(CC) $(CFLAGS) <fileName>.cpp			#the '@' hides the command from the user (output is still displayed)
+#	@$(CMP) $(CMPFLGS) <fileName>.cpp			#the '@' hides the command from the user (output is still displayed)
 #
-#remember to add to $(TITLE) line!!!
+#remember to add to $(OBJ) line!!!
 
-debug.o: debug.cpp debug.h libs.h
-	@$(CC) $(CFLAGS) debug.cpp
+debug.o: debug.cpp debug.h
+	@$(CMP) $(CMPFLGS) debug.cpp
 
 initialize.o: initialize.cpp RTX.h lib/PcbInfo.h
-	@$(CC) $(CFLAGS) initialize.cpp
+	@$(CMP) $(CMPFLGS) initialize.cpp
 	
-iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h libs.h
-	@$(CC) $(CFLAGS) iprocesses.cpp
+iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h
+	@$(CMP) $(CMPFLGS) iprocesses.cpp
 
 RTX.o: RTX.cpp RTX.h lib/PcbInfo.h lib/PCB.h 
-	@$(CC) $(CFLAGS) RTX.cpp
+	@$(CMP) $(CMPFLGS) RTX.cpp
 
-SignalHandler.o: SignalHandler.cpp SignalHandler.h libs.h
-	@$(CC) $(CFLAGS) SignalHandler.cpp
+SignalHandler.o: SignalHandler.cpp SignalHandler.h
+	@$(CMP) $(CMPFLGS) SignalHandler.cpp
 	
 Scheduler.o: Scheduler.cpp Scheduler.h lib/PQ.h lib/PCB.h
-	@$(CC) $(CFLAGS) Scheduler.cpp
+	@$(CMP) $(CMPFLGS) Scheduler.cpp
 	
-CCI.o: CCI.cpp CCI.h libs.h
-	@$(CC) $(CFLAGS) CCI.cpp
+CCI.o: CCI.cpp CCI.h
+	@$(CMP) $(CMPFLGS) CCI.cpp
 
 TimingServices.o: TimingServices.cpp TimingServices.h
-	@$(CC) $(CFLAGS) TimingServices.cpp
+	@$(CMP) $(CMPFLGS) TimingServices.cpp
 
-MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h libs.h
-	@$(CC) $(CFLAGS) lib/MsgEnv.cpp
+MsgServ.o:MsgServ.cpp MsgServ.h
+	@$(CMP) $(CMPFLGS) MsgServ.cpp
 
-WallClock.o: lib/WallClock.cpp lib/WallClock.h libs.h
-	@$(CC) $(CFLAGS) lib/WallClock.cpp
-	
 MsgTrace.o: MsgTrace.cpp MsgTrace.h libs.h
 	$(CC) $(CFLAGS) MsgTrace.cpp
 
-Queue.o: lib/Queue.cpp lib/Queue.h libs.h
-	@$(CC) $(CFLAGS) lib/Queue.cpp
+MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
+	@$(CMP) $(CMPFLGS) lib/MsgEnv.cpp
+
+WallClock.o: lib/WallClock.cpp lib/WallClock.h
+	@$(CMP) $(CMPFLGS) lib/WallClock.cpp
+
+Queue.o: lib/Queue.cpp lib/Queue.h debug.h
+	@$(CMP) $(CMPFLGS) lib/Queue.cpp
+
+PQ.o: lib/PQ.cpp lib/PQ.h lib/Queue.h lib/PCB.h
+	@$(CMP) $(CMPFLGS) lib/PQ.cpp
 
 PCB.o: lib/PCB.cpp lib/PCB.h lib/PcbInfo.h
-	@$(CC) $(CFLAGS) lib/PCB.cpp
+	@$(CMP) $(CMPFLGS) lib/PCB.cpp
 	
 Context.o: lib/Context.cpp lib/Context.h
-	@$(CC) $(CFLAGS) lib/Context.cpp
+	@$(CMP) $(CMPFLGS) lib/Context.cpp
 
-clean:
-	@rm -rf *.o
+userProcesses.o: userProcesses.cpp userProcesses.h
+	@$(CMP) $(CMPFLGS) userProcesses.cpp
 
-run:
-	@./a.out
+tools.o: tools.cpp tools.h
+	@$(CMP) $(CMPFLGS) tools.cpp
+
+tests.o: tests.cpp tests.h debug.h
+	@$(CMP) $(CMPFLGS) tests.cpp
+
+#external processes
+keyboard.o: keyboard.cpp
+	@$(CMP) $(CMPFLGS) keyboard.cpp
+
+crt.o: crt.cpp
+	@$(CMP) $(CMPFLGS) crt.cpp

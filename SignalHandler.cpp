@@ -74,24 +74,22 @@ int SignalHandler::atomic(bool on){
 
 void SignalHandler::handler( int sigNum )
 {
-	debugMsg("Signal Received: ");
 	switch(sigNum)
 	{
 		case SIGINT:
-			debugMsg("SIGINT",0,1);
 			die(EXIT_SUCCESS);
 			break;
 
 		case SIGALRM:
-			debugMsg("SIGALRM",0,1);
+			i_timing_process();
 			break;
 
 		case SIGUSR1:	//Keyboard
-			debugMsg("SIGUSR1: KB",0,1);
+			i_keyboard_handler();
 			break;
 
 		case SIGUSR2:	//Crt
-			debugMsg("SIGUSR2: CRT",0,1);
+			i_crt_handler();
 			break;
 		default:
 			assure(false,"Unknown Signal Received",__FILE__,__LINE__,__func__,false);

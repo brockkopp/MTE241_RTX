@@ -1,14 +1,23 @@
-#include "PCB.h"
-
-using namespace std;
+#ifndef H_PQ
+#define H_PQ
 
 /*The PQ class provides Priority Queue functionality*/
+#include "PCB.h"
+#include "Queue.h"
+#include "../debug.h"
+
+typedef int pItemType;
+
 
 class PQ {
   public:
-    void penqueue (PCB new_data, priority_level);
-    PCB * pdequeue ();       
+  	PQ( int nPriority );
+  	~PQ( );
+	  bool pq_enqueue ( PCB* newData, int priorityLevel );
+	  itemType pq_dequeue( );       
   
   private:
-    Queue master[];
+    Queue _master[];
 };
+
+#endif

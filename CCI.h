@@ -1,8 +1,19 @@
-#include "debug.h"
+#ifndef H_CCI
+#define H_CCI
 
+#include "debug.h"
+#include "tools.h"
+#include "RTX.h"
+#include "lib/WallClock.h"
+#define SIGINT 2
 class CCI
 {
 	public:
-		static int parseString( string input, string *output[], string token, string maxCount);
-		int processCCI();
+		CCI(RTX* rtx);
+		void processCCI();
+		WallClock* wallClock;
+	private:
+		RTX* _rtx;
 };
+
+#endif
