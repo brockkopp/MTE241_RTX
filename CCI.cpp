@@ -57,11 +57,12 @@ void CCI::processCCI()
 			}
 			else if(input[0] == "c")
 			{
-				string time[4];				
+				string time[3];				
 				if(params > 2)
 					errMsg = "Too many parameters";
-				else if(!parseString(input[1],time,':',3) != 3 || wallClock->setTime(time) != EXIT_SUCCESS)
+				else if(parseString(input[1],time,':',3) != 3 || wallClock->setTime(time) != EXIT_SUCCESS)
 					errMsg = "Invalid time format";
+
 			}
 			else if(input[0] == "cd")
 			{

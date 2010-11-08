@@ -22,6 +22,8 @@
 #define PROCESS_K	3
 
 #define USER_PROC_A	4
+#define USER_PROC_B	5
+#define USER_PROC_C	6
 
 class RTX
 {
