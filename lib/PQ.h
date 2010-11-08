@@ -6,6 +6,9 @@
 #include "Queue.h"
 #include "../debug.h"
 
+typedef int pItemType;
+
+
 class PQ {
   public:
   	PQ( int nPriority );

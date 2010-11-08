@@ -54,8 +54,9 @@ bool PQ::pq_enqueue (PCB* newData, int priorityLevel)
 }
 
 /*
-Dequeues a pointer to an itemType. Returns null if there is nothing to dequeue.
+Dequeues a pointer to an pItemType. Returns null if there is nothing to dequeue.
 */
+
 itemType PQ::pq_dequeue() 
 {
 //	int masterLength = sizeof(_master);

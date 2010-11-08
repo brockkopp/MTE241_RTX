@@ -1,3 +1,4 @@
+#include <string>
 #include "debug.h"
 #include "lib/PCB.h"
 #include "lib/PQ.h"
@@ -5,7 +6,7 @@
 class Scheduler {
     public:
 
-			Scheduler(PCB* currentProcess, PCB* readyProcs[]); //Constructor!
+		Scheduler(PCB* currentProcess, Queue readyProcs); //Constructor!
 			
 //			void release_processor( );   
 //			int change_priority( PCB * target, int newPriority );
