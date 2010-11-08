@@ -356,7 +356,7 @@ void Queue::printIntQueue() //assume _typeCastType == INT
 {
 	QueueNode* Temp = _rear;
 	int position = _length - 1;
-<<<<<<< Updated upstream
+
 	debugMsg("Queue: [ ");
 	while(Temp != NULL)
 	{

@@ -19,8 +19,7 @@ int testParser()
 int testQueues()
 {
 	int ret = EXIT_SUCCESS;
-	
-<<<<<<< Updated upstream
+
 	try
 	{
 		#if PRINT_Q_RESULTS == 1
