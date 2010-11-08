@@ -55,7 +55,7 @@ class Queue
 	 int* 				dequeue_int();
 	 std::string* dequeue_string();
 	 MsgEnv* 			dequeue_MsgEnv();
-	 PCB* 				dequeue_PCB();
+	 //PCB* 				dequeue_PCB();
 	 
 	 bool 					contains( itemType value );	 
 	 int 						get_length();
@@ -67,7 +67,7 @@ class Queue
 	 int* 				pluck ( int* value );
 	 std::string* pluck ( std::string* value );
 	 MsgEnv* 			pluck ( MsgEnv* value );
-	 PCB* 				pluck ( PCB* value );
+	 //PCB* 				pluck ( PCB* value );
 	 
 	 bool replace( itemType currValue, itemType newValue );
 	 
@@ -75,7 +75,7 @@ class Queue
 	 int* 				select( int* value );
 	 std::string* select( std::string* value );
 	 MsgEnv* 			select( MsgEnv* value );
-	 PCB* 				select( PCB* value );
+	 //PCB* 				select( PCB* value );
 	 
 	 void printIntQueue(); //for testing purposes
 };

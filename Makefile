@@ -2,7 +2,7 @@ CMP=g++
 CMPFLGS= -c -Wall	#compile only, show all warnings
 LNKFLGS= -o
 TITLE=RTX.out
-OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PCB.o Context.o userProcesses.o tests.o tools.o
+OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
 KB=KB.out
 KB_OBJ=keyboard.o
 CRT=CRT.out
@@ -73,6 +73,9 @@ WallClock.o: lib/WallClock.cpp lib/WallClock.h
 
 Queue.o: lib/Queue.cpp lib/Queue.h debug.h
 	@$(CMP) $(CMPFLGS) lib/Queue.cpp
+
+PQ.o: lib/PQ.cpp lib/PQ.h lib/Queue.h lib/PCB.h
+	@$(CMP) $(CMPFLGS) lib/PQ.cpp
 
 PCB.o: lib/PCB.cpp lib/PCB.h lib/PcbInfo.h
 	@$(CMP) $(CMPFLGS) lib/PCB.cpp
