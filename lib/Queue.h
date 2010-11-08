@@ -10,11 +10,7 @@
 #include "../tools.h"
 
 //These constants will be used for type-casting
-#define UNK_TYPE 0
-#define INT 1
-#define STRING 2
-#define MSG_ENV 3
-#define PROCCONBLOCK 4
+
 
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~
  *~*~* Type Definitions *~*~*
@@ -36,17 +32,22 @@ class Queue
 		QueueNode* _front;
 		QueueNode* _rear;
 		int _length;
-		std::string _queueType;
-		int _typeCastType;
-		
-		int determineCastType();		
+		int _queueType;
+			
 	  itemType 		dequeue_gen();  
 	  itemType 		pluck_gen(itemType value);
 	  itemType 		select_gen(itemType value);
 		
 	public:
+		//Constants
+		static const	int UNK_TYPE = 0;
+		static const	int INT = 1;
+		static const	int STRING = 2;
+		static const	int MSG_ENV = 3;
+		static const	int PROCCONBLOCK = 4;
+	
 	 Queue( );
-	 Queue( std::string qtype );
+	 Queue( int qtype ); //qtype should be one of the constants declared above
 	 ~Queue();
 	 
 	 bool enqueue( itemType value ); 
@@ -59,8 +60,8 @@ class Queue
 	 
 	 bool 					contains( itemType value );	 
 	 int 						get_length();
-	 std::string 		get_queueType();
-	 void 					set_queueType( std::string type ); //may only be done if _queueType not already defined
+	 int 						get_queueType(); //constants declared in Queue class!
+	 void 					set_queueType( int type ); //may only be done if _queueType not already defined
 	 bool 					isEmpty();	
 	  
 	 itemType 		pluck ( itemType value );
