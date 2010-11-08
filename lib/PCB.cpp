@@ -10,10 +10,19 @@ PCB::PCB(PcbInfo* info)
 	_processType = info->processType;
 	_atomicCount = 0;
 	
-	//_stack    init stack (info->stackSize);
-	_fPtr = info->address;
+	_stack = (char *)(malloc(info->stackSize));
+	assure(_stack != NULL, "Stack initialization failed", __FILE__, __LINE__, __func__, true);
+
+	//_fPtr = (void(*)())info->address;
+
+	context = new Context(_stack, info->stackSize);		//process will suspend here until enqueued by scheduler i think
+	
+	//Execution returns here after process is enqueued (in Context constructor).
+	//Begin execution	
+	//_fPtr();	
 }
 
+/*
 PCB::PCB ( int processType, int priority) 
 {
 	_processType = processType;
@@ -30,17 +39,17 @@ PCB::PCB ( int processType, int priority)
 	//init state <-- how to we do this?
 	_priority = priority;
 }
-
-int PCB::set_priority( int pri ) 
+*/
+int PCB::setPriority( int pri ) 		//SHOULD THIS RE-ENQUEUE PCB IF IN RPQ????
 {
 	//Check if priority level exists
 	if (pri < 0 || pri > 3) {
-		return 1; //error!
+		return EXIT_ERROR; //error!
 	}
 	
 	else {
 		_priority = pri;
-		return 0;
+		return EXIT_SUCCESS;
 	}
 }
 

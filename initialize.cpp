@@ -1,10 +1,12 @@
-#include "libs.h"
+#include "debug.h"
 #include "RTX.h"
 #include "CCI.h"
-#include "debug.h"
+#include <cstring>
 #include "signal.h"
 #include "SignalHandler.h"
 #include "tests.h"
+
+#define ANG_TEST 0
 
 //Private method declarations
 void doTests();
@@ -13,15 +15,24 @@ int cleanupShmem();
 int createInitTable(PcbInfo* initTable[]);
 
 RTX* rtx;
+CCI* cci;
 caddr_t shemFiles[2];
-int pidKB, pidCRT, pidMe;
+int pidKB, pidCRT;
+char* myPid;
 
 int main(void)
 {
+#if ANG_TEST == 0
+	debugMsg("\tQueue Test: \t");    
+	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+#endif
+
+
+#if ANG_TEST == 1
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
-	//Retrieve RTX's main process id
-	pidMe = getpid();
+
+	myPid = (char*)intToStr(getpid()).c_str();
 
 	debugMsg("------------------------------------\n           RTX INITIALIZED\n------------------------------------",1,2);	
 
@@ -33,30 +44,34 @@ int main(void)
 	assure(inititalizeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, true);
 	//Initialize init table and assure initialization is successful
 	assure(createInitTable(initTable) == EXIT_SUCCESS, "Init table failed to initialize", __FILE__, __LINE__, __func__, true);
-
+	
 	//Create and initialize rtx and its child members (schedling services etc)
+	debugMsg("\n");
 	rtx = new RTX(initTable, sigHandler);
+	debugMsg("\n");
 
 	//Create keyboad thread
 	if ((pidKB = fork()) == 0)
 	{
-		debugMsg("Keyboard forked",1,1); //execl("./keyboard", "keyboard", pidMe, (char *)0);
-		sleep(1000000000);
+		execl("./KB.out", myPid, (char*)NULL);
+
 		//if the execution reaches here, the keyboard thread failed to initialize
 		assure(false, "Keyboard helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
 	if ((pidCRT = fork()) == 0)
 	{
-		debugMsg("CRT forked",0,1); //execl("./crt", "crt", pidMe);
-		sleep(1000000000);
+		execl("./CRT.out", myPid, (char*)NULL);
+
 		//if the execution reaches here, the crt thread failed to initialize
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
+	debugMsg("\n");
 	
+	//Unmask signals
 	rtx->signalHandler->setSigMasked(false);
 
 #if TESTS_MODE == 1
@@ -66,22 +81,25 @@ int main(void)
 	//Initialize Tick Signals
 	//ualarm(100,100);
 
-	CCI* cci = new CCI();
+	debugMsg("Type 'help' at any time to list possible CCI commands",0,2);	
+
+	cci = new CCI(rtx);
 	delete cci;
 
-	//Signal normal program completion
+	//Signal cci init failed, program should not normally reach this point
 	die(EXIT_ERROR);
+#endif
 }
 
 void doTests()
 {
-	debugMsg("Testing...",2,1);
+	debugMsg("Testing...",1,1);
 	debugMsg("\tParser Test:\t");    
 	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tSignal Test:\t");    
 	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tQueue Test: \t");    
-	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tMessaging Test:\t"); 
 	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tAnother Test:\t");   
@@ -93,7 +111,7 @@ void doTests()
 void die(int sigNum)
 {
 	debugMsg("Terminate command initiated ",2,0);
-	debugMsg((sigNum == EXIT_SUCCESS) ? "normally" : "UNEXPECTEDLY",0,1);
+	debugMsg((sigNum == EXIT_SUCCESS) ? "normally" : "UNEXPECTEDLY: " + intToStr(sigNum) ,0,1);
 
 	//Force mask all signals 
 	rtx->signalHandler->setSigMasked(true);
@@ -111,6 +129,7 @@ void die(int sigNum)
 
 	//Cleanup rtx, including signal handler
 	delete rtx;
+	delete cci;
 
 	debugMsg("------------------------------------\n    RTX TERMINATED SUCCESSFULLY\n------------------------------------",1,2);	
 	

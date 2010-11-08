@@ -3,6 +3,7 @@
 
 #include "debug.h"
 #include "signal.h"
+#include "iprocesses.h"
 
 class SignalHandler
 {
