@@ -1,5 +1,8 @@
 #include "MsgEnv.h"
 
+//const string DISPLAY_ACK = "display_ack";
+//const string DISPLAY_FAIL = "display_fail";
+
 int MsgEnv::getDestPid()
 {
 	return msgFields._destPid;

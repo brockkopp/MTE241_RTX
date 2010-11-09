@@ -8,7 +8,6 @@
 
 typedef int pItemType;
 
-
 class PQ {
   public:
   	PQ( int nPriority );
@@ -17,7 +16,8 @@ class PQ {
 	  itemType pq_dequeue( );       
   
   private:
-    Queue _master[];
+	//Queue* _master[];
+	Queue* _master[4];
 };
 
 #endif

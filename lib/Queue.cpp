@@ -8,25 +8,6 @@ Please explain what values the qtype can be.
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
  *~*~*~*~*~*~*	 PRIVATE FUNCTIONS   *~*~*~*~*~*~*~*~*
  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*/
-int Queue::determineCastType()
-{
-	std::string qtype = _queueType;
-	if(qtype == "int" || qtype == "INT")
-		return INT;
-	
-	else if(qtype == "string" || qtype == "STRING" || qtype == "String")
-		return STRING;
-	
-	else if(qtype == "MsgEnv" || qtype == "msgenv" || qtype == "MSGENV" || qtype == "Msg_Env" || qtype == "msg_env" || qtype == "MSG_ENV")
-		return MSG_ENV;
-	
-	else if(qtype == "PCB" || qtype == "pcb")
-		return PROCCONBLOCK;
-	
-	else
-		return UNK_TYPE;
-}
-
 //Dequeues an object from the front of the queue.
 //Returns a pointer to the dequeued object.
 //Returns NULL if there is no node to dequeue.
@@ -128,18 +109,16 @@ Queue::Queue()
 	_front = NULL;
 	_rear = NULL;	
 	_length = 0;
-	_queueType = "";
-	_typeCastType = determineCastType();
+	_queueType = UNK_TYPE;
 }
 
 
-Queue::Queue(std::string qtype)
+Queue::Queue(int qtype)
 {
 	_front = NULL;
 	_rear = NULL;	
 	_length = 0;
 	_queueType = qtype;
-	_typeCastType = determineCastType();
 }
 
 //Destructor: delete all memory used by the queue
@@ -170,13 +149,13 @@ bool Queue::enqueue( itemType value )
 	catch(char* str) { return false; } //if memory allocation for the pointer fails
 
 	//perform required type-casting
-	if(_typeCastType == INT)
+	if(_queueType == INT)
 		Temp->item = (int*)value;
-	else if(_typeCastType == STRING)
+	else if(_queueType == STRING)
 		Temp->item = (std::string*)value;
-	else if(_typeCastType == PROCCONBLOCK)
+	else if(_queueType == PROCCONBLOCK)
 		Temp->item = (PCB*)value;	
-	else if(_typeCastType == MSG_ENV)
+	else if(_queueType == MSG_ENV)
 		Temp->item = (MsgEnv*)value;
 
 	if(_front == NULL) //adding first node
@@ -244,20 +223,17 @@ int Queue::get_length()
 	return _length;
 }
 
-//Returns the queueType of the queue. If not defined(""), calling function MUST PERFORM CAST TYPING when a itemType* is being returned
-std::string Queue::get_queueType()
+//Returns the queueType of the queue. If not defined(ie UNK_TYPE 0), calling function MUST PERFORM CAST TYPING when a itemType* is being returned
+int Queue::get_queueType()
 {
 	return _queueType;
 }
 
 //Sets the queueType of the queue. May only be done if the _queueType was not previously defined
-void Queue::set_queueType( std::string type )
+void Queue::set_queueType( int type )
 {
-	if(_typeCastType == UNK_TYPE)
-	{
+	if(_queueType == UNK_TYPE)
 		_queueType = type;
-  	_typeCastType = determineCastType();
-	}
 	return;
 }
 
@@ -314,13 +290,13 @@ bool Queue::replace( itemType currValue, itemType newValue )
 	if(toChange == NULL)
 		return 0;	
 
-	if(_typeCastType == INT)
+	if(_queueType == INT)
 		toChange->item = (int*)newValue;
-	else if(_typeCastType == STRING)
+	else if(_queueType == STRING)
 		toChange->item = (std::string*)newValue;
-	else if(_typeCastType == PROCCONBLOCK)
+	else if(_queueType == PROCCONBLOCK)
 		toChange->item = (PCB*)newValue;	
-	else if(_typeCastType == MSG_ENV)
+	else if(_queueType == MSG_ENV)
 		toChange->item = (MsgEnv*)newValue;
 	else
 		toChange->item = newValue;

@@ -7,14 +7,12 @@
 */
 PQ::PQ( int nPriority ) 
 {
-	Queue* _master = new Queue[nPriority];
+	//Queue* _master = new Queue[nPriority];
 	
 	try
 	{
-		Queue q("PCB"); //create empty queue
-		
 		for(int i = 0; i < nPriority; i++)
-			_master[i] = q;
+			_master[i] = new Queue(4); 		//hard coded for compilability (brock)
 	}
 	catch(char* c)
 	{
@@ -49,7 +47,7 @@ bool PQ::pq_enqueue (PCB* newData, int priorityLevel)
 	}
 	
 	//Enqueue the data at the requested priority level.	
-	return (_master[priorityLevel].enqueue(newData));	
+	return (_master[priorityLevel]->enqueue(newData));	
 }
 
 /*
@@ -60,10 +58,11 @@ itemType PQ::pq_dequeue()
 {
 	int masterLength = sizeof(_master);
 	itemType returnVal;
-	for( int i; i < masterLength; i++) 
+	for( int i = 0; i < masterLength; i++) 
 	{
-		//Try dequeuing
-		if (returnVal = _master[i].dequeue_PCB())
+
+		returnVal = _master[i]->dequeue_PCB();
+		if (returnVal != NULL)
 			return returnVal;
 	}
 	

@@ -13,6 +13,8 @@
 #define BLOCKED_ENV 1
 #define BLOCKED_MSG_RECIEVE 2
 
+class Queue;
+
 class PCB 
 {
 	public:	
@@ -20,7 +22,6 @@ class PCB
 		Context* context;     //Includes jmp_buf
 		
 		/*~*~* Member functions ~*~*~*~*/
-		
 		//Constructors
 		PCB( PcbInfo* tableEntry );
 		PCB( int processType, int priority ); 
@@ -29,8 +30,12 @@ class PCB
 		~PCB();
 		
 		//Private Member Getters/Setters
-		int get_atomicCount( );
-		void set_atomicCount( int atomCount );
+
+		void setAtomicCount( int atomCount );
+
+		int incAtomicCount();
+		int decAtomicCount();
+		int getAtomicCount();
 		
 		void* get_fPtr( );
 		void set_fPtr( void* fPtr );
@@ -69,7 +74,7 @@ class PCB
 		int _processType;
 		char* _stack;
 		int _state;
-//		Queue _mailbox; //Message mailbox
+		Queue _mailbox; //Message mailbox
 		//Context is a public member - WHY?
 };
 #endif

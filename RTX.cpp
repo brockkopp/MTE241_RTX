@@ -1,25 +1,29 @@
 #include "RTX.h"
 
-RTX::RTX(PcbInfo* initTable[], SignalHandler* sigHandler)
+RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
-	signalHandler = sigHandler;
+	_signalHandler = signalHandler;
+	_scheduler = NULL;
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
-		pcbList[i] = new PCB(initTable[i]);
+		_pcbList[i] = new PCB(initTable[i]);
+
+	_signalHandler->setSigMasked(false);
 
 	debugMsg("RTX Init Done",0,1);
 }
 
 RTX::~RTX()
 {
+	_signalHandler->setSigMasked(true);
 	//Free resources held by each RTX member, allocated in the RTX constructor
 
-
-	//Signal handling no long exists
-	delete signalHandler;
+	//delete _mailMan;
+	//delete _scheduler;
+	//delete _signalHandler;
 }
 
 int RTX::getPcb(int pid, PCB** pcb)
@@ -27,10 +31,42 @@ int RTX::getPcb(int pid, PCB** pcb)
 	int ret = EXIT_SUCCESS;
 
 	if(pid >= 0 && pid < PROCESS_COUNT)
-		*pcb = pcbList[pid];
+		*pcb = _pcbList[pid];
 	else
 		ret = EXIT_ERROR;
 	
+	return ret;
+}
+
+int RTX::getCurrentPcb(PCB** pcb)
+{
+	int ret = EXIT_SUCCESS;
+
+	if(_scheduler != NULL && _scheduler->_currentProcess != NULL)
+		*pcb = _scheduler->_currentProcess;
+	else
+		ret = EXIT_ERROR;	
+	
+	return ret;
+}
+
+int RTX::atomic(bool on)
+{
+	int ret = EXIT_SUCCESS;
+	PCB* currPcb = NULL;
+	
+	if(getCurrentPcb(&currPcb) != EXIT_SUCCESS)
+		ret = EXIT_ERROR;
+	else
+	{	
+		int cnt = (on) ? currPcb->incAtomicCount() : currPcb->decAtomicCount();
+
+		if (cnt == 0)				
+			_signalHandler->setSigMasked(false);
+		else if(cnt == 1)
+			_signalHandler->setSigMasked(true);
+	}
+
 	return ret;
 }
 
@@ -86,9 +122,34 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 	return -2;
 }
 
+/* Message envelope contains messages (character string) to sent to console. 
+ * String must be in usual C/C++ string format terminated by null character
+ * send_console_chars sends then message onto the i_crt_handler who then deals with outputting to the console
+ * After tranmission is complete, the same envelope is returned to invoking process with message_type "display_ack" as confirmation
+ * Inovking process does not block! 
+ * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
-	return -2;
+	if(msg_envelope == NULL) //error check
+		return EXIT_ERROR;
+		
+	string toSend = (*msg_envelope).getMsgData();
+	if(toSend[toSend.length()-1] != '\n') //ensure message is terminated by null character	
+		return EXIT_ERROR;
+	
+	//validated that message is in correct format
+	int iCRTProcId = -2;
+	//send message to i_crt_handler to deal with transmission of the message to the console
+	int res = K_send_message(iCRTProcId, msg_envelope);
+	i_crt_handler();
+	
+	//verify transmission was successful
+	string msgType = (*msg_envelope).getMsgType();
+	//USE (*msg_envelope).DISPLAY_FAIL;!!!!!!!!!!!!!!!!!!!!!!!!
+	if(msgType != "display_fail")
+		return EXIT_ERROR;
+		
+	return res;
 }
 
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
