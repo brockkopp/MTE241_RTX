@@ -1,10 +1,14 @@
 #include "iprocesses.h"
-//extern RTX* gRTX;
-//extern CCI* gCCI;
+extern CCI* gCCI;
 
 void i_timing_process()
 {
-	//gCCI->wallClock->increment();
+	gCCI->wallClock->increment();
+	string time;
+	if((time = gCCI->wallClock->toString()) != "")
+	{
+		//print time
+	}
 }
 void i_keyboard_handler()
 {
@@ -16,5 +20,3 @@ void i_crt_handler()
 	debugMsg("Signal Received: SIGUSR2: CRT",0,1);
 	return;
 }
-
-

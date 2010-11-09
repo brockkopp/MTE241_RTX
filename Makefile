@@ -70,7 +70,7 @@ Queue.o: lib/Queue.cpp lib/Queue.h debug.h
 RTX.o: RTX.cpp RTX.h lib/PcbInfo.h lib/PCB.h 
 	@$(CMP) $(CMPFLGS) RTX.cpp
 
-SignalHandler.o: SignalHandler.cpp SignalHandler.h
+SignalHandler.o: SignalHandler.cpp SignalHandler.h CCI.h
 	@$(CMP) $(CMPFLGS) SignalHandler.cpp
 	
 Scheduler.o: Scheduler.cpp Scheduler.h lib/PQ.h lib/PCB.h

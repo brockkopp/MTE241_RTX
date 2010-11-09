@@ -11,7 +11,6 @@ class CCI
 {
 	public:
 		CCI();
-		string getWallClockTime();		
 		WallClock* wallClock;
 
 	private:

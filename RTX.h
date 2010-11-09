@@ -9,6 +9,7 @@
 #include "lib/MsgEnv.h"
 
 class PcbInfo;
+class SignalHandler;
 
 //NOTE:Project Constants defined in "libs.h"
 

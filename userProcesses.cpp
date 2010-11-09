@@ -20,8 +20,8 @@ void userProcessA()
 
 void userProcessB()
 {
-	MsgEnv* myMsg;
-	/*while(true)
+	/*MsgEnv* myMsg;
+	while(true)
 	{
 		myMsg = K_receive_message();
 		K_send_message(USER_PROC_C, myMsg);

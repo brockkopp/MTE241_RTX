@@ -60,7 +60,5 @@ int WallClock::setTime(string time[])
 
 string WallClock::toString()
 {
-	stringstream ret;
-	
-	return intToStr(_hours,2) + ":" + intToStr(_minutes,2) + ":" + intToStr(_seconds,2);
+	return (_isNewTime) ? intToStr(_hours,2) + ":" + intToStr(_minutes,2) + ":" + intToStr(_seconds,2) : "";
 }
