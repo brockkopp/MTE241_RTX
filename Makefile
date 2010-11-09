@@ -57,9 +57,6 @@ MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
 	
 MsgServ.o:MsgServ.cpp MsgServ.h
 	@$(CMP) $(CMPFLGS) MsgServ.cpp
-
-MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
-	@$(CMP) $(CMPFLGS) lib/MsgEnv.cpp
 	
 PCB.o: lib/PCB.cpp lib/PCB.h lib/PcbInfo.h
 	@$(CMP) $(CMPFLGS) lib/PCB.cpp
