@@ -39,7 +39,7 @@ Return true if enqueue is successful, return false otherwise
 bool PQ::pq_enqueue (pItemType newData, int priorityLevel)
 {
 	//Check to make sure that the priority level exists
-	int masterLength = sizeof(_master);
+	int masterLength = sizeof(_master); //I think this needs to be sizeof(master) / sizeof(master[0]) -karl
 	if (priorityLevel >= masterLength) 
 	{
 		//Then the priorityLevel is too high, so return error
@@ -63,9 +63,30 @@ pItemType PQ::pq_dequeue()
 
 		returnVal = _master[i]->dequeue_PCB();
 		if (returnVal != NULL)
-			return returnVal;
+			return static_cast<pItemType>(returnVal); //Not sure if this should be casted here but i added it anyway to make it work -Karl
 	}
 	
 	return NULL; //The dequeue has failed, nothing to dequeue.	
 }
+
+//Plucks the value form the PQ. If value DNE, then it returns NULL
+pItemType PQ::pq_pluck( pItemType target) {
+	int masterLength = sizeof(_master) / sizeof(_master[0]);
+
+	//Check which queue target is in. When it is found, pluck it from the queue.
+	for (int i=0; i<masterLength; i++) {
+		pItemType pluckedValue = _master[i]->pluck( target );
+		
+		if ( pluckedValue )
+			return pluckedValue;
+			
+		//Else, keep tryiing
+	}
+
+	//If we've gotten here, then the value did not exist in the PQ, so return NULL
+	return NULL;
+}
+
+
+
 

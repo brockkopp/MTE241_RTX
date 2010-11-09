@@ -13,7 +13,8 @@ class PQ {
   	PQ( int nPriority );
   	~PQ( );
 	  bool pq_enqueue ( pItemType newData, int priorityLevel );
-	  pItemType pq_dequeue( );       
+	  pItemType pq_dequeue( );
+	  pItemType pq_pluck( pItemType target); 
   
   private:
 	//Queue* _master[];
