@@ -54,7 +54,7 @@ class Queue
 	 int* 				dequeue_int();
 	 std::string* dequeue_string();
 	 MsgEnv* 			dequeue_MsgEnv();
-	 PCB*		dequeue_PCB();
+	 PCB*					dequeue_PCB();
 	 
 	 bool 					contains( itemType value );	 
 	 int 						get_length();
