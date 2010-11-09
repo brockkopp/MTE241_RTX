@@ -36,7 +36,7 @@ PQ::~PQ()
 Enqueues newData into the queue with priorityLevel priority.
 Return true if enqueue is successful, return false otherwise
 */
-bool PQ::pq_enqueue (PCB* newData, int priorityLevel)
+bool PQ::pq_enqueue (pItemType newData, int priorityLevel)
 {
 	//Check to make sure that the priority level exists
 	int masterLength = sizeof(_master);
@@ -46,7 +46,7 @@ bool PQ::pq_enqueue (PCB* newData, int priorityLevel)
 		return false;
 	}
 	
-	//Enqueue the data at the requested priority level.	
+	//Enqueue the data at t"int""int"he requested priority level.	
 	return (_master[priorityLevel]->enqueue(newData));	
 }
 
@@ -54,7 +54,7 @@ bool PQ::pq_enqueue (PCB* newData, int priorityLevel)
 Dequeues a pointer to an pItemType. Returns null if there is nothing to dequeue.
 */
 
-itemType PQ::pq_dequeue() 
+pItemType PQ::pq_dequeue() 
 {
 	int masterLength = sizeof(_master);
 	itemType returnVal;

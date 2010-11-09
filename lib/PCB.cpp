@@ -19,27 +19,11 @@ PCB::PCB(PcbInfo* info)
 	Queue q(q.MSG_ENV);
 	_mailbox = q;
 	
-	context = new Context(_stack, info->stackSize);		//process will suspend here until enqueued by scheduler I think
+	_context = new Context(_stack, info->stackSize);		//process will suspend here until enqueued by scheduler I think
 	
 	//Execution returns here after process is enqueued (in Context constructor).
 	//Begin execution	
 	//_fPtr();	
-}
-
-PCB::PCB ( int processType, int priority ) 
-{	
-	_atomicCount = 0;
-	//init fPtr <-- how to we do this?
-	//init id <-- how to we do this?
-	//init name <-- ?
-	_priority = priority;
-	_processType = processType;
-	//Init stack <-- how to we do this?
-	//init state <-- how to we do this?
-	
-	Queue q(q.MSG_ENV);
-	_mailbox = q;
-	//Context context;
 }
 
 /*~*~*~*~*~*~* Destructors *~*~*~*~*~*~*~*/
@@ -102,6 +86,10 @@ void PCB::set_stack( char* stack ) {	_stack = stack; }
 		
 int PCB::get_state() { return _state; }
 void PCB::set_state( int state ) {	_state = state; } 
+
+Context* PCB::get_context() { return _context; }
+int PCB::save_context() { return _context->save(); }
+int PCB::restore_context() { return _context->restore(); }
 				
 /*~*~*~*~*~*~* Mailbox Modifiers *~*~*~*~*~*~*~*/
 //Dequeues oldest message in the mailbox (FIFO)

@@ -112,7 +112,7 @@ Queue::Queue()
 	_queueType = UNK_TYPE;
 }
 
-
+//Queuetypes are defined as constants in the header...
 Queue::Queue(int qtype)
 {
 	_front = NULL;
