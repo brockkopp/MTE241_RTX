@@ -1,7 +1,7 @@
 #include "MsgEnv.h"
 
-//const string DISPLAY_ACK = "display_ack";
-//const string DISPLAY_FAIL = "display_fail";
+const string DISPLAY_ACK = "display_ack";
+const string DISPLAY_FAIL = "display_fail";
 
 int MsgEnv::getDestPid()
 {
@@ -40,7 +40,7 @@ int MsgEnv::getMsgType()
 	return msgFields._msgType;
 }
 
-int MsgEnv::setMsgType(int newMsgType)
+int MsgEnv::setMsgType(string newMsgType)
 {
 	if(newMsgType >=0 && newMsgType <=3)
 	{

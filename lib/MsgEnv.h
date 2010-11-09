@@ -16,15 +16,15 @@ class MsgEnv
 		
 	public:
 		//possible message types - Not sure implementation is correct of these constants...
-//		static const string DISPLAY_ACK;
-//		static const string DISPLAY_FAIL;
+		static const string DISPLAY_ACK;
+		static const string DISPLAY_FAIL;
 		
 		int getDestPid();
 		int setDestPid(int newDestPid);
 		int getOriginPid();
 		int setOriginPid(int newOriginPid);
 		int getMsgType();
-		int setMsgType(int newMsgType);
+		int setMsgType(string newMsgType);
 		string getMsgData();
 		int setMsgData(string msgInfo);
 };

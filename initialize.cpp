@@ -2,11 +2,13 @@
 #include "RTX.h"
 #include "CCI.h"
 #include <cstring>
+#include <sys/mman.h>
 #include "signal.h"
 #include "SignalHandler.h"
 #include "tests.h"
 
-#define ANG_TEST 0
+#define SHMEM_BUFFER_SIZE 1024
+
 //Globals
 RTX* gRTX;
 CCI* gCCI;
@@ -17,7 +19,14 @@ int inititalizeShmem();
 int cleanupShmem();
 int createInitTable(PcbInfo* initTable[]);
 
-caddr_t shemFiles[2];
+struct shmem
+{
+	caddr_t rxPtr;
+	caddr_t txPtr;
+	const static int bufferSize = 128;
+}shmem;
+
+
 int pidKB, pidCRT;
 char* myPid;
 
@@ -197,26 +206,24 @@ int inititalizeShmem()
 
 int cleanupShmem()
 {
-/*	int ret = EXIT_SUCCESS;
+	int ret = EXIT_SUCCESS;
 	try
 	{
-		munmap (rx_memmap_pt)        //unmap the memory buffers
-		munmap (tx_memmap_pt)
+		munmap(shmem.rxPtr,shmem.bufferSize);        //unmap the memory buffers
+		munmap(shmem.txPtr,shmem.bufferSize);
 
-		close(rx_shared_mem_f_id)    //close temporary files
-		close(tx_shared_mem_f_id)
+//		close(rx_shared_mem_f_id)    //close temporary files
+//		close(tx_shared_mem_f_id)
 
-		unlink(rx_shared_mem_f)    //delete temporary files
-		unlink(tx_shared_mem_f)
+//		unlink(rx_shared_mem_f)    //delete temporary files
+//		unlink(tx_shared_mem_f)
 	}
-	catch(Exception e)
+	catch(int e)
 	{
 		ret = EXIT_ERROR;
 	}
+
 	return ret;
-*/
-	return -2;
-	return EXIT_SUCCESS;
 }
 
 int createInitTable(PcbInfo* initTable[])
