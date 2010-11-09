@@ -37,7 +37,8 @@ void i_crt_handler()
 			}
 			else //return message that transmission failed
 			{
-				(*retMsg).setMsgType((*retMsg).DISPLAY_FAIL);
+				//(*retMsg).setMsgType((*retMsg).DISPLAY_FAIL);
+				(*retMsg).setMsgType("display_fail");
 				//K_send_message(invoker, retMsg);				CANT DO THIS WITHOUT INSTANCE OF RTX!!!!
 				return;
 			}		
