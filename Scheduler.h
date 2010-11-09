@@ -1,3 +1,7 @@
+/* Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * 
+Q * Q *  QUESTION: are we keeping currentProcess a private member? or should we make it public?
+Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q */
+
 #include <string>
 #include "debug.h"
 #include "lib/PCB.h"

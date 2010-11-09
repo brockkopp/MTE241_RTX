@@ -116,13 +116,6 @@ bool PCB::add_mail( MsgEnv* message )
 	return (_mailbox.enqueue(message));
 }
 
-////Enqueue message onto mailbox queue
-//bool add_mail( MsgEnv* message )
-//{
-//	return (_mailbox.enqueue(message));
-//}
-
-
 //Returns the number of messages in the mailbox
 int PCB::check_mail( ) 
 { 

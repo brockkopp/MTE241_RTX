@@ -117,9 +117,34 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 	return -2;
 }
 
+/* Message envelope contains messages (character string) to sent to console. 
+ * String must be in usual C/C++ string format terminated by null character
+ * send_console_chars sends then message onto the i_crt_handler who then deals with outputting to the console
+ * After tranmission is complete, the same envelope is returned to invoking process with message_type "display_ack" as confirmation
+ * Inovking process does not block! 
+ * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
-	return -2;
+	if(msg_envelope == NULL) //error check
+		return EXIT_ERROR;
+		
+	string toSend = (*msg_envelope).getMsgData();
+	if(toSend[toSend.length()-1] != '\n') //ensure message is terminated by null character	
+		return EXIT_ERROR;
+	
+	//validated that message is in correct format
+	int iCRTProcId = -2;
+	//send message to i_crt_handler to deal with transmission of the message to the console
+	int res = K_send_message(iCRTProcId, msg_envelope);
+	i_crt_handler();
+	
+	//verify transmission was successful
+	string msgType = (*msg_envelope).getMsgType();
+	//USE (*msg_envelope).DISPLAY_FAIL;!!!!!!!!!!!!!!!!!!!!!!!!
+	if(msgType != "display_fail")
+		return EXIT_ERROR;
+		
+	return res;
 }
 
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)

@@ -1,4 +1,6 @@
 #include "debug.h"
+#include "RTX.h"
+#include "CCI.h"
 
 
 //#include <iostream>
@@ -8,7 +10,6 @@
 //#include "SignalHandler.h"
 
 //class RTX;
-//#include "CCI.h"
 //class CCI;
 
 //using namespace std;
