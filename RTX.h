@@ -2,35 +2,37 @@
 #define H_RTX
 
 #include "debug.h"
-#include "RTX.h"
 #include "SignalHandler.h"
 #include "Scheduler.h"
 #include "MsgServ.h"
 #include "lib/PCB.h"
-#include "lib/PcbInfo.h"
 #include "lib/MsgEnv.h"
+
+class PcbInfo;
 
 //NOTE:Project Constants defined in "libs.h"
 
 //RTX Global Constants
-#define PROCESS_COUNT 	7	//Total number of processes existing in the RTX
-#define STACK_SIZE 	2034	//Stack size in bytes
+#define PROCESS_COUNT 	7		//Total number of processes existing in the RTX
+#define STACK_SIZE 		2048	//Stack size in bytes
 
 //Constants used to denote process types
-#define PROCESS_I	1	
+#define PROCESS_I		1	
 #define PROCESS_USER	2
-#define PROCESS_K	3
+#define PROCESS_K		3
 
-#define USER_PROC_A	4
-#define USER_PROC_B	5
-#define USER_PROC_C	6
+#define USER_PROC_A		4
+#define USER_PROC_B		5
+#define USER_PROC_C		6
 
 class RTX
 {
 	public:
-		RTX(PcbInfo* initTable[], SignalHandler* sigHandler);
+		RTX(PcbInfo* initTable[], SignalHandler* signalHandler);
 		~RTX();
 		int getPcb(int pid, PCB** pcb);
+		int getCurrentPcb(PCB** pcb);
+		int atomic(bool on);
 		
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
 		MsgEnv* K_receive_message();
@@ -44,11 +46,12 @@ class RTX
 		int K_send_console_chars(MsgEnv* msg_envelope);
 		int K_get_console_chars(MsgEnv* msg_envelope);
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
-
-		PCB* pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
-		Scheduler* scheduler;
-		SignalHandler* signalHandler;
-		MsgServ* mailMan;
+	
+	private:
+		PCB*			_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
+		Scheduler* 		_scheduler;
+		SignalHandler* 	_signalHandler;
+		MsgServ* 		_mailMan;
 };
 
 #endif

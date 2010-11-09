@@ -6,14 +6,16 @@
 #include "RTX.h"
 #include "lib/WallClock.h"
 #define SIGINT 2
+
 class CCI
 {
 	public:
-		CCI(RTX* rtx);
-		void processCCI();
+		CCI();
+		string getWallClockTime();		
 		WallClock* wallClock;
+
 	private:
-		RTX* _rtx;
+		void processCCI();
 };
 
 #endif

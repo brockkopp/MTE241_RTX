@@ -30,8 +30,12 @@ class PCB
 		~PCB();
 		
 		//Private Member Getters/Setters
-		int get_atomicCount( );
-		void set_atomicCount( int atomCount );
+
+		void setAtomicCount( int atomCount );
+
+		int incAtomicCount();
+		int decAtomicCount();
+		int getAtomicCount();
 		
 		void* get_fPtr( );
 		void set_fPtr( void* fPtr );

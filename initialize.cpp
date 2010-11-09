@@ -7,6 +7,9 @@
 #include "tests.h"
 
 #define ANG_TEST 0
+//Globals
+RTX* gRTX;
+CCI* gCCI;
 
 //Private method declarations
 void doTests();
@@ -14,8 +17,6 @@ int inititalizeShmem();
 int cleanupShmem();
 int createInitTable(PcbInfo* initTable[]);
 
-RTX* rtx;
-CCI* cci;
 caddr_t shemFiles[2];
 int pidKB, pidCRT;
 char* myPid;
@@ -40,7 +41,8 @@ int main(void)
 	
 	//Create and initialize rtx and its child members (schedling services etc)
 	debugMsg("\n");
-	rtx = new RTX(initTable, sigHandler);
+	
+	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
 
 	//Create keyboad thread
@@ -63,9 +65,6 @@ int main(void)
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
 	debugMsg("\n");
-	
-	//Unmask signals
-	rtx->signalHandler->setSigMasked(false);
 
 #if TESTS_MODE == 1
 	doTests();
@@ -76,8 +75,8 @@ int main(void)
 
 	debugMsg("Type 'help' at any time to list possible CCI commands",0,2);	
 
-	cci = new CCI(rtx);
-	delete cci;
+	gCCI = new CCI();
+	delete gCCI;
 
 	//Signal cci init failed, program should not normally reach this point
 	die(EXIT_ERROR);
@@ -103,10 +102,9 @@ void doTests()
 void die(int sigNum)
 {
 	debugMsg("Terminate command initiated ",2,0);
-	debugMsg((sigNum == EXIT_SUCCESS) ? "normally" : "UNEXPECTEDLY: " + intToStr(sigNum) ,0,1);
+	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + intToStr(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
 
-	//Force mask all signals 
-	rtx->signalHandler->setSigMasked(true);
+	gRTX->atomic(true);
 
 	//Cleanup shared memeory and assure that cleanup is successful
 	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed", __FILE__, __LINE__, __func__, false);
@@ -120,8 +118,8 @@ void die(int sigNum)
 	wait();	
 
 	//Cleanup rtx, including signal handler
-	delete rtx;
-	delete cci;
+	delete gRTX;
+	delete gCCI;
 
 	debugMsg("------------------------------------\n    RTX TERMINATED SUCCESSFULLY\n------------------------------------",1,2);	
 	

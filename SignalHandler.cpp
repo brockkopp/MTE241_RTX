@@ -54,30 +54,12 @@ int SignalHandler::setSigMasked(bool masked)
 	return ret;
 }
 
-int SignalHandler::atomic(bool on){
-/*	int ret = EXIT_SUCCESS;
-	int * atmCnt = rtx->schedler->cp->atomicNumber;	
-	
-	(on) ? atmCnt++ : atmCnt --;
-	
-	if(atmCnd < 0)
-		ret = EXIT_ERROR;
-	if(atmCnt == 0)
-		sigSetMasked(false);
-	if(atmCnt == 1)
-		sigSetMasked(true);
-
-	return ret;
-*/
-	return -2;
-}
-
 void SignalHandler::handler( int sigNum )
 {
 	switch(sigNum)
 	{
 		case SIGINT:
-			die(EXIT_SUCCESS);
+			die(0);		//Signal number 0 denotes normal termination (not forced)
 			break;
 
 		case SIGALRM:

@@ -1,11 +1,11 @@
 #include "CCI.h"
+extern RTX* gRTX;
 
 //REMOVE AFTER I/O IS IMPLEMENTED
 #include <stdio.h>
 
-CCI::CCI(RTX* rtx)
+CCI::CCI()
 {
-	_rtx = rtx;
 	wallClock = new WallClock();
 	processCCI();
 }
@@ -40,10 +40,10 @@ void CCI::processCCI()
 					errMsg = "Too many parameters";
 				else
 				{
-					MsgEnv* myEnv = _rtx->K_request_msg_env();
+					MsgEnv* myEnv = gRTX->K_request_msg_env();
 					myEnv->setDestPid(USER_PROC_A);
 					//Set other appropriate fields
-					if(_rtx->K_send_message(USER_PROC_A, myEnv) != EXIT_SUCCESS)
+					if(gRTX->K_send_message(USER_PROC_A, myEnv) != EXIT_SUCCESS)
 						errMsg = "Message failed to send";
 					
 				}
@@ -84,11 +84,11 @@ void CCI::processCCI()
 					errMsg = "Too many parameters";
 				else
 				{
-					MsgEnv* myEnv = _rtx->K_request_msg_env();
-					if(_rtx->K_get_trace_buffers(myEnv) != EXIT_SUCCESS)
+					MsgEnv* myEnv = gRTX->K_request_msg_env();
+					if(gRTX->K_get_trace_buffers(myEnv) != EXIT_SUCCESS)
 						errMsg = "Failed to retrieve message buffers";
 					else 
-						_rtx->K_send_console_chars(myEnv);
+						gRTX->K_send_console_chars(myEnv);
 				}
 			}
 			else if(input[0] == "t")
@@ -96,7 +96,7 @@ void CCI::processCCI()
 				if(params > 1)
 					errMsg = "Too many parameters";
 				else
-					_rtx->signalHandler->handler(SIGINT);
+					kill(getpid(),SIGINT);
 			}
 			else if(input[0] == "n")
 			{
@@ -104,7 +104,7 @@ void CCI::processCCI()
 				PCB* pcb = NULL;
 				if(strToInt(input[1],&priority) != EXIT_SUCCESS || strToInt(input[2],&pid) != EXIT_SUCCESS)
 					errMsg = "invalid parameters";
-				else if(_rtx->getPcb(pid,&pcb) != EXIT_SUCCESS)
+				else if(gRTX->getPcb(pid,&pcb) != EXIT_SUCCESS)
 					errMsg = "Invalid process id";
 				else if(pcb->set_priority(priority) != EXIT_SUCCESS)
 					errMsg = "Invalid priority";

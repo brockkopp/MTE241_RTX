@@ -55,8 +55,21 @@ PCB::~PCB()
  ~*~*~*~* Getters/Setters ~*~*~*~*~~*~*
  *~*~*~*~*~~*~*~*~*~~*~*~*~*~~*~*~*~*~*/
 		
-int PCB::get_atomicCount() { return _atomicCount; }
-void PCB::set_atomicCount( int atomCount ) {	_atomicCount = atomCount; }
+//int PCB::get_atomicCount() { return _atomicCount; }
+//void PCB::set_atomicCount( int atomCount ) {	_atomicCount = atomCount; }
+int PCB::incAtomicCount()
+{
+	return ++_atomicCount;
+}
+int PCB::decAtomicCount()
+{
+	assure(_atomicCount > 0,"Atomic count out of bounds",__FILE__,__LINE__,__func__,true);
+	return --_atomicCount;
+}
+int PCB::getAtomicCount()
+{
+	return _atomicCount;
+}
 		
 void* PCB::get_fPtr() { return _fPtr; }
 void PCB::set_fPtr( void* fPtr ) {	_fPtr = fPtr; }
@@ -102,6 +115,13 @@ bool PCB::add_mail( MsgEnv* message )
 {
 	return (_mailbox.enqueue(message));
 }
+
+////Enqueue message onto mailbox queue
+//bool add_mail( MsgEnv* message )
+//{
+//	return (_mailbox.enqueue(message));
+//}
+
 
 //Returns the number of messages in the mailbox
 int PCB::check_mail( ) 

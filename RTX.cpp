@@ -1,25 +1,29 @@
 #include "RTX.h"
 
-RTX::RTX(PcbInfo* initTable[], SignalHandler* sigHandler)
+RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
-	signalHandler = sigHandler;
+	_signalHandler = signalHandler;
+	_scheduler = NULL;
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
-		pcbList[i] = new PCB(initTable[i]);
+		_pcbList[i] = new PCB(initTable[i]);
+
+	_signalHandler->setSigMasked(false);
 
 	debugMsg("RTX Init Done",0,1);
 }
 
 RTX::~RTX()
 {
+	_signalHandler->setSigMasked(true);
 	//Free resources held by each RTX member, allocated in the RTX constructor
 
-
-	//Signal handling no long exists
-	delete signalHandler;
+	//delete _mailMan;
+	//delete _scheduler;
+	//delete _signalHandler;
 }
 
 int RTX::getPcb(int pid, PCB** pcb)
@@ -27,10 +31,42 @@ int RTX::getPcb(int pid, PCB** pcb)
 	int ret = EXIT_SUCCESS;
 
 	if(pid >= 0 && pid < PROCESS_COUNT)
-		*pcb = pcbList[pid];
+		*pcb = _pcbList[pid];
 	else
 		ret = EXIT_ERROR;
 	
+	return ret;
+}
+
+int RTX::getCurrentPcb(PCB** pcb)
+{
+	int ret = EXIT_SUCCESS;
+
+	if(_scheduler != NULL && _scheduler->_currentProcess != NULL)
+		*pcb = _scheduler->_currentProcess;
+	else
+		ret = EXIT_ERROR;	
+	
+	return ret;
+}
+
+int RTX::atomic(bool on)
+{
+	int ret = EXIT_SUCCESS;
+	PCB* currPcb = NULL;
+	
+	if(getCurrentPcb(&currPcb) != EXIT_SUCCESS)
+		ret = EXIT_ERROR;
+	else
+	{	
+		int cnt = (on) ? currPcb->incAtomicCount() : currPcb->decAtomicCount();
+
+		if (cnt == 0)				
+			_signalHandler->setSigMasked(false);
+		else if(cnt == 1)
+			_signalHandler->setSigMasked(true);
+	}
+
 	return ret;
 }
 

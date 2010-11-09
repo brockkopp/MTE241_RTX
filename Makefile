@@ -12,7 +12,7 @@ CRT_OBJ=crt.o
 all: preclean $(KB) $(CRT) $(TITLE) clean run
 
 preclean:
-	@rm -f $(TITLE) $(KB) $(CRT)
+	@rm -f $(TITLE) $(KB) $(CRT) $(OBJ) $(KB_OBJ) $(CRT_OBJ)
 
 clean:
 	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ)	#Delete all object files

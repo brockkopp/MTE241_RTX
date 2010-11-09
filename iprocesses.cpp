@@ -1,8 +1,10 @@
 #include "iprocesses.h"
+//extern RTX* gRTX;
+//extern CCI* gCCI;
 
 void i_timing_process()
 {
-	//increase count, call wall clock, check msgs, etc
+	//gCCI->wallClock->increment();
 }
 void i_keyboard_handler()
 {
