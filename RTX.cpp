@@ -144,9 +144,8 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	i_crt_handler();
 	
 	//verify transmission was successful
-	string msgType = (*msg_envelope).getMsgType();
 	//USE (*msg_envelope).DISPLAY_FAIL;!!!!!!!!!!!!!!!!!!!!!!!!
-	if(msgType != "display_fail")
+	if((*msg_envelope).getMsgType() != MsgEnv::DISPLAY_ACK)
 		return EXIT_ERROR;
 		
 	return res;
