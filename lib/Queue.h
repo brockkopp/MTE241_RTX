@@ -42,7 +42,7 @@ class Queue
 		static const	int INT = 1;
 		static const	int STRING = 2;
 		static const	int MSG_ENV = 3;
-		static const	int PROCCONBLOCK = 4;
+		static const	int PROCCONBLOCK = 4; //PCB type
 	
 	 Queue( );
 	 Queue( int qtype ); //qtype should be one of the constants declared above
