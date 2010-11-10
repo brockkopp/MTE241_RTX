@@ -1,21 +1,31 @@
-/* Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * 
-Q * Q *  QUESTION: are we keeping currentProcess a private member? or should we make it public?
-Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q * Q */
-
 #include <string>
 #include "debug.h"
 #include "lib/PCB.h"
 #include "lib/PQ.h"
+#include "lib/Queue.h"
 
 class Scheduler {
     public:
 
 		Scheduler(PCB* currentProcess, Queue readyProcs); //Constructor!
 			
-//			void release_processor( );   
-//			int change_priority( PCB * target, int newPriority );
-//			int process_switch( );
-//       
+			void release_processor( );   
+			int change_priority( PCB * target, int newPriority );
+			int process_switch( );
+
+			//Place new process on ready queue
+      int add_ready_process( PCB * target );
+      
+//     	static const int BLOCKED_ENV = 1;
+//			static const int BLOCKED_MSG_WAIT = 2;
+			int block_process (PCB * target, int reason );
+		int unblock_process( PCB * target );
+			
+		//Returns if a process is currently blocked on envelope
+		int is_blocked( PCB * target );
+		
+		PCB* get_current_process();
+
 
 //			//Place new process on ready queue
 //      bool add_ready_process( PCB * target );
@@ -25,8 +35,11 @@ class Scheduler {
 //			//Returns if a process is currently blocked on envelope
 //			bool is_blocked( PCB * target );
 
-//    private:
-//      int context_switch( PCB * next_proc );
+    private:
+
+
+    
+      int context_switch( PCB * next_proc );
 //      int context_save( );
 
 			//Members

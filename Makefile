@@ -9,7 +9,9 @@ CRT=CRT.out
 CRT_OBJ=crt.o
 
 ##Command List
-all: preclean $(KB) $(CRT) $(TITLE) clean run
+all: preclean $(KB) $(CRT) $(TITLE) clean
+
+total: preclean $(KB) $(CRT) $(TITLE) clean run
 
 preclean:
 	@rm -f $(TITLE) $(KB) $(CRT) $(OBJ) $(KB_OBJ) $(CRT_OBJ)

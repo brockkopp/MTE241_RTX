@@ -6,14 +6,15 @@
 #include "Queue.h"
 #include "../debug.h"
 
-typedef int pItemType;
+typedef PCB* pItemType;
 
 class PQ {
   public:
   	PQ( int nPriority );
   	~PQ( );
-	  bool pq_enqueue ( PCB* newData, int priorityLevel );
-	  itemType pq_dequeue( );       
+	  bool pq_enqueue ( pItemType newData, int priorityLevel );
+	  pItemType pq_dequeue( );
+	  pItemType pq_pluck( pItemType target); 
   
   private:
 	//Queue* _master[];

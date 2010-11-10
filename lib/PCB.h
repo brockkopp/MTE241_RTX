@@ -19,13 +19,11 @@ class Queue;
 class PCB 
 {
 	public:	
-		/*~*~*~*~*~* Members *~*~*~*~*~*/
-		Context* context;     //Includes jmp_buf
+		
 		
 		/*~*~* Member functions ~*~*~*~*/
 		//Constructors
-		PCB( PcbInfo* tableEntry );
-		PCB( int processType, int priority ); 
+		PCB( PcbInfo* tableEntry ); 
 		
 		//Destructor
 		~PCB();
@@ -50,6 +48,10 @@ class PCB
 		int get_priority( );
 		int set_priority( int pri );
 		
+		Context* get_context();
+		int save_context();
+		int restore_context();
+		
 		int get_processType( );
 		void set_processType( int processType );
 		
@@ -67,6 +69,7 @@ class PCB
 
 	private:
 		/*~*~*~*~*~* Members *~*~*~*~*~*/
+		Context* _context;     //Includes jmp_buf
 		int _atomicCount; 
 		void* _fPtr;  
 		int _id; //Process id
