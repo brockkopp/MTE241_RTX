@@ -9,7 +9,12 @@ CRT=CRT.out
 CRT_OBJ=crt.o
 
 ##Command List
-all: preclean $(KB) $(CRT) $(TITLE) clean
+all: preclean $(KB) $(CRT) $(TITLE) clean noRunMsg
+
+noRunMsg: 
+	@echo
+	@echo Execute '"make run"' to compile and execute
+	@echo
 
 run: all run
 
