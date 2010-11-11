@@ -32,7 +32,7 @@ PCB::~PCB()
 	free(_fPtr); //void*, can't use delete because it'll try to dereference
 	delete[] _stack;
 	delete[] &(_mailbox);
-	delete[] context;
+	delete[] _context;
 }
 
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -89,7 +89,7 @@ void PCB::set_state( int state ) {	_state = state; }
 
 Context* PCB::get_context() { return _context; }
 int PCB::save_context() { return _context->save(); }
-int PCB::restore_context() { return _context->restore(); }
+void PCB::restore_context() { _context->restore(); }
 				
 /*~*~*~*~*~*~* Mailbox Modifiers *~*~*~*~*~*~*~*/
 //Dequeues oldest message in the mailbox (FIFO)

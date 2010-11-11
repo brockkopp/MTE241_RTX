@@ -42,8 +42,8 @@ int RTX::getCurrentPcb(PCB** pcb)
 {
 	int ret = EXIT_SUCCESS;
 
-	if(_scheduler != NULL && _scheduler->_currentProcess != NULL)
-		*pcb = _scheduler->_currentProcess;
+	if(_scheduler != NULL && _scheduler->get_current_process() != NULL)
+		*pcb = _scheduler->get_current_process();
 	else
 		ret = EXIT_ERROR;	
 	
