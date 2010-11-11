@@ -1,5 +1,4 @@
 #include "Scheduler.h"
-
 /*
 Constructor
 
@@ -56,7 +55,7 @@ returnValues:
 */
 int Scheduler::change_priority( PCB * target, int newPriority ) 
 { 
-	int oldPri = target->get_priority();
+//	int oldPri = target->get_priority();
 
 	//Case 1: PCB is on ready queue
 	
@@ -127,6 +126,8 @@ int Scheduler::process_switch( ) {
 	PCB* nextProc =  _readyProcs.pq_dequeue();
 	
 	context_switch( nextProc );
+	
+	return -2;
 }
 
 /*
@@ -150,6 +151,8 @@ int Scheduler::context_switch( PCB * nextProc )
 	if (save_return == 0) {
 		_currentProcess->restore_context();
 	}
+	
+	return 0;
 }
 
 /*
@@ -167,6 +170,7 @@ int Scheduler::add_ready_process( PCB * target )
 
 //	if ( target->get_status() == )
 
+return -2;
 }
 
 
@@ -236,19 +240,18 @@ int Scheduler::unblock_process( PCB * target )
 }
 
 
-///*
-//Return values: //Will return the state constant value depending on which type of blocked it is.
-//	0: 
-//	1: If proc is blocked on enveloper
-//	2: If proc is blocked on message recieve
+/*
+Return values: //Will return the state constant value depending on which type of blocked it is.
+	0: 
+	1: If proc is blocked on enveloper
+	2: If proc is blocked on message recieve
 
-//*/
-//int Scheduler::is_blocked( PCB * target ) 
-//{
-//	return target->get_state();
-//}
+*/
+int Scheduler::is_blocked( PCB * target ) 
+{
+	return target->get_state();
+}
 
-//PCB* get_current_process() {
-//	return _currentProcess;
-
-//}
+PCB* Scheduler::get_current_process() {
+	return _currentProcess;
+}
