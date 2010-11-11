@@ -4,45 +4,51 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 {
 	if(destPid >= 0 && destPid <= PROCESS_COUNT)
 	{
+		//retrieve PCB of currently excecuting process 
+		PCB* tempPCB = get_current_process();
+		
 		msg->setDestPid(destPid);
-		msg->setOriginPid(0); //is there a way to access the PCB of the current process?
-		addTrace(msg, SEND); //should this be a pointer to a pointer to the envelope?
+		msg->setOriginPid(tempPCB.get_id()); 
+		addTrace(msg, SEND); //Q*Q*Q*Q*Q*Q*Q*Q*Q**Q*Q*Q*Q*Q*Q*Qshould this be a pointer to a pointer to the envelope?
 		/*
-		int tempStatus = K_request_process_status(destPid);
+		PCB* tempDestPCB = //need way to get PCB based on PID***********************************
+		int tempStatus = K_request_process_status(tempDestPCB);//should require PCB?
 		if(tempStatus == BLOCKED_MSG_RECIEVE)
 		{
-			bool temp = unblock_process(PCB);//need to know how to get PCB
+			bool temp = unblock_process(tempDestPCB);//need to know how to get PCB
 			if(!temp)
 				return EXIT_ERROR;
 		}
 		else if(tempStatus == SLEEPING)
 			if(msg type == wake up)
 			{
-				bool temp = unblock_process(PCB);//need to know how to get PCB
+				bool temp = unblock_process(tempDestPCB);//need to know how to get PCB
 				if(!temp)
 					return EXIT_ERROR;
 			}
-		enQ msg onto PCB
+		tempDestPCB.add_mail(msg);
+		return EXIT_SUCCESS;
 		*/
 	return -2;
 }
 
 MsgEnv* MsgServ::recieveMsg()
 {
-/*
-	if (PCB mailbox is empty)
-	{
-  	block_process(process_id, BLOCKED_ON_RECEIVE);
-		process_switch(); //use release_processor?
-	}
-	tempMsg = dequeue msg env from PCB mailbox
-	add_trace(tempMsg, RECEIVE);
-	if (current_process = i_processA)
-    return NULL;
+	//retrieve PCB of currently excecuting process 
+	PCB* tempPCB = get_current_process();
 	
-	return pointer to msg env
-*/
-	return NULL;
+	if (tempPCB.check_mail() == 0)
+	{
+		//i_process cannot be blocked
+		if (tempPCB.get_processType = PROCESS_I)
+    	return NULL;
+  	block_process(tempPCB, BLOCKED_MSG_RECEIVE); 
+		process_switch(); //Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q use release_processor?
+	}
+	MsgEnv* tempMsg = tempPCB.retrieve_mail();
+	add_trace(tempMsg, RECEIVE);
+	
+	return tempMsg;
 }
 
 int MsgServ::releaseEnv(MsgEnv* msg)
@@ -51,10 +57,10 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 	if (msg == NULL)
 		return EXIT_ERROR;
 		
-	free_env_Q.enqueue(msg);
-	PCB* tempPtr = is_blocked_on_envelope();    
-	if(tempPtr != NULL)
-		bool temp = unblock_process(tempPtr);
+	freeEnvQ.enqueue(msg);
+	PCB* tempPcb = is_blocked_on_envelope(); //need to find the function again. Location? this function returned a PCB   
+	if(tempPcb != NULL)
+		bool temp = unblock_process(tempPcb);
 	if(!temp)
 		return EXIT_ERROR;
 	*/
@@ -63,14 +69,15 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 
 MsgEnv* MsgServ::requestEnv()
 {
-	/*
-	if (free_env_Q.isEmpty() ) 
+	//retrieve PCB of currently excecuting process 
+	PCB* tempPCB = get_current_process();
+	
+	if( freeEnvQ.isEmpty() ) 
 	{
- 		block_process(process_id, BLOCKED ON ENV) 			
-		process_switch()
+		//do i need to do something to prevent blocking an i_process Q*Q*Q*Q*Q*Q*Q*Q*Q
+ 		block_process(tempPCB, BLOCKED_ENV); 			
+		process_switch(); //use release_processor?
 	}
-	MsgEnv* ptrMsg = free_env_Q.dequeue_MsgEnv();
-	return (ptrMsg)
-	*/
-	return NULL;
+	MsgEnv* ptrMsg = freeEnvQ.dequeue_MsgEnv();
+	return ptrMsg;
 }
