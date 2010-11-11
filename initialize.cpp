@@ -7,24 +7,7 @@
 #include "SignalHandler.h"
 #include "tests.h"
 
-
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <errno.h>
-
-#include <string.h>
-#include <stdlib.h>
-//
-#include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>			// getpid() definition
-
-#include <fcntl.h>
-
-#include <sys/mman.h>
-//#include <sys/wait.h>
-#include <stdio.h>
+#define SHMEM_BUFFER_SIZE 1024
 
 //Globals
 RTX* gRTX;
@@ -36,16 +19,16 @@ int initializeShmem();
 int cleanupShmem();
 int createInitTable(PcbInfo* initTable[]);
 
-struct Shmem
+struct shmem
 {
 	caddr_t rxPtr;
 	caddr_t txPtr;
-	char* 	rxFileName;
-	char* 	txFileName;
+	string 	rxFileName;
+	string 	txFileName;
 	int 	rxId;
 	int		txId;
 	const static int 	bufferSize = 128;
-} shmem;
+}shmem;
 
 
 int pidKB, pidCRT;
@@ -159,26 +142,24 @@ void die(int sigNum)
 
 int initializeShmem()
 {
-	cout << open((char *)"junkDemo", O_RDWR | O_CREAT | O_EXCL, (mode_t) 0755 );
-
 	int result;
 
-	shmem.rxFileName = (char *)"rxFile";
-	shmem.rxFileName = (char *)"txFile";
+	shmem.rxFileName = "rxFile";
+	shmem.rxFileName = "txFile";
 
 	int success = 0;
 
-	shmem.rxId = open(shmem.rxFileName, O_RDWR | O_CREAT | O_EXCL, (mode_t) 0755 );
+	shmem.rxId = open(shmem.rxFileName.c_str(), O_RDWR | O_CREAT | O_EXCL, (mode_t) 0755 );
 	success += assure(shmem.rxId >= 0,"RX Shared memory file failed to initialize",__FILE__,__LINE__,__func__,false);
 
 	result = ftruncate(shmem.rxId, shmem.bufferSize ); 
-	success += assure(!result,"RX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false);
+	success += assure(result,"RX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false);
 
-	shmem.txId = open(shmem.txFileName, O_RDWR | O_CREAT | O_EXCL, (mode_t) 0755 );
+	shmem.txId = open(shmem.txFileName.c_str(), O_RDWR | O_CREAT | O_EXCL, (mode_t) 0755 );
 	success += assure(shmem.txId >= 0,"TX Shared memory file failed to initialize",__FILE__,__LINE__,__func__,false);
 
 	result = ftruncate(shmem.txId, shmem.bufferSize ); 
-	success += assure(!result,"TX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false);
+	success += assure(result,"TX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false);
 
 	shmem.rxPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.rxId, (off_t) 0);
 	success += assure(shmem.rxPtr != MAP_FAILED,"RX memory map failed to initialize",__FILE__,__LINE__,__func__,false);
@@ -205,8 +186,8 @@ int cleanupShmem()
 		close(shmem.rxId);    
 		close(shmem.txId);
 
-		unlink(shmem.rxFileName);
-		unlink(shmem.txFileName);
+		unlink(shmem.rxFileName.c_str());
+		unlink(shmem.txFileName.c_str());
 	}
 	catch(int e)
 	{
