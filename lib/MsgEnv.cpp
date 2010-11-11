@@ -11,7 +11,7 @@ int MsgEnv::getDestPid()
 int MsgEnv::setDestPid(int newDestPid)
 {
 	//check if a valid destPID was passed
-	if(newDestPid >=0 && newDestPid <=4)//need to confirm # of processes 																					that need to recieve
+	if(newDestPid >=0 && newDestPid <=PROCESS_COUNT)//need to confirm # of processes 																					that need to recieve
 	{
 		msgFields._destPid = newDestPid;
 		return EXIT_SUCCESS;
@@ -27,7 +27,7 @@ int MsgEnv::getOriginPid()
 int MsgEnv::setOriginPid(int newOriginPid)
 {
 	//check if passed PID is valid
-	if(newOriginPid >=0 && newOriginPid <=4)//confirm # of processes
+	if(newOriginPid >=0 && newOriginPid <=PROCESS_COUNT)//confirm # of processes
 	{
 		msgFields._originPid = newOriginPid;
 		return EXIT_SUCCESS;
@@ -42,12 +42,15 @@ string MsgEnv::getMsgType()
 
 int MsgEnv::setMsgType(string newMsgType)
 {
-	//if(newMsgType >=0 && newMsgType <=3)
-	//{
+	/*
+	if(newMsgType >=0 && newMsgType <=3) //4 msg types
+	{
 		msgFields._msgType = newMsgType;
 		return EXIT_SUCCESS;
-	//}
-	//return EXIT_ERROR;
+	}
+	*/
+	return EXIT_ERROR;
+	
 }
 
 string MsgEnv::getMsgData()
