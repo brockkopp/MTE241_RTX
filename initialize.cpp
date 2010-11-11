@@ -142,8 +142,8 @@ int initializeShmem()
 	int res = EXIT_SUCCESS;
 	int result;
 
-	shmem.rxFileName = (char *)"rxFileBrockSucks2";
-	shmem.txFileName = (char *)"txFileBrockSucks2";
+	shmem.rxFileName = (char *)"rx.buf";
+	shmem.txFileName = (char *)"tx.buf";
 
 	int success = 0;
 

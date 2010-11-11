@@ -10,4 +10,8 @@
 #Precompiled header files
 *.gch
 
+#Temporary Shmem Files
+*.buf
+
+#Compiled Object Files
 *.o
