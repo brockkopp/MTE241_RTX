@@ -95,7 +95,7 @@ int RTX::K_release_processor()
 	return -2;
 }
 
-int RTX::K_request_process_status(MsgEnv* memory_block) //why does this requre a msg envelope? shouldn't it just require the pid to find the PCB? -Eric
+int RTX::K_request_process_status(MsgEnv* memory_block) //why does this requre a msg envelope? shouldn't it just require the PCB and return the status? -Eric
 {
 	return -2;
 }
