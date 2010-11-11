@@ -1,9 +1,7 @@
 #include "debug.h"
 #include "RTX.h"
 #include "CCI.h"
-#include <cstring>
 #include <sys/mman.h>
-#include "signal.h"
 #include "SignalHandler.h"
 #include "tests.h"
 
@@ -23,7 +21,11 @@ struct shmem
 {
 	caddr_t rxPtr;
 	caddr_t txPtr;
-	const static int bufferSize = 128;
+	string 	rxFileName;
+	string 	txFileName;
+	int 	rxId;
+	int		txId;
+	const static int 	bufferSize = 128;
 }shmem;
 
 
@@ -138,6 +140,8 @@ void die(int sigNum)
 
 int inititalizeShmem()
 {
+	shmem.rxFileName = "rxFile";
+	shmem.rxFileName = "txFile";
 /*
 	for(int i=0; i < 2; i++)
 	{
@@ -209,14 +213,14 @@ int cleanupShmem()
 	int ret = EXIT_SUCCESS;
 	try
 	{
-		munmap(shmem.rxPtr,shmem.bufferSize);        //unmap the memory buffers
+		munmap(shmem.rxPtr,shmem.bufferSize);
 		munmap(shmem.txPtr,shmem.bufferSize);
 
-//		close(rx_shared_mem_f_id)    //close temporary files
-//		close(tx_shared_mem_f_id)
+		close(shmem.rxId);    
+		close(shmem.txId);
 
-//		unlink(rx_shared_mem_f)    //delete temporary files
-//		unlink(tx_shared_mem_f)
+		unlink(shmem.rxFileName.c_str());
+		unlink(shmem.txFileName.c_str());
 	}
 	catch(int e)
 	{

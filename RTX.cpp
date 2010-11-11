@@ -7,6 +7,8 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_signalHandler = signalHandler;
 	_scheduler = NULL;
 
+	_mailMan = new MsgServ();
+
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
 		_pcbList[i] = new PCB(initTable[i]);
@@ -41,12 +43,10 @@ int RTX::getPcb(int pid, PCB** pcb)
 int RTX::getCurrentPcb(PCB** pcb)
 {
 	int ret = EXIT_SUCCESS;
-
-	if(_scheduler != NULL && _scheduler->get_current_process() != NULL)
-		*pcb = _scheduler->get_current_process();
-	else
-		ret = EXIT_ERROR;	
 	
+	if(_scheduler != NULL || (*pcb = _scheduler->get_current_process()) == NULL)
+		ret = EXIT_ERROR;
+
 	return ret;
 }
 
@@ -72,22 +72,22 @@ int RTX::atomic(bool on)
 
 int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
 {
-	return sendMsg(dest_process_id, msg_envelope);
+	return _mailMan->sendMsg(dest_process_id, msg_envelope);
 }
 
 MsgEnv* RTX::K_receive_message()
 {
-	return recieveMsg();
+	return _mailMan->recieveMsg();
 }
 
 MsgEnv* RTX::K_request_msg_env()
 {
-	return requestEnv();
+	return _mailMan->requestEnv();
 }
 
 int RTX::K_release_msg_env(MsgEnv* memory_block)
 {
-	return releaseEnv(memory_block);
+	return _mailMan->releaseEnv(memory_block);
 }
 
 int RTX::K_release_processor()

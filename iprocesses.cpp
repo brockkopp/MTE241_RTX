@@ -1,9 +1,9 @@
 #include "iprocesses.h"
 extern CCI* gCCI;
+extern RTX* gRTX;
 
 void i_timing_process()
 {
-
 	int timeCount;//make global, put it in file where it has been decided to place global variables
 	timeCount++;
 	//check pcb msg q for new msgs

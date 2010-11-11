@@ -2,7 +2,7 @@ CMP=g++
 CMPFLGS= -c -Wall	#compile only, show all warnings
 LNKFLGS= -o
 TITLE=RTX.out
-OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
+OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o MsgServ.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
 KB=KB.out
 KB_OBJ=keyboard.o
 CRT=CRT.out
@@ -11,7 +11,7 @@ CRT_OBJ=crt.o
 ##Command List
 all: preclean $(KB) $(CRT) $(TITLE) clean
 
-total: preclean $(KB) $(CRT) $(TITLE) clean run
+run: all run
 
 preclean:
 	@rm -f $(TITLE) $(KB) $(CRT) $(OBJ) $(KB_OBJ) $(CRT_OBJ)

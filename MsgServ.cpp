@@ -6,7 +6,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 	{
 		msg->setDestPid(destPid);
 		msg->setOriginPid(0); //is there a way to access the PCB of the current process?
-		addTrace(msg, SEND); //should this be a pointer to a pointer to the envelope?
+		//addTrace(msg, SEND); //should this be a pointer to a pointer to the envelope?
 		/*
 		int tempStatus = K_request_process_status(destPid);
 		if(tempStatus == BLOCKED_MSG_RECIEVE)
@@ -24,6 +24,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 			}
 		enQ msg onto PCB
 		*/
+	}
 	return -2;
 }
 

@@ -10,6 +10,7 @@
 
 class PcbInfo;
 class SignalHandler;
+class MsgServ;
 
 //NOTE:Project Constants defined in "libs.h"
 
