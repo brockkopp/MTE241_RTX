@@ -1,13 +1,14 @@
 #include "debug.h"
 #include "RTX.h"
 #include "CCI.h"
-#include <cstring>
 #include <sys/mman.h>
-#include "signal.h"
+#include <fcntl.h>
+//#include <unistd.h>
 #include "SignalHandler.h"
 #include "tests.h"
 
-#define SHMEM_BUFFER_SIZE 1024
+#include <sys/types.h>
+#include <sys/stat.h>
 
 //Globals
 RTX* gRTX;
@@ -15,27 +16,29 @@ CCI* gCCI;
 
 //Private method declarations
 void doTests();
-int inititalizeShmem();
+int initializeShmem();
 int cleanupShmem();
 int createInitTable(PcbInfo* initTable[]);
 
-struct shmem
+struct Shmem
 {
 	caddr_t rxPtr;
 	caddr_t txPtr;
-	const static int bufferSize = 128;
-}shmem;
+	char* 	rxFileName;
+	char* 	txFileName;
+	int 	rxId;
+	int		txId;
+	const static int 	bufferSize = 128;
+} shmem;
 
-
-int pidKB, pidCRT;
-char* myPid;
+int pidKB, pidCRT, pidRTX;
 
 int main(void)
 {
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
 
-	myPid = (char*)intToStr(getpid()).c_str();
+	pidRTX = getpid();
 
 	debugMsg("------------------------------------\n           RTX INITIALIZED\n------------------------------------",1,2);	
 
@@ -44,7 +47,7 @@ int main(void)
 	SignalHandler* sigHandler = new SignalHandler();
 
 	//Create shared memory and assure that initialization is successful
-	assure(inititalizeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, true);
+	assure(initializeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, false);		//TRUE!!!!!!!!!!!
 	//Initialize init table and assure initialization is successful
 	assure(createInitTable(initTable) == EXIT_SUCCESS, "Init table failed to initialize", __FILE__, __LINE__, __func__, true);
 	
@@ -57,7 +60,7 @@ int main(void)
 	//Create keyboad thread
 	if ((pidKB = fork()) == 0)
 	{
-		execl("./KB.out", myPid, (char*)NULL);
+		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
 
 		//if the execution reaches here, the keyboard thread failed to initialize
 		assure(false, "Keyboard helper process failed to initialize", __FILE__, __LINE__, __func__, true);
@@ -65,7 +68,7 @@ int main(void)
 	}
 	if ((pidCRT = fork()) == 0)
 	{
-		execl("./CRT.out", myPid, (char*)NULL);
+		execl("./CRT.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
 
 		//if the execution reaches here, the crt thread failed to initialize
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
@@ -113,11 +116,10 @@ void die(int sigNum)
 	debugMsg("Terminate command initiated ",2,0);
 	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + intToStr(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
 
-	gRTX->atomic(true);
+	//Cleanup rtx, including signal handler
+	delete gRTX;
+	delete gCCI;
 
-	//Cleanup shared memeory and assure that cleanup is successful
-	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed", __FILE__, __LINE__, __func__, false);
-	
 	//Kill keyboard and wait until thread dies
 	kill(pidKB,SIGKILL);
 	wait();	
@@ -126,9 +128,8 @@ void die(int sigNum)
 	kill(pidCRT,SIGKILL);
 	wait();	
 
-	//Cleanup rtx, including signal handler
-	delete gRTX;
-	delete gCCI;
+	//Cleanup shared memeory and assure that cleanup is successful
+	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed", __FILE__, __LINE__, __func__, false);
 
 	debugMsg("------------------------------------\n    RTX TERMINATED SUCCESSFULLY\n------------------------------------",1,2);	
 	
@@ -136,87 +137,56 @@ void die(int sigNum)
 	exit(EXIT_SUCCESS);
 }
 
-int inititalizeShmem()
+int initializeShmem()
 {
-/*
-	for(int i=0; i < 2; i++)
-	{
+	int res = EXIT_SUCCESS;
+	int result;
 
-		shemFile[i] = mmap((caddr_t) 0, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fid, (off_t) 0);
-		ensure(shmemFile[i] != NULL,"Shared memory file failed to init",__FILE__,__LINE__,true);
-		  		
-		
-	}
+	shmem.rxFileName = (char *)"rx.buf";
+	shmem.txFileName = (char *)"tx.buf";
 
-	create file with permissions for owner rwx access only
-		verify file created successfully
-		truncate file to 128bytes to match the memory buffer
-		//note: first file is rx_shared_mem_f, second file is                 tx_shared_mem_f
+	int success = 0;
 
-	}
+	shmem.rxId = open(shmem.rxFileName, O_RDWR | O_CREAT | O_EXCL, (mode_t) 0755 );
+	success += assure(shmem.rxId != -1,"RX Shared memory file failed to initialize",__FILE__,__LINE__,__func__,false);
 
-	in_pid = fork keyboard process
-	if(in_pid == 0)  //deal with child process
+	result = ftruncate(shmem.rxId, shmem.bufferSize ); 
+	success += assure(result == 0,"RX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false);
 
-	{
+	shmem.txId = open(shmem.txFileName, O_RDWR | O_CREAT | O_EXCL, (mode_t) 0755 );
+	success += assure(shmem.txId != -1,"TX Shared memory file failed to initialize",__FILE__,__LINE__,__func__,false);
 
-	    //rx_shared_mem_f descriptor is an arg
-		execl(./keyboard, keyboard args);           
+	result = ftruncate(shmem.txId, shmem.bufferSize ); 
+	success += assure(result == 0,"TX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false);
 
-	//should never reach here
-		declare execl failed and terminate
+	shmem.rxPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.rxId, (off_t) 0);
+	success += assure(shmem.rxPtr != MAP_FAILED,"RX memory map failed to initialize",__FILE__,__LINE__,__func__,false);
 
-	}
+	shmem.txPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.txId, (off_t) 0);
+	success += assure(shmem.txPtr != MAP_FAILED,"TX memory map failed to initialize",__FILE__,__LINE__,__func__,false);
 
-	sleep(1);    //give keyboard process time to start
+	if(success == 6)
+		debugMsg("Shared Memory Initialization Successful");
+	else
+		res = EXIT_ERROR;
 
-	out_pid = fork crt process
-
-	if(out_pid  == 0)  //deal with child process
-
-	{
-		execl(crt args); //tx_shared_mem_f descriptor is an arg
-		//should never reach here
-		declare execl failed and terminate execution
-
-	}
-
-	sleep(1);    //give crt process time to start
-
-	//create shared memory buffers for two processes
-
-	caddr_t rx_memmap_pt = mmap(keyboard args);
-
-	if(memory mapping not successful)
-
-	    cleanup and terminate execution
-
-	caddr_t tx_memmap_pt = mmap(crt args);
-
-	if(memory mapping not successful)
-
-	    cleanup and terminate execution
-
-	//create membuf pointers so RTX kernel may access the shared mem         rx_mem_buf = (inputbuf*) rx_memmap_pt
-	    tx_mem_buf = (inputbuf*) tx_memmap_pt
-	}
-*/
-	return EXIT_SUCCESS;
+	return res;
 }
 
 int cleanupShmem()
 {
 	int ret = EXIT_SUCCESS;
+
 	try
 	{
-		munmap(shmem.rxPtr,shmem.bufferSize);        //unmap the memory buffers
+		munmap(shmem.rxPtr,shmem.bufferSize);
 		munmap(shmem.txPtr,shmem.bufferSize);
 
-//		close(rx_shared_mem_f_id)    //close temporary files
-//		close(tx_shared_mem_f_id)
+		close(shmem.rxId);    
+		close(shmem.txId);
 
-//		unlink(rx_shared_mem_f)    //delete temporary files
-//		unlink(tx_shared_mem_f)
+		unlink(shmem.rxFileName);
+		unlink(shmem.txFileName);
 	}
 	catch(int e)
 	{

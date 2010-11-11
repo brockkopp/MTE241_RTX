@@ -2,6 +2,8 @@
 #define H_MSGENV
 
 #include "../debug.h"
+//#include "../RTX.h"
+#define PROCESS_COUNT 7		//REMOVE!!!
 
 class MsgEnv
 {

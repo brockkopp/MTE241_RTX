@@ -10,6 +10,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		msg->setDestPid(destPid);
 		msg->setOriginPid(tempPCB.get_id()); 
 		addTrace(msg, SEND); //Q*Q*Q*Q*Q*Q*Q*Q*Q**Q*Q*Q*Q*Q*Q*Qshould this be a pointer to a pointer to the envelope?
+
 		/*
 		PCB* tempDestPCB = //need way to get PCB based on PID***********************************
 		int tempStatus = K_request_process_status(tempDestPCB);//should require PCB?
@@ -29,6 +30,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		tempDestPCB.add_mail(msg);
 		return EXIT_SUCCESS;
 		*/
+	}
 	return -2;
 }
 

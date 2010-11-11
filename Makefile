@@ -2,16 +2,21 @@ CMP=g++
 CMPFLGS= -c -Wall	#compile only, show all warnings
 LNKFLGS= -o
 TITLE=RTX.out
-OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
+OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o MsgServ.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
 KB=KB.out
 KB_OBJ=keyboard.o
 CRT=CRT.out
 CRT_OBJ=crt.o
 
 ##Command List
-all: preclean $(KB) $(CRT) $(TITLE) clean
+all: preclean $(KB) $(CRT) $(TITLE) clean noRunMsg
 
-total: preclean $(KB) $(CRT) $(TITLE) clean run
+noRunMsg: 
+	@echo
+	@echo Execute '"make run"' to compile and execute
+	@echo
+
+run: all execute
 
 preclean:
 	@rm -f $(TITLE) $(KB) $(CRT) $(OBJ) $(KB_OBJ) $(CRT_OBJ)
@@ -19,7 +24,7 @@ preclean:
 clean:
 	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ)	#Delete all object files
 
-run:
+execute:
 	@./$(TITLE)				#Run main executable after build
 
 ##Linking
@@ -59,9 +64,6 @@ MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
 	
 MsgServ.o:MsgServ.cpp MsgServ.h
 	@$(CMP) $(CMPFLGS) MsgServ.cpp
-
-MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
-	@$(CMP) $(CMPFLGS) lib/MsgEnv.cpp
 	
 PCB.o: lib/PCB.cpp lib/PCB.h lib/PcbInfo.h
 	@$(CMP) $(CMPFLGS) lib/PCB.cpp

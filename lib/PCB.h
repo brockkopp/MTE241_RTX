@@ -50,7 +50,7 @@ class PCB
 		
 		Context* get_context();
 		int save_context();
-		int restore_context();
+		void restore_context();
 		
 		int get_processType( );
 		void set_processType( int processType );
