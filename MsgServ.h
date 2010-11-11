@@ -4,6 +4,10 @@
 #include "debug.h"
 #include "RTX.h"
 #include "lib/Queue.h"
+#include "MsgTrace.h"
+
+
+
 
 class MsgServ
 {

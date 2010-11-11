@@ -72,22 +72,22 @@ int RTX::atomic(bool on)
 
 int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
 {
-	return -2;
+	return sendMsg(dest_process_id, msg_envelope);
 }
 
 MsgEnv* RTX::K_receive_message()
 {
-	return NULL;
+	return recieveMsg();
 }
 
 MsgEnv* RTX::K_request_msg_env()
 {
-	return NULL;
+	return requestEnv();
 }
 
 int RTX::K_release_msg_env(MsgEnv* memory_block)
 {
-	return -2;
+	return releaseEnv(memory_block);
 }
 
 int RTX::K_release_processor()
@@ -95,7 +95,7 @@ int RTX::K_release_processor()
 	return -2;
 }
 
-int RTX::K_request_process_status(MsgEnv* memory_block)
+int RTX::K_request_process_status(MsgEnv* memory_block) //why does this requre a msg envelope? shouldn't it just require the pid to find the PCB? -Eric
 {
 	return -2;
 }
