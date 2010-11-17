@@ -10,13 +10,15 @@ void i_timing_process()
 		//insert any new msgs into the internal q
 	//check if any msgs on the internal q are expired
 		//if so send msgs to the process and wake it up
-		
+	
 	gCCI->wallClock->increment();
+
 	string time;
 	if((time = gCCI->wallClock->toString()) != "")
-	{
-		cout << time;
-	}
+		cout << time << endl;
+
+	//ualarm(0,0);
+	
 	return;
 }
 void i_keyboard_handler()
@@ -25,9 +27,9 @@ void i_keyboard_handler()
 	return;
 }
 void i_crt_handler()
-{/*
+{
 	debugMsg("Signal Received: SIGUSR2: CRT",0,1);
-	bool CRTisBusy = false;
+/*	bool CRTisBusy = false;
 	
 	PCB* currPcb = NULL;
 //	if(getCurrentPcb(&currPcb) == EXIT_SUCCESS) HOW DO I USE GETCURRENTPCB!? NEED AN INSTANCE OF THE RTX!!!

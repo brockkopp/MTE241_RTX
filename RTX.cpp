@@ -46,7 +46,12 @@ int RTX::getCurrentPcb(PCB** pcb)
 {
 	int ret = EXIT_SUCCESS;
 	
-	if(_scheduler != NULL || (*pcb = _scheduler->get_current_process()) == NULL)
+	if(_scheduler == NULL)			//TESTING ONLY!!!!!!!!!!!!!!!
+	{
+		*pcb = _pcbList[0];
+		debugMsg("Default pcb used in getCurrentPcb",0,1);
+	}
+	else if(_scheduler == NULL || (*pcb = _scheduler->get_current_process()) == NULL)
 		ret = EXIT_ERROR;
 
 	return ret;
@@ -57,18 +62,24 @@ int RTX::atomic(bool on)
 	int ret = EXIT_SUCCESS;
 	PCB* currPcb = NULL;
 	
-	if(getCurrentPcb(&currPcb) != EXIT_SUCCESS)
-		ret = EXIT_ERROR;
-	else
+	if(_scheduler == NULL)			//TESTING ONLY!!!!!!!!!!!!!!!
+	{
+		debugMsg("no scheduler... forcing atomic",0,1);
+		_signalHandler->setSigMasked(on);
+	}
+	else if(assure(getCurrentPcb(&currPcb) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false))
 	{	
 		int cnt = (on) ? currPcb->incAtomicCount() : currPcb->decAtomicCount();
-
+		
 		if (cnt == 0)				
 			_signalHandler->setSigMasked(false);
 		else if(cnt == 1)
 			_signalHandler->setSigMasked(true);
 	}
+	else
+		ret = EXIT_ERROR;
 
+	
 	return ret;
 }
 

@@ -92,10 +92,9 @@ int main(void)
 	debugMsg("Type 'help' at any time to list possible CCI commands",0,2);	
 
 	gCCI = new CCI();
-	delete gCCI;
 
 	//Signal cci init failed, program should not normally reach this point
-	die(EXIT_ERROR);
+	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
 }
 
 void doTests()
@@ -120,6 +119,8 @@ void die(int sigNum)
 	debugMsg("Terminate command initiated ",2,0);
 	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + getSigDesc(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
 
+	ualarm(0,0);	//Disable alarm
+
 	//Cleanup rtx, including signal handler
 	try
 	{
@@ -128,7 +129,7 @@ void die(int sigNum)
 	}
 	catch(int e)
 	{
-		debugMsg("RTX or CCI cleanup failed");
+		debugMsg("RTX or CCI cleanup failed",0,1);
 	}
 
 	//Kill KB and CRT child processes

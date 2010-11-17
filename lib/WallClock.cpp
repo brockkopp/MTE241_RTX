@@ -1,33 +1,41 @@
 #include "WallClock.h"
 
-WallClock::WallClock()
+WallClock::WallClock(unsigned int tickLength)
 {
+	_miliseconds = 0;
 	_seconds = 0;
 	_minutes = 0;
 	_hours = 0;
 	_isDisplayed = false;
 	_isNewTime = false;
+	_tickLength = tickLength;
 }
 
 void WallClock::setDisplayed(bool isDisplayed)
 {
 	_isDisplayed = isDisplayed;
 	_isNewTime = isDisplayed;
-	if (isDisplayed)
-		ualarm(100,100);
+	if (isDisplayed)			//TESTING ONLY
+		ualarm(_tickLength,_tickLength);
 }
 
 void WallClock::increment()
 {
-	_seconds ++;
-	if (_seconds > 60)
+	_miliseconds += 100;
+
+	if(_miliseconds >= 1000)
 	{
-		_seconds = _seconds - 60;
-		_minutes++;
-		if(_minutes > 60)
+		_miliseconds -= 1000;
+		_seconds ++;
+		if (_seconds > 60)
 		{
-			_minutes = _minutes - 60;
-			_hours = (++_hours % 24);
+			_seconds = _seconds - 60;
+			_minutes++;
+			if(_minutes > 60)
+			{
+				_minutes = _minutes - 60;
+				_hours = (++_hours % 24);
+			}
 		}
 		_isNewTime = true;
 	}
@@ -62,5 +70,15 @@ int WallClock::setTime(string time[])
 
 string WallClock::toString()
 {
-	return (_isNewTime) ? intToStr(_hours,2) + ":" + intToStr(_minutes,2) + ":" + intToStr(_seconds,2) : "";
+	string ret;
+
+	if(_isNewTime)
+	{
+		_isNewTime = false;
+		ret = intToStr(_hours,2) + ":" + intToStr(_minutes,2) + ":" + intToStr(_seconds,2);
+	}
+	else
+		ret = "";
+
+	return ret;
 }

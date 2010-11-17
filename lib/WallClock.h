@@ -11,11 +11,13 @@ class WallClock
 		unsigned int _hours;
 		unsigned int _minutes;
 		unsigned int _seconds;
+		unsigned int _miliseconds;
 		bool _isDisplayed;
 		bool _isNewTime;
+		unsigned int _tickLength;
 
 	public:
-		WallClock();
+		WallClock(unsigned int tickLength);
 		void increment();
 		int setTime( int hours, int minutes, int seconds );
 		int setTime(string time[]);
