@@ -30,7 +30,7 @@ clean:
 	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ)	#Delete all object files
 	
 clean_all:
-	@rm *.o *.out #Delete everything!!!!
+	@rm -f *.o *.out #Delete everything!!!!
 
 execute:
 	@./$(TITLE)				#Run main executable after build
