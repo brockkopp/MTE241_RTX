@@ -82,16 +82,13 @@ int main(void)
 	sleep(1);
 	debugMsg("\n");
 
-#if TESTS_MODE == 1
-	doTests();
-#endif
-
-	//Initialize Tick Signals
-	//ualarm(100,100);
-
 	debugMsg("Type 'help' at any time to list possible CCI commands",0,2);	
 
 	gCCI = new CCI();
+
+#if TESTS_MODE == 1
+	doTests();
+#endif
 
 	//Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
@@ -103,7 +100,7 @@ void doTests()
 	debugMsg("\tParser Test:\t");    
 	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tSignal Test:\t");    
-	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	   debugMsg((testSignals() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tQueue Test: \t");    
 	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tMessaging Test:\t"); 
