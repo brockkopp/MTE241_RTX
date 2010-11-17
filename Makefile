@@ -9,7 +9,12 @@ CRT=CRT.out
 CRT_OBJ=crt.o
 
 ##Command List
-all: preclean $(KB) $(CRT) $(TITLE) clean noRunMsg
+all: compileMsg preclean $(KB) $(CRT) $(TITLE) clean noRunMsg
+
+compileMsg:
+	@echo
+	@echo Starting compilation process...
+	@echo
 
 noRunMsg: 
 	@echo
