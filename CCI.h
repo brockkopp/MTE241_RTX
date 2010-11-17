@@ -11,10 +11,10 @@ class CCI
 {
 	public:
 		CCI();
-		WallClock* wallClock;
+		~CCI();
+		int processCCI();
 
-	private:
-		void processCCI();
+		WallClock* wallClock;
 };
 
 #endif

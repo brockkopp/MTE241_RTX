@@ -7,10 +7,14 @@ extern RTX* gRTX;
 CCI::CCI()
 {
 	wallClock = new WallClock();
-	processCCI();
 }
 
-void CCI::processCCI()
+CCI::~CCI()
+{
+	delete wallClock;
+}
+
+int CCI::processCCI()
 {
 	string command;
 	string input[3];
@@ -137,4 +141,6 @@ void CCI::processCCI()
 		if(errMsg.length() > 0)
 			cout << ("\t" + errMsg + "\n");
 	}	
+
+	return EXIT_ERROR;
 }
