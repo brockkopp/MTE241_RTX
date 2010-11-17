@@ -89,5 +89,5 @@ string getSigDesc(int sigNum)
 		default:	ret = "Undefined signal"; break;
 	}
 
-	return ret + ": " + intToStr(sigNum);
+	return ret + " (" + intToStr(sigNum) + ")";
 }
