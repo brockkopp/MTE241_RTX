@@ -5,7 +5,7 @@
 #include "RTX.h"
 #include "lib/Queue.h"
 #include "MsgTrace.h"
-#include "PCB.h"
+#include "lib/PCB.h"
 
 
 class MsgServ

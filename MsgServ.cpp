@@ -1,15 +1,20 @@
 #include "MsgServ.h"
 
+extern RTX* gRTX;
+
 int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 {
 	if(destPid >= 0 && destPid <= PROCESS_COUNT)
 	{
 		//retrieve PCB of currently excecuting process 
-		PCB* tempPCB = get_current_process();
+		
+		PCB* tempPCB;
+
+		assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 		
 		msg->setDestPid(destPid);
-		msg->setOriginPid(tempPCB.get_id()); 
-		addTrace(msg, SEND); //Q*Q*Q*Q*Q*Q*Q*Q*Q**Q*Q*Q*Q*Q*Q*Qshould this be a pointer to a pointer to the envelope?
+		//msg->setOriginPid(tempPCB.get_id()); 
+		//addTrace(msg, SEND); //Q*Q*Q*Q*Q*Q*Q*Q*Q**Q*Q*Q*Q*Q*Q*Qshould this be a pointer to a pointer to the envelope?
 
 		/*
 		PCB* tempDestPCB = //need way to get PCB based on PID***********************************
@@ -37,18 +42,20 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 MsgEnv* MsgServ::recieveMsg()
 {
 	//retrieve PCB of currently excecuting process 
-	PCB* tempPCB = get_current_process();
+	PCB* tempPCB;
+	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
-	if (tempPCB.check_mail() == 0)
+	if (tempPCB->check_mail() == 0)
 	{
 		//i_process cannot be blocked
-		if (tempPCB.get_processType = PROCESS_I)
+		if (tempPCB->get_processType() == PROCESS_I)
     	return NULL;
-  	block_process(tempPCB, BLOCKED_MSG_RECEIVE); 
-		process_switch(); //Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q use release_processor?
+  		
+		//block_process(tempPCB, BLOCKED_MSG_RECIEVE); 		//should probably be moved to RTX primitive to allow access to scheduler -Brock
+		//process_switch(); //Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q use release_processor?	//should probably be moved to RTX primitive to allow access to scheduler -Brock
 	}
-	MsgEnv* tempMsg = tempPCB.retrieve_mail();
-	add_trace(tempMsg, RECEIVE);
+	MsgEnv* tempMsg = tempPCB->retrieve_mail();
+	//add_trace(tempMsg, RECEIVE);
 	
 	return tempMsg;
 }
@@ -72,14 +79,15 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 MsgEnv* MsgServ::requestEnv()
 {
 	//retrieve PCB of currently excecuting process 
-	PCB* tempPCB = get_current_process();
+	PCB* tempPCB;
+	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
-	if( freeEnvQ.isEmpty() ) 
+	if( freeEnvQ->isEmpty() ) 
 	{
 		//do i need to do something to prevent blocking an i_process Q*Q*Q*Q*Q*Q*Q*Q*Q
- 		block_process(tempPCB, BLOCKED_ENV); 			
-		process_switch(); //use release_processor?
+ 		//block_process(tempPCB, BLOCKED_ENV); 			
+		//process_switch(); //use release_processor?
 	}
-	MsgEnv* ptrMsg = freeEnvQ.dequeue_MsgEnv();
+	MsgEnv* ptrMsg = freeEnvQ->dequeue_MsgEnv();
 	return ptrMsg;
 }

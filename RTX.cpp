@@ -28,6 +28,7 @@ RTX::~RTX()
 	//delete _signalHandler;
 }
 
+//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getPcb(int pid, PCB** pcb)
 {
 	int ret = EXIT_SUCCESS;
@@ -40,6 +41,7 @@ int RTX::getPcb(int pid, PCB** pcb)
 	return ret;
 }
 
+//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getCurrentPcb(PCB** pcb)
 {
 	int ret = EXIT_SUCCESS;

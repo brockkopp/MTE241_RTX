@@ -13,6 +13,8 @@ void WallClock::setDisplayed(bool isDisplayed)
 {
 	_isDisplayed = isDisplayed;
 	_isNewTime = isDisplayed;
+	if (isDisplayed)
+		ualarm(100,100);
 }
 
 void WallClock::increment()

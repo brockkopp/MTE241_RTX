@@ -70,6 +70,8 @@ void CCI::processCCI()
 					errMsg = "Too many parameters";
 				else
 					wallClock->setDisplayed(true);
+				sleep(10);
+				wallClock->setDisplayed(false);
 			}
 			else if(input[0] == "ct")
 			{

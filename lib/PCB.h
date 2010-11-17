@@ -31,7 +31,6 @@ class PCB
 		//Private Member Getters/Setters
 
 		void setAtomicCount( int atomCount );
-
 		int incAtomicCount();
 		int decAtomicCount();
 		int getAtomicCount();
