@@ -96,6 +96,7 @@ int main(void)
 
 void doTests()
 {
+	
 	debugMsg("Testing...",1,1);
 	debugMsg("\tParser Test:\t");    
 	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
