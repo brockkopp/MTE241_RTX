@@ -68,6 +68,7 @@ string getSigDesc(int sigNum)
 	
 	switch(sigNum)
 	{
+		case -1:	ret = "RTX Fatal Error"; break;			//Emulated signal defined within application
 		case 1:		ret = "Terminal Hangup"; break;
 		case 2:		ret = "Interrupt from keyboard"; break;
 		case 3:		ret = "Quit from keyboard"; break;

@@ -32,7 +32,9 @@ struct Shmem
 	const static int 	bufferSize = 128;
 } shmem;
 
-int pidKB, pidCRT, pidRTX;
+int pidKB = 0, 
+	pidCRT = 0, 
+	pidRTX = 0;
 
 int main(void)
 {
@@ -116,7 +118,7 @@ void doTests()
 void die(int sigNum)
 {
 	debugMsg("Terminate command initiated ",2,0);
-	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + intToStr(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
+	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + getSigDesc(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
 
 	//Cleanup rtx, including signal handler
 	try
@@ -130,14 +132,18 @@ void die(int sigNum)
 	}
 
 	//Kill KB and CRT child processes
-	kill(pidCRT,SIGKILL);
-	kill(pidKB,SIGKILL);
-
-	//Wait until KB and CRT exit
-	waitpid(pidCRT,NULL,0);	
-	  debugMsg("CRT process terminated",1,1);
-	waitpid(pidKB,NULL,0);	
-	  debugMsg("KB  process terminated",0,1);
+	if(pidCRT != 0)
+	{
+		kill(pidCRT,SIGKILL);
+		waitpid(pidCRT,NULL,0);	
+		debugMsg("CRT process terminated",1,1);
+	}
+	if(pidKB != 0)
+	{
+		kill(pidKB,SIGKILL);
+		waitpid(pidKB,NULL,0);	
+	    debugMsg("KB  process terminated",0,1);
+	}
 
 
 	//Cleanup shared memeory and assure that cleanup is successful
