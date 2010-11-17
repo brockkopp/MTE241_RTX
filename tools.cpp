@@ -61,3 +61,32 @@ int parseString( string input, string output[], char token, int maxCount)
 	else
 		return tokenCnt;
 }
+
+string getSigDesc(int sigNum)
+{
+	string ret;
+	
+	switch(sigNum)
+	{
+		case 1:		ret = "Terminal Hangup"; break;
+		case 2:		ret = "Interrupt from keyboard"; break;
+		case 3:		ret = "Quit from keyboard"; break;
+		case 4:		ret = "Illegal Instruction"; break;
+		case 5:		ret = "Trace/breakpoint trap"; break;
+		case 6:		ret = "Abort signal"; break;
+		case 7:		ret = "Emulator Trap"; break;
+		case 8:		ret = "Floating point exception"; break;
+		case 9:		ret = "Kill signal"; break;
+		case 10:	ret = "Bus error (bad memory access)"; break;
+		case 11:	ret = "Invalid memory reference"; break;
+		case 12:	ret = "Bad argument to routine"; break;
+		case 13:	ret = "Broken pipe: write to pipe with no readers"; break;
+		case 14:	ret = "Timer signal from ualarm"; break;
+		case 15:	ret = "Termination signal"; break; 
+		case 30:	ret = "User-defined signal 1 (KB)"; break;
+		case 31:	ret = "User-defined signal 2 (CRT)"; break;
+		default:	ret = "Undefined signal"; break;
+	}
+
+	return ret + ": " + intToStr(sigNum);
+}
