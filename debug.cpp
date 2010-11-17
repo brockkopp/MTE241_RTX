@@ -32,14 +32,14 @@ int assure(bool condition, string message, string fileName, int lineNum, string 
 	if(!condition)
 	{		
 		stringstream msg;
-		if(isFatal)
+		if(!isFatal)
 		{
-			msg << "ERROR: " << fileName << ":" << lineNum << "(" << message << ")";
+			msg << "ERROR: " << fileName << ":" << lineNum << "(" << func << "():" << message << ")\n";
 			debugMsg(msg.str());
 		}
 		else
 		{
-			msg << "FATAL ERROR: " << fileName << ":" << lineNum << "(" << func << "():" << message << ")";
+			msg << "FATAL ERROR: " << fileName << ":" << lineNum << "(" << func << "():" << message << ")\n";
 			debugMsg(msg.str(),1,1);
 			if(func != "die")
 				die(EXIT_ERROR);

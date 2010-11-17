@@ -4,19 +4,21 @@ extern RTX* gRTX;
 
 void i_timing_process()
 {
-	int timeCount;//make global, put it in file where it has been decided to place global variables
-	timeCount++;
+	//int timeCount;//make global, put it in file where it has been decided to place global variables
+	//timeCount++;
 	//check pcb msg q for new msgs
 		//insert any new msgs into the internal q
 	//check if any msgs on the internal q are expired
 		//if so send msgs to the process and wake it up
-		
+	
 	gCCI->wallClock->increment();
+
 	string time;
 	if((time = gCCI->wallClock->toString()) != "")
-	{
-		//print time
-	}
+		cout << time << endl;
+
+	//ualarm(0,0);
+	
 	return;
 }
 void i_keyboard_handler()
@@ -27,7 +29,7 @@ void i_keyboard_handler()
 void i_crt_handler()
 {
 	debugMsg("Signal Received: SIGUSR2: CRT",0,1);
-	bool CRTisBusy = false;
+/*	bool CRTisBusy = false;
 	
 	PCB* currPcb = NULL;
 //	if(getCurrentPcb(&currPcb) == EXIT_SUCCESS) HOW DO I USE GETCURRENTPCB!? NEED AN INSTANCE OF THE RTX!!!
@@ -57,6 +59,6 @@ void i_crt_handler()
 			CRTisBusy = false;
 			//how do I return the envelope if there's none in the mailbox? need while loop above?
 		}
-	}	
+	}*/	
 	return;
 }

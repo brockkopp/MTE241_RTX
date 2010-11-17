@@ -2,10 +2,14 @@
 #include "RTX.h"
 #include "CCI.h"
 #include <sys/mman.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+//#include <unistd.h>
 #include "SignalHandler.h"
 #include "tests.h"
 
-#define SHMEM_BUFFER_SIZE 1024
+#include <sys/types.h>
+#include <sys/stat.h>
 
 //Globals
 RTX* gRTX;
@@ -13,31 +17,31 @@ CCI* gCCI;
 
 //Private method declarations
 void doTests();
-int inititalizeShmem();
+int initializeShmem();
 int cleanupShmem();
 int createInitTable(PcbInfo* initTable[]);
 
-struct shmem
+struct Shmem
 {
 	caddr_t rxPtr;
 	caddr_t txPtr;
-	string 	rxFileName;
-	string 	txFileName;
+	char* 	rxFileName;
+	char* 	txFileName;
 	int 	rxId;
 	int		txId;
 	const static int 	bufferSize = 128;
-}shmem;
+} shmem;
 
-
-int pidKB, pidCRT;
-char* myPid;
+int pidKB = 0, 
+	pidCRT = 0, 
+	pidRTX = 0;
 
 int main(void)
 {
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
 
-	myPid = (char*)intToStr(getpid()).c_str();
+	pidRTX = getpid();
 
 	debugMsg("------------------------------------\n           RTX INITIALIZED\n------------------------------------",1,2);	
 
@@ -46,7 +50,8 @@ int main(void)
 	SignalHandler* sigHandler = new SignalHandler();
 
 	//Create shared memory and assure that initialization is successful
-	assure(inititalizeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, true);
+	assure(initializeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, true);
+
 	//Initialize init table and assure initialization is successful
 	assure(createInitTable(initTable) == EXIT_SUCCESS, "Init table failed to initialize", __FILE__, __LINE__, __func__, true);
 	
@@ -59,7 +64,7 @@ int main(void)
 	//Create keyboad thread
 	if ((pidKB = fork()) == 0)
 	{
-		execl("./KB.out", myPid, (char*)NULL);
+		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
 
 		//if the execution reaches here, the keyboard thread failed to initialize
 		assure(false, "Keyboard helper process failed to initialize", __FILE__, __LINE__, __func__, true);
@@ -67,7 +72,7 @@ int main(void)
 	}
 	if ((pidCRT = fork()) == 0)
 	{
-		execl("./CRT.out", myPid, (char*)NULL);
+		execl("./CRT.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
 
 		//if the execution reaches here, the crt thread failed to initialize
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
@@ -77,29 +82,26 @@ int main(void)
 	sleep(1);
 	debugMsg("\n");
 
+	debugMsg("Type 'help' at any time to list possible CCI commands",0,2);	
+
+	gCCI = new CCI();
+
 #if TESTS_MODE == 1
 	doTests();
 #endif
 
-	//Initialize Tick Signals
-	//ualarm(100,100);
-
-	debugMsg("Type 'help' at any time to list possible CCI commands",0,2);	
-
-	gCCI = new CCI();
-	delete gCCI;
-
 	//Signal cci init failed, program should not normally reach this point
-	die(EXIT_ERROR);
+	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
 }
 
 void doTests()
 {
+	
 	debugMsg("Testing...",1,1);
 	debugMsg("\tParser Test:\t");    
 	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tSignal Test:\t");    
-	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	   debugMsg((testSignals() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tQueue Test: \t");    
 	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tMessaging Test:\t"); 
@@ -113,24 +115,38 @@ void doTests()
 void die(int sigNum)
 {
 	debugMsg("Terminate command initiated ",2,0);
-	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + intToStr(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
+	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + getSigDesc(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
 
-	gRTX->atomic(true);
-
-	//Cleanup shared memeory and assure that cleanup is successful
-	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed", __FILE__, __LINE__, __func__, false);
-	
-	//Kill keyboard and wait until thread dies
-	kill(pidKB,SIGKILL);
-	wait();	
-
-	//Kill crt and wait until thread dies
-	kill(pidCRT,SIGKILL);
-	wait();	
+	ualarm(0,0);	//Disable alarm
 
 	//Cleanup rtx, including signal handler
-	delete gRTX;
-	delete gCCI;
+	try
+	{
+		delete gRTX;
+		delete gCCI;
+	}
+	catch(int e)
+	{
+		debugMsg("RTX or CCI cleanup failed",0,1);
+	}
+
+	//Kill KB and CRT child processes
+	if(pidCRT != 0)
+	{
+		kill(pidCRT,SIGKILL);
+		waitpid(pidCRT,NULL,0);	
+		debugMsg("CRT process terminated",1,1);
+	}
+	if(pidKB != 0)
+	{
+		kill(pidKB,SIGKILL);
+		waitpid(pidKB,NULL,0);	
+	    debugMsg("KB  process terminated",0,1);
+	}
+
+
+	//Cleanup shared memeory and assure that cleanup is successful
+	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed", __FILE__, __LINE__, __func__, true);
 
 	debugMsg("------------------------------------\n    RTX TERMINATED SUCCESSFULLY\n------------------------------------",1,2);	
 	
@@ -138,79 +154,53 @@ void die(int sigNum)
 	exit(EXIT_SUCCESS);
 }
 
-int inititalizeShmem()
+int initializeShmem()
 {
-	shmem.rxFileName = "rxFile";
-	shmem.rxFileName = "txFile";
-/*
-	for(int i=0; i < 2; i++)
-	{
+	int ret = EXIT_SUCCESS;		//Default returned value
+	int result;					//Temporarily stores return values
+	int fail = 0;			//Keeps track of whether function was successful
 
-		shemFile[i] = mmap((caddr_t) 0, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fid, (off_t) 0);
-		ensure(shmemFile[i] != NULL,"Shared memory file failed to init",__FILE__,__LINE__,true);
-		  		
-		
-	}
+	//Initialize files names. Files will be created in execution directory
+	shmem.rxFileName = (char *)"rx.buf";
+	shmem.txFileName = (char *)"tx.buf";
 
-	create file with permissions for owner rwx access only
-		verify file created successfully
-		truncate file to 128bytes to match the memory buffer
-		//note: first file is rx_shared_mem_f, second file is                 tx_shared_mem_f
+	//Create RX buffer file
+	shmem.rxId = open(shmem.rxFileName, O_RDWR | O_CREAT | O_EXCL, (mode_t) 0755 );
+	fail += assure(shmem.rxId != -1,"RX Shared memory file failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
+	
+	//Truncate RX buffer file to buffer size
+	result = ftruncate(shmem.rxId, shmem.bufferSize ); 
+	fail += assure(result == 0,"RX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
-	}
+	//Create TX buffer file
+	shmem.txId = open(shmem.txFileName, O_RDWR | O_CREAT | O_EXCL, (mode_t) 0755 );
+	fail += assure(shmem.txId != -1,"TX Shared memory file failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
-	in_pid = fork keyboard process
-	if(in_pid == 0)  //deal with child process
+	//Truncate TX buffer file to buffer size
+	result = ftruncate(shmem.txId, shmem.bufferSize ); 
+	fail += assure(result == 0,"TX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
-	{
+	//Create RX buffer association
+	shmem.rxPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.rxId, (off_t) 0);
+	fail += assure(shmem.rxPtr != MAP_FAILED,"RX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
-	    //rx_shared_mem_f descriptor is an arg
-		execl(./keyboard, keyboard args);           
+	//Create TX buffer association
+	shmem.txPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.txId, (off_t) 0);
+	fail += assure(shmem.txPtr != MAP_FAILED,"TX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
-	//should never reach here
-		declare execl failed and terminate
+	//Assure that all functions returned success
+	if(fail == 0)
+		debugMsg("Shared Memory Initialization Successful");
+	else
+		ret = EXIT_ERROR;
 
-	}
-
-	sleep(1);    //give keyboard process time to start
-
-	out_pid = fork crt process
-
-	if(out_pid  == 0)  //deal with child process
-
-	{
-		execl(crt args); //tx_shared_mem_f descriptor is an arg
-		//should never reach here
-		declare execl failed and terminate execution
-
-	}
-
-	sleep(1);    //give crt process time to start
-
-	//create shared memory buffers for two processes
-
-	caddr_t rx_memmap_pt = mmap(keyboard args);
-
-	if(memory mapping not successful)
-
-	    cleanup and terminate execution
-
-	caddr_t tx_memmap_pt = mmap(crt args);
-
-	if(memory mapping not successful)
-
-	    cleanup and terminate execution
-
-	//create membuf pointers so RTX kernel may access the shared mem         rx_mem_buf = (inputbuf*) rx_memmap_pt
-	    tx_mem_buf = (inputbuf*) tx_memmap_pt
-	}
-*/
-	return EXIT_SUCCESS;
+	return ret;
 }
 
 int cleanupShmem()
 {
-	int ret = EXIT_SUCCESS;
+	int ret = EXIT_SUCCESS;		//Default returned value
+
 	try
 	{
 		munmap(shmem.rxPtr,shmem.bufferSize);
@@ -219,11 +209,12 @@ int cleanupShmem()
 		close(shmem.rxId);    
 		close(shmem.txId);
 
-		unlink(shmem.rxFileName.c_str());
-		unlink(shmem.txFileName.c_str());
+		unlink(shmem.rxFileName);
+		unlink(shmem.txFileName);
 	}
 	catch(int e)
 	{
+		debugMsg("Shared memory cleanup failed (Error: " + intToStr(e) + ")");
 		ret = EXIT_ERROR;
 	}
 
@@ -232,57 +223,62 @@ int cleanupShmem()
 
 int createInitTable(PcbInfo* initTable[])
 {	
-	//Loop through each init table entry and allocate memory
-	for(int i = 0; i <= PROCESS_COUNT; i++){
-		//Do not throw error upon failure, use own validation
-		initTable[i] = new(std::nothrow) PcbInfo();
-		if (initTable[i] == NULL)				//#Do we need this???	
-		{
-			delete[] initTable;		
-			return EXIT_ERROR;
+	int ret = EXIT_SUCCESS;
+
+	try	//Assure init table is allocated successfully
+	{
+		//Loop through each init table entry and allocate memory
+		for(int i = 0; i <= PROCESS_COUNT; i++){
+			//Do not throw error upon failure, use own validation
+			initTable[i] = new PcbInfo();
+
+			//Initialize fields which are consistent across processes
+			initTable[i]->processId = i;
+			initTable[i]->stackSize = STACK_SIZE;
 		}
-		
-		//Initialize fields which are consistent across processes
-		initTable[i]->processId = i;
-		initTable[i]->stackSize = STACK_SIZE;
+
+		//Kernel Processes
+		initTable[0]->name =		"i_timing";	
+		initTable[0]->priority =    0;
+		initTable[0]->processType = PROCESS_I;
+		initTable[0]->address = 	NULL;
+
+		initTable[1]->name =		"i_kb";	
+		initTable[1]->priority =    0;
+		initTable[1]->processType = PROCESS_I;
+		initTable[1]->address = 	NULL;
+
+		initTable[2]->name =		"i_crt";	
+		initTable[2]->priority =    0;
+		initTable[2]->processType = PROCESS_I;
+		initTable[2]->address = 	NULL;
+
+		initTable[3]->name =		"null";	
+		initTable[3]->priority =    3;
+		initTable[3]->processType = PROCESS_K;
+		initTable[3]->address = 	NULL;
+
+	//User Processes
+		initTable[4]->name =		"user1";	
+		initTable[4]->priority =    2;
+		initTable[4]->processType = PROCESS_I;
+		initTable[4]->address = 	NULL;
+
+		initTable[5]->name =		"user2";	
+		initTable[5]->priority =    2;
+		initTable[5]->processType = PROCESS_I;
+		initTable[5]->address = 	NULL;
+
+		initTable[6]->name =		"user3";	
+		initTable[6]->priority =    2;
+		initTable[6]->processType = PROCESS_I;
+		initTable[6]->address = 	NULL;
 	}
-
-//Kernel Processes
-	initTable[0]->name =		"i_timing";	
-	initTable[0]->priority =        0;
-	initTable[0]->processType = 	0;
-	initTable[0]->address = 	NULL;
-
-	initTable[1]->name =		"i_kb";	
-	initTable[1]->priority =        0;
-	initTable[1]->processType = 	0;
-	initTable[1]->address = 	NULL;
-
-	initTable[2]->name =		"i_crt";	
-	initTable[2]->priority =        0;
-	initTable[2]->processType = 	0;
-	initTable[2]->address = 	NULL;
-
-	initTable[3]->name =		"null";	
-	initTable[3]->priority =        3;
-	initTable[3]->processType = 	0;
-	initTable[3]->address = 	NULL;
-
-//User Processes
-	initTable[4]->name =		"user1";	
-	initTable[4]->priority =        2;
-	initTable[4]->processType = 	0;
-	initTable[4]->address = 	NULL;
-
-	initTable[5]->name =		"user2";	
-	initTable[5]->priority =        2;
-	initTable[5]->processType = 	0;
-	initTable[5]->address = 	NULL;
-
-	initTable[6]->name =		"user3";	
-	initTable[6]->priority =        2;
-	initTable[6]->processType = 	0;
-	initTable[6]->address = 	NULL;
+	catch(int e)
+	{
+		delete[] initTable;
+		ret = EXIT_ERROR;
+	}
 	
-	return EXIT_SUCCESS;
+	return ret;
 }

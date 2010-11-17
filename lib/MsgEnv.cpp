@@ -42,13 +42,14 @@ string MsgEnv::getMsgType()
 
 int MsgEnv::setMsgType(string newMsgType)
 {
-	/*
-	if(newMsgType >=0 && newMsgType <=3) //4 msg types
+	int val;
+	
+	if(strToInt(newMsgType,&val) == EXIT_SUCCESS && val >= 0 && val <= 3) //4 msg types
 	{
 		msgFields._msgType = newMsgType;
 		return EXIT_SUCCESS;
 	}
-	*/
+	
 	return EXIT_ERROR;
 	
 }

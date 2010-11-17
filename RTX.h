@@ -12,8 +12,6 @@ class PcbInfo;
 class SignalHandler;
 class MsgServ;
 
-//NOTE:Project Constants defined in "libs.h"
-
 //RTX Global Constants
 #define PROCESS_COUNT 	7		//Total number of processes existing in the RTX
 #define STACK_SIZE 		2048	//Stack size in bytes

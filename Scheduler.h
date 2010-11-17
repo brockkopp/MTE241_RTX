@@ -26,15 +26,6 @@ class Scheduler {
 		
 		PCB* get_current_process();
 
-
-//			//Place new process on ready queue
-//      bool add_ready_process( PCB * target );
-//			bool block_process (PCB * target, string reason ); //i think this string should be an int - Eric
-//			bool unblock_process( PCB * target );
-//			
-//			//Returns if a process is currently blocked on envelope
-//			bool is_blocked( PCB * target );
-
     private:
 
 

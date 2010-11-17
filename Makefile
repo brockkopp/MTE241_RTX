@@ -16,7 +16,7 @@ noRunMsg:
 	@echo Execute '"make run"' to compile and execute
 	@echo
 
-run: all run
+run: all execute
 
 preclean:
 	@rm -f $(TITLE) $(KB) $(CRT) $(OBJ) $(KB_OBJ) $(CRT_OBJ)
@@ -24,7 +24,7 @@ preclean:
 clean:
 	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ)	#Delete all object files
 
-run:
+execute:
 	@./$(TITLE)				#Run main executable after build
 
 ##Linking

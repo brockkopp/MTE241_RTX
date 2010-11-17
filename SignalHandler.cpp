@@ -46,7 +46,7 @@ int SignalHandler::setSigMasked(bool masked)
 			sigprocmask(SIG_SETMASK, &_sigSetHandled, NULL);
 		}
 	}
-	catch(char* str)
+	catch(int e	)
 	{
 		ret = EXIT_ERROR;
 	}
@@ -73,6 +73,7 @@ void SignalHandler::handler( int sigNum )
 		case SIGUSR2:	//Crt
 			i_crt_handler();
 			break;
+
 		default:
 			assure(false,"Unknown Signal Received",__FILE__,__LINE__,__func__,false);
 			break;			

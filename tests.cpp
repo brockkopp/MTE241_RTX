@@ -3,6 +3,8 @@
 
 #define PRINT_Q_RESULTS 0
 
+extern RTX* gRTX;
+
 int testParser()
 {
 	int ret = EXIT_SUCCESS;
@@ -13,6 +15,23 @@ int testParser()
 	if (tokens[0] != "test" || tokens[1] != "parsing" || tokens[2] != "function")
 		ret = EXIT_ERROR;
 	
+	return ret;
+}
+
+int testSignals()
+{
+	int ret = EXIT_SUCCESS;
+/*
+	try
+	{
+		gRTX->atomic(true);
+		gRTX->atomic(false);
+	}
+	catch(int e)
+	{
+		ret = EXIT_ERROR;
+	}
+*/	
 	return ret;
 }
 
