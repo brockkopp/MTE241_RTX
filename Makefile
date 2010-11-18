@@ -1,5 +1,5 @@
 CMP=g++
-CMPFLGS= -c -Wall	#compile only, show all warnings
+CMPFLGS= -g -c -Wall	#compile only, show all warnings
 LNKFLGS= -o
 TITLE=RTX.out
 OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o MsgServ.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
