@@ -1,6 +1,8 @@
 #ifndef H_RTX
 #define H_RTX
 
+#include <sys/types.h>
+#include <signal.h>
 #include "debug.h"
 #include "SignalHandler.h"
 #include "Scheduler.h"

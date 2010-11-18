@@ -158,7 +158,7 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
  * send_console_chars sends then message onto the i_crt_handler who then deals with outputting to the console
  * After tranmission is complete, the same envelope is returned to invoking process with message_type "display_ack" as confirmation
  * Inovking process does not block! 
- * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char */
+ * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission times out */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
 	if(msg_envelope == NULL) //error check
@@ -172,13 +172,27 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	int iCRTProcId = -2;
 	//send message to i_crt_handler to deal with transmission of the message to the console
 	int res = K_send_message(iCRTProcId, msg_envelope);
-	i_crt_handler();
 	
-	//verify transmission was successful
-	//USE (*msg_envelope).DISPLAY_FAIL;!!!!!!!!!!!!!!!!!!!!!!!!
-	if((*msg_envelope).getMsgType() != MsgEnv::DISPLAY_ACK)
-		return EXIT_ERROR;
-		
+	if(res!=EXIT_ERROR)
+	{
+		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
+	
+		bool transmission_complete = false;
+		int failCount = 0;
+		while(!transmission_complete && failCount < 10)
+		{
+			msg_envelope = _mailMan->recieveMsg(); //this is blocking call!
+			if(msg_envelope->getMsgType() == (*msg_envelope).DISPLAY_ACK)
+			{
+				transmission_complete = true;
+				res = EXIT_SUCCESS;
+			}
+			else
+				failCount++;
+		}
+		if(!transmission_complete) //i.e. operation timed out
+			return EXIT_ERROR;
+	}
 	return res;
 }
 
