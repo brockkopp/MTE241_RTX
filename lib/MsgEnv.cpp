@@ -2,9 +2,12 @@
 
 string MsgEnv::DISPLAY_ACK = "display_ack";
 string MsgEnv::DISPLAY_FAIL = "display_fail";
+
 string MsgEnv::WAKE_UP = "wake_up";
 string MsgEnv::DELAY_REQUEST = "delay_request";
 
+string MsgEnv::TRANSMIT_TO_CRT_REQUEST = "transmit to CRT request";
+string MsgEnv::CONSOLE_INPUT = "console_input";
 
 int MsgEnv::getDestPid()
 {
@@ -14,7 +17,8 @@ int MsgEnv::getDestPid()
 int MsgEnv::setDestPid(int newDestPid)
 {
 	//check if a valid destPID was passed
-	if(newDestPid >=0 && newDestPid <=PROCESS_COUNT)
+	if(newDestPid >=0 && newDestPid <=0)           //PROCESS_COUNT)
+
 	{
 		msgFields._destPid = newDestPid;
 		return EXIT_SUCCESS;
@@ -30,7 +34,12 @@ int MsgEnv::getOriginPid()
 int MsgEnv::setOriginPid(int newOriginPid)
 {
 	//check if passed PID is valid
-	if(newOriginPid >=0 && newOriginPid <=PROCESS_COUNT)//confirm # of processes
+		/* ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * 
+	~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ *
+	~ * ~ * ~ * ~ * ~ * Using processCOUNT or no? If so, make it compile ~ * ~ * ~ * ~ * ~ * ~ * ~ * 
+	~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ */
+	//if(newOriginPid >=0 && newOriginPid <=PROCESS_COUNT)//confirm # of processes
+	if(newOriginPid >=0 && newOriginPid <=0)
 	{
 		msgFields._originPid = newOriginPid;
 		return EXIT_SUCCESS;
@@ -56,8 +65,9 @@ string MsgEnv::getMsgType()
 
 int MsgEnv::setMsgType(string newMsgType)
 {
-	
-	if(newMsgType == DISPLAY_ACK || newMsgType == DISPLAY_FAIL || newMsgType == WAKE_UP || newMsgType == DELAY_REQUEST) 
+	int val;
+	if(strToInt(newMsgType,&val) == EXIT_SUCCESS && val >= 0 && val <= 3) //4 msg types
+
 	{
 		msgFields._msgType = newMsgType;
 		return EXIT_SUCCESS;

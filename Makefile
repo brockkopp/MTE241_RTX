@@ -1,5 +1,5 @@
 CMP=g++
-CMPFLGS= -c -Wall	#compile only, show all warnings
+CMPFLGS= -g -c -Wall	#compile only, show all warnings
 LNKFLGS= -o
 TITLE=RTX.out
 OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o MsgServ.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
@@ -9,7 +9,12 @@ CRT=CRT.out
 CRT_OBJ=crt.o
 
 ##Command List
-all: preclean $(KB) $(CRT) $(TITLE) clean noRunMsg
+all: compileMsg preclean $(KB) $(CRT) $(TITLE) clean noRunMsg
+
+compileMsg:
+	@echo
+	@echo Starting compilation process...
+	@echo
 
 noRunMsg: 
 	@echo
@@ -23,6 +28,9 @@ preclean:
 
 clean:
 	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ)	#Delete all object files
+	
+clean_all:
+	@rm -f *.o *.out #Delete everything!!!!
 
 execute:
 	@./$(TITLE)				#Run main executable after build

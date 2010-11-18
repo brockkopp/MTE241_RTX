@@ -1,6 +1,8 @@
 #ifndef H_RTX
 #define H_RTX
 
+#include <sys/types.h>
+#include <signal.h>
 #include "debug.h"
 #include "SignalHandler.h"
 #include "Scheduler.h"
@@ -12,8 +14,6 @@
 class PcbInfo;
 class SignalHandler;
 class MsgServ;
-
-//NOTE:Project Constants defined in "libs.h"
 
 //RTX Global Constants
 #define PROCESS_COUNT 	7		//Total number of processes existing in the RTX
@@ -51,11 +51,14 @@ class RTX
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
 	
 	private:
-		PCB*			_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
-		Scheduler* 		_scheduler;
+		PCB*						_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
+		Scheduler* 			_scheduler;
 		SignalHandler* 	_signalHandler;
-		MsgServ* 		_mailMan;
+
 		MsgTrace* _msgTrace;
+
+		MsgServ* 				_mailMan;
+		Queue						_userInputs;
 };
 
 #endif

@@ -18,9 +18,7 @@ class Queue;
 
 class PCB 
 {
-	public:	
-		
-		
+	public:			
 		/*~*~* Member functions ~*~*~*~*/
 		//Constructors
 		PCB( PcbInfo* tableEntry ); 
@@ -31,7 +29,6 @@ class PCB
 		//Private Member Getters/Setters
 
 		void setAtomicCount( int atomCount );
-
 		int incAtomicCount();
 		int decAtomicCount();
 		int getAtomicCount();

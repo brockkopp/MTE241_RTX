@@ -6,11 +6,16 @@ extern RTX* gRTX;
 
 CCI::CCI()
 {
-	wallClock = new WallClock();
-	processCCI();
+	wallClock = new WallClock(100000);
+	//ualarm(100000,100000);
 }
 
-void CCI::processCCI()
+CCI::~CCI()
+{
+	delete wallClock;
+}
+
+int CCI::processCCI()
 {
 	string command;
 	string input[3];
@@ -37,7 +42,7 @@ void CCI::processCCI()
 			if(input[0] == "s")		//to complete
 			{
 				if(params > 1)
-					errMsg = "Too many parameters";
+					errMsg = "Too many parameters for 'Send Message' command";
 				else
 				{
 					MsgEnv* myEnv = gRTX->K_request_msg_env();
@@ -51,7 +56,7 @@ void CCI::processCCI()
 			else if(input[0] == "ps")	//to complete
 			{
 				if(params > 1)
-					errMsg = "Too many parameters";
+					errMsg = "Too many parameters for 'Display Process Status' command";
 				else
 					cout << "processStatus\n";
 			}
@@ -59,7 +64,7 @@ void CCI::processCCI()
 			{
 				string time[3];				
 				if(params > 2)
-					errMsg = "Too many parameters";
+					errMsg = "Too many parameters for 'Set Clock' command";
 				else if(parseString(input[1],time,':',3) != 3 || wallClock->setTime(time) != EXIT_SUCCESS)
 					errMsg = "Invalid time format";
 
@@ -67,21 +72,21 @@ void CCI::processCCI()
 			else if(input[0] == "cd")
 			{
 				if(params > 1)
-					errMsg = "Too many parameters";
+					errMsg = "Too many parameters for 'Display Clock' command";
 				else
 					wallClock->setDisplayed(true);
 			}
 			else if(input[0] == "ct")
 			{
 				if(params > 1)
-					errMsg = "Too many parameters";
+					errMsg = "Too many parameters for 'Hide Clock' command";
 				else
 					wallClock->setDisplayed(false);
 			}
 			else if(input[0] == "b")	//to complete
 			{
 				if(params > 1)
-					errMsg = "Too many parameters";
+					errMsg = "Too many parameters for 'Display Msg Buffers' command";
 				else
 				{
 					MsgEnv* myEnv = gRTX->K_request_msg_env();
@@ -94,7 +99,7 @@ void CCI::processCCI()
 			else if(input[0] == "t")
 			{
 				if(params > 1)
-					errMsg = "Too many parameters";
+					errMsg = "Too many parameters for 'Terminate' command";
 				else
 					kill(getpid(),SIGINT);
 			}
@@ -112,7 +117,7 @@ void CCI::processCCI()
 			else if(input[0] == "help")	//remove for demo
 			{
 				if(params > 1)
-					errMsg = "Too many parameters";
+					errMsg = "Too many parameters for 'Help' command";
 				else
 				{
 					cout << "\nRTX Commands:\n";
@@ -135,4 +140,6 @@ void CCI::processCCI()
 		if(errMsg.length() > 0)
 			cout << ("\t" + errMsg + "\n");
 	}	
+
+	return EXIT_ERROR;
 }
