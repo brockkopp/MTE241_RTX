@@ -14,6 +14,7 @@
 //Globals
 RTX* gRTX;
 CCI* gCCI;
+Queue gUserInputs;
 
 //Private method declarations
 void doTests();
@@ -58,6 +59,8 @@ int main(void)
 	//Create and initialize rtx and its child members (schedling services etc)
 	debugMsg("\n");
 	
+	Queue q(q.STRING);
+	gUserInputs = q;
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
 

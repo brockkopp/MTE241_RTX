@@ -50,10 +50,11 @@ class RTX
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
 	
 	private:
-		PCB*			_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
-		Scheduler* 		_scheduler;
+		PCB*						_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
+		Scheduler* 			_scheduler;
 		SignalHandler* 	_signalHandler;
-		MsgServ* 		_mailMan;
+		MsgServ* 				_mailMan;
+		Queue						_userInputs;
 };
 
 #endif

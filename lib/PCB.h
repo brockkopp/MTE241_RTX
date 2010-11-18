@@ -18,9 +18,7 @@ class Queue;
 
 class PCB 
 {
-	public:	
-		
-		
+	public:			
 		/*~*~* Member functions ~*~*~*~*/
 		//Constructors
 		PCB( PcbInfo* tableEntry ); 
