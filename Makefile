@@ -9,7 +9,12 @@ CRT=CRT.out
 CRT_OBJ=crt.o
 
 ##Command List
-all: preclean $(KB) $(CRT) $(TITLE) clean noRunMsg
+all: compileMsg preclean $(KB) $(CRT) $(TITLE) clean noRunMsg
+
+compileMsg:
+	@echo
+	@echo Starting compilation process...
+	@echo
 
 noRunMsg: 
 	@echo
@@ -23,6 +28,9 @@ preclean:
 
 clean:
 	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ)	#Delete all object files
+	
+clean_all:
+	@rm -f *.o *.out #Delete everything!!!!
 
 execute:
 	@./$(TITLE)				#Run main executable after build
