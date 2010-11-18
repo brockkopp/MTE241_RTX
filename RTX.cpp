@@ -171,9 +171,10 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	//validated that message is in correct format
 	int iCRTProcId = -2;
 	//send message to i_crt_handler to deal with transmission of the message to the console
+	int temp = (*msg_envelope).setMsgType((*msg_envelope).TRANSMIT_TO_CRT_REQUEST);
 	int res = K_send_message(iCRTProcId, msg_envelope);
 	
-	if(res!=EXIT_ERROR)
+	if(res != EXIT_ERROR)
 	{
 		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
 	

@@ -29,17 +29,21 @@ void i_keyboard_handler()
 void i_crt_handler()
 {
 	debugMsg("Signal Received: SIGUSR2: CRT",0,1);
-/*	bool CRTisBusy = false;
+	bool CRTisBusy = false;
 	
 	PCB* currPcb = NULL;
-//	if(getCurrentPcb(&currPcb) == EXIT_SUCCESS) HOW DO I USE GETCURRENTPCB!? NEED AN INSTANCE OF THE RTX!!!
-	if(true)//current PCB is valid
+	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS) //current PCB is valid
 	{
 		if((*currPcb).check_mail() > 0 ) //Someone is trying to send chars to the console
 		{
-			MsgEnv* retMsg = ((*currPcb).retrieve_mail()); //won't be null because already checked if mailbox was empty
-			int invoker = (*currPcb).get_id();
-				
+			MsgEnv* retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
+			if(retMsg == NULL) //make the check anyways
+			{
+				assure(true,"Null envelope in I_CRT mailbox. Cannot transmit, don't know who I'm supposed to tattle on!",__FILE__,__LINE__,__func__,true);
+				return;
+			}
+			
+			int invoker = (*retMsg).getOriginPid();				
 			if(!CRTisBusy) //CRT is NOT busy - perform transmission
 			{
 				CRTisBusy = true;
@@ -48,17 +52,10 @@ void i_crt_handler()
 			}
 			else //return message that transmission failed
 			{
-				//(*retMsg).setMsgType((*retMsg).DISPLAY_FAIL);
-				(*retMsg).setMsgType(MsgEnv::DISPLAY_FAIL);
-				//K_send_message(invoker, retMsg);				CANT DO THIS WITHOUT INSTANCE OF RTX!!!!
-				return;
+				(*retMsg).setMsgType((*retMsg).DISPLAY_FAIL);
+				gRTX->K_send_message(invoker, retMsg);			
 			}		
 		}
-		else //receieved a signal
-		{
-			CRTisBusy = false;
-			//how do I return the envelope if there's none in the mailbox? need while loop above?
-		}
-	}*/	
-	return;
+		return;
+	}
 }

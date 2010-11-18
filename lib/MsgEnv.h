@@ -21,6 +21,7 @@ class MsgEnv
 		//possible message types - Not sure implementation is correct of these constants...
 		static string DISPLAY_ACK;
 		static string DISPLAY_FAIL;
+		static string TRANSMIT_TO_CRT_REQUEST;
 
 		int getDestPid();
 		int setDestPid(int newDestPid);

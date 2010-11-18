@@ -2,6 +2,7 @@
 
 string MsgEnv::DISPLAY_ACK = "display_ack";
 string MsgEnv::DISPLAY_FAIL = "display_fail";
+string MsgEnv::TRANSMIT_TO_CRT_REQUEST = "transmit to CRT request";
 
 int MsgEnv::getDestPid()
 {
