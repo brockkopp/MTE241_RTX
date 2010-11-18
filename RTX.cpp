@@ -105,12 +105,26 @@ int RTX::K_release_msg_env(MsgEnv* memory_block)
 
 int RTX::K_release_processor()
 {
+	//We need a scheduler object names scheduler to be declared (in initialization???)
+	
+	//return scheduler.release_processor();
 	return -2;
 }
 
 int RTX::K_request_process_status(MsgEnv* memory_block) //why does this requre a msg envelope? shouldn't it just require the PCB and return the status? -Eric
 {
-	return -2;
+//	array returnArray
+//	for each PCB
+//	{
+//		status = PCB.get_status
+//		priority = PCB.get_priority
+//		Add status and priority to returnArray
+//	}
+//	Put returnArray into message contents
+//	send_message( invoking_process, msg_env_ptr )
+//	;
+return -2;
+	
 }
 
 int RTX::K_terminate()
@@ -122,6 +136,10 @@ int RTX::K_terminate()
 
 int RTX::K_change_priority(int new_priority, int target_process_id)
 {
+	//We need a scheduler object names scheduler to be declared (in initialization???)
+	
+	//return scheduler.change_priority(new_priority,target_process_id);
+	
 	return -2;
 }
 
