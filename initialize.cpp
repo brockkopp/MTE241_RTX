@@ -14,7 +14,7 @@
 //Globals
 RTX* gRTX;
 CCI* gCCI;
-Queue gUserInputs;
+Queue* gUserInputs;
 
 //Private method declarations
 void doTests();
@@ -60,7 +60,8 @@ int main(void)
 	debugMsg("\n");
 	
 	Queue q(q.STRING);
-	gUserInputs = q;
+	gUserInputs = new Queue();
+	gUserInputs->set_queueType((*gUserInputs).STRING);
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
 
@@ -127,6 +128,7 @@ void die(int sigNum)
 	{
 		delete gRTX;
 		delete gCCI;
+		delete gUserInputs;
 	}
 	catch(int e)
 	{

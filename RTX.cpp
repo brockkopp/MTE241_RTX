@@ -170,8 +170,9 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	
 	//validated that message is in correct format
 	int iCRTProcId = -2;
+	int invoker = (*msg_envelope).getOriginPid();
 	//send message to i_crt_handler to deal with transmission of the message to the console
-	int temp = (*msg_envelope).setMsgType((*msg_envelope).TRANSMIT_TO_CRT_REQUEST);
+	(*msg_envelope).setMsgType((*msg_envelope).TRANSMIT_TO_CRT_REQUEST);
 	int res = K_send_message(iCRTProcId, msg_envelope);
 	
 	if(res != EXIT_ERROR)
@@ -180,25 +181,40 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	
 		bool transmission_complete = false;
 		int failCount = 0;
-		while(!transmission_complete && failCount < 10)
+		while(!transmission_complete && failCount < 10) //should this loop be done here or in i_process? ANG
 		{
 			msg_envelope = _mailMan->recieveMsg(); //this is blocking call!
 			if(msg_envelope->getMsgType() == (*msg_envelope).DISPLAY_ACK)
 			{
 				transmission_complete = true;
-				res = EXIT_SUCCESS;
-			}
+				res = K_send_message(invoker, msg_envelope);
+			}			
 			else
 				failCount++;
 		}
+		if(msg_envelope->getMsgType() == (*msg_envelope).DISPLAY_FAIL)
+			res = K_send_message(invoker, msg_envelope);
+			
 		if(!transmission_complete) //i.e. operation timed out
 			return EXIT_ERROR;
 	}
 	return res;
 }
 
+/* Invoking process provides a message envelope (previously allocated) - NON BLOCKING!
+ * A message is sent to the invoking process using the envelope provided once the end of line character is received or the buffer is filled. 
+ * Message type is "console_input"; message contains characters received
+ * End of keyboard string is indicated by null character
+ * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (i.e. no characters waiting) */
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
+//	if(gUserInputs->get_length() == 0)
+//		return EXIT_ERROR;
+//	
+//	int invoker = (*msg_envelope).getOriginPid();
+//	(*msg_envelope).setMsgData(*(gUserInputs.dequeue_string()));
+//	(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);
+//	return K_send_message(invoker, msg_envelope);
 	return -2;
 }
 

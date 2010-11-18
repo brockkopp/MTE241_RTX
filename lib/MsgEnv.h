@@ -22,6 +22,7 @@ class MsgEnv
 		static string DISPLAY_ACK;
 		static string DISPLAY_FAIL;
 		static string TRANSMIT_TO_CRT_REQUEST;
+		static string CONSOLE_INPUT;		
 
 		int getDestPid();
 		int setDestPid(int newDestPid);

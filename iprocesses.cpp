@@ -21,11 +21,30 @@ void i_timing_process()
 	
 	return;
 }
+
+/* Signal is sent to the i_keyboard_handler from the Keyboard process. 
+ * I_KB reads the data from the shmem and adds it to a queue of user input (global variable)
+ * K_get_console_chars extracts user inputs from the global queue as necessary */
 void i_keyboard_handler()
 {
 	debugMsg("Signal Received: SIGUSR1: KB",0,1);
+	bool KEYBOARDisBusy = false; //!!!*!*!*!*!*!*!*QQQQQQ*~!*!*!*!*!* Why do I need this? ~Ang
+	
+	PCB* currPcb = NULL;
+	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && !KEYBOARDisBusy) //current PCB is valid
+	{
+		//extract information from shared memory
+		string userMsg = "";		
+		//gUserInputs->enqueue(&userMsg);
+	}
 	return;
 }
+
+/* Signal is sent to the i_crt_handler from the K_send_console_chars primitive. 
+ * Before sending the signal, K_send_console_chars also sends the i_crt_handler a message envelope containing the message to be transmitted to the crt
+ * The i_crt_handler therefore takes the message from its mailbox and adds it to the shared memory. Once added to shmem, the message is as good as sent.
+ * The i_crt_handler WILL NOT write to the shmem if the CRT process is busy
+ * If the transmission is complete, i_crt_handler will return the envelope to the invoking process as acknowledgement */
 void i_crt_handler()
 {
 	debugMsg("Signal Received: SIGUSR2: CRT",0,1);
@@ -49,13 +68,14 @@ void i_crt_handler()
 				CRTisBusy = true;
 				//add message to shmem
 				//what if have to wait for crt process?
+				(*retMsg).setMsgType((*retMsg).DISPLAY_ACK);
 			}
 			else //return message that transmission failed
 			{
 				(*retMsg).setMsgType((*retMsg).DISPLAY_FAIL);
-				gRTX->K_send_message(invoker, retMsg);			
 			}		
+			gRTX->K_send_message(invoker, retMsg);	
 		}
-		return;
 	}
+	return;
 }
