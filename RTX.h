@@ -7,6 +7,7 @@
 #include "MsgServ.h"
 #include "lib/PCB.h"
 #include "lib/MsgEnv.h"
+#include "MsgTrace.h"
 
 class PcbInfo;
 class SignalHandler;
@@ -54,6 +55,7 @@ class RTX
 		Scheduler* 		_scheduler;
 		SignalHandler* 	_signalHandler;
 		MsgServ* 		_mailMan;
+		MsgTrace* _msgTrace;
 };
 
 #endif

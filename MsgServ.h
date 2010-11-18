@@ -5,7 +5,8 @@
 #include "RTX.h"
 #include "lib/Queue.h"
 #include "MsgTrace.h"
-#include "PCB.h"
+#include "lib/PCB.h"
+
 
 
 class MsgServ
@@ -17,6 +18,8 @@ class MsgServ
 		MsgEnv* requestEnv();
 	private:
 		Queue* freeEnvQ;
+		Scheduler* _scheduler;
+		MsgTrace* _msgTrace;
 };
 
 #endif

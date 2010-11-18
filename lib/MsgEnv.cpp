@@ -2,6 +2,9 @@
 
 string MsgEnv::DISPLAY_ACK = "display_ack";
 string MsgEnv::DISPLAY_FAIL = "display_fail";
+string MsgEnv::WAKE_UP = "wake_up";
+string MsgEnv::DELAY_REQUEST = "delay_request";
+
 
 int MsgEnv::getDestPid()
 {
@@ -11,7 +14,7 @@ int MsgEnv::getDestPid()
 int MsgEnv::setDestPid(int newDestPid)
 {
 	//check if a valid destPID was passed
-	if(newDestPid >=0 && newDestPid <=PROCESS_COUNT)//need to confirm # of processes 																					that need to recieve
+	if(newDestPid >=0 && newDestPid <=PROCESS_COUNT)
 	{
 		msgFields._destPid = newDestPid;
 		return EXIT_SUCCESS;
@@ -35,6 +38,17 @@ int MsgEnv::setOriginPid(int newOriginPid)
 	return EXIT_ERROR;
 }	
 
+int MsgEnv::getTimeStamp()
+{
+	return msgFields._timeStamp;
+}
+
+int MsgEnv::setTimeStamp(int newTimeStamp)
+{
+	msgFields._timeStamp = newTimeStamp;
+	return EXIT_SUCCESS;
+}
+
 string MsgEnv::getMsgType()
 {
 	return msgFields._msgType;
@@ -43,7 +57,7 @@ string MsgEnv::getMsgType()
 int MsgEnv::setMsgType(string newMsgType)
 {
 	
-	if(newMsgType >=0 && newMsgType <=3) //4 msg types
+	if(newMsgType == DISPLAY_ACK || newMsgType == DISPLAY_FAIL || newMsgType == WAKE_UP || newMsgType == DELAY_REQUEST) 
 	{
 		msgFields._msgType = newMsgType;
 		return EXIT_SUCCESS;
