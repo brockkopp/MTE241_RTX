@@ -40,7 +40,7 @@ void i_timing_process()
 		cout << time << endl;
 
 	//ualarm(0,0);
-	
+	*/
 	return;
 }
 
