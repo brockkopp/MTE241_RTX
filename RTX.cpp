@@ -8,8 +8,6 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
 
-	_scheduler = NULL;
-
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
 		_pcbList[i] = new PCB(initTable[i]);

@@ -69,7 +69,7 @@ int main(void)
 	debugMsg("\n");
 
 	//Create keyboad thread
-#ifdef karlRocks
+
 	if ((pidKB = fork()) == 0)
 	{
 		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
@@ -86,7 +86,7 @@ int main(void)
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
-
+#ifdef karlRocks
 #endif
 cout << "Here #3\n";
 	//wait to assure that keyboard and crt initialize properly
@@ -101,8 +101,8 @@ cout << "Here #3\n";
 	doTests();
 #endif
 
-	//Signal cci init failed, program should not normally reach this point
-	//assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
+//	Signal cci init failed, program should not normally reach this point
+	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
 }
 
 void doTests()
