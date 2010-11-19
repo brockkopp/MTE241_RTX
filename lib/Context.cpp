@@ -6,7 +6,8 @@ It is used to keep track of a PCB/Proc's context.
 /*
 	Constructor
 */
-Context::Context (char* stackPtr, int stackSize) {
+Context::Context (char* stackPtr, int stackSize) 
+{
 	//SEE rtxInitialization on UW-ACE
 	jmp_buf tempBuf;
 //	setjmp( tempBuf ); //Might this be needed? pdf doesn't say it is --karl

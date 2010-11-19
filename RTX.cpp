@@ -7,11 +7,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
-
 	_scheduler = NULL;
-
-	_msgTrace = NULL;																					//allows mailMan access to trace functions
-	_mailMan = new MsgServ(_scheduler, _msgTrace);						//allows mailMan access to functions
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)

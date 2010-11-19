@@ -63,6 +63,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		tempDestPCB->add_mail(msg);
 		return EXIT_SUCCESS;
 	}
+
 	return EXIT_ERROR;
 }
 
