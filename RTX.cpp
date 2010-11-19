@@ -7,6 +7,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
+
 	_scheduler = NULL;
 
 	//Initialize each PCB from init table
@@ -21,7 +22,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	for(int i=0; i < PROCESS_COUNT; i++)
 		pcbTmpList->enqueue(_pcbList[i]);
 	
-	_scheduler = new Scheduler (*pcbTmpList);
+	_scheduler = new Scheduler (pcbTmpList);
 	delete pcbTmpList;
 	
 	_signalHandler->setSigMasked(false);

@@ -4,7 +4,6 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include <fcntl.h>
-//#include <unistd.h>
 #include "SignalHandler.h"
 #include "tests.h"
 
@@ -41,7 +40,7 @@ int main(void)
 {
 
 ///////////////////////////////
-cleanupShmem();
+	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed (init)", __FILE__, __LINE__, __func__, false);
 ///////////////////////////////
 
 	//Create init table
@@ -63,10 +62,9 @@ cleanupShmem();
 	
 	//Create and initialize rtx and its child members (schedling services etc)
 	debugMsg("\n");
-	
-	gUserInputs = new Queue();
-	gUserInputs->set_queueType((*gUserInputs).STRING);
-	
+
+	gUserInputs = new Queue(Queue::STRING);
+
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
 
@@ -88,13 +86,14 @@ cleanupShmem();
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
+
 #endif
 cout << "Here #3\n";
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
 	debugMsg("\n");
 
-	debugMsg("Type 'help' at any time to list possible CCI commands",0,2);	
+	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gCCI = new CCI();
 
@@ -103,7 +102,7 @@ cout << "Here #3\n";
 #endif
 
 	//Signal cci init failed, program should not normally reach this point
-	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
+	//assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
 }
 
 void doTests()

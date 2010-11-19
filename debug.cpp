@@ -18,17 +18,15 @@ void debugMsg(int message)
 
 void debugMsg(string message, int newLinesB, int newLinesA)
 {
-	//stringstream msg;
 	string msg;
 	for(int i=0; i < newLinesB; i++)
 		msg += "\n";
-		//msg << "\n";
-	//msg << message;
+
 	msg += message;
+	
 	for(int i=0; i < newLinesA; i++)
 		msg += "\n";
-		//msg << "\n";
-	//debugMsg(msg.str());
+
 	debugMsg(msg);
 }
 
