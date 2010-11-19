@@ -9,7 +9,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_signalHandler = signalHandler;
 	_scheduler = NULL;
 	_msgTrace = NULL;																					//added by Eric, allows mailMan access to trace functions
-	_mailMan = new MsgServ(_scheduler, _msgTrace);						//added by Eric, allows mailMan access to functions
+//	_mailMan = new MsgServ(_msgTrace);						//added by Eric, allows mailMan access to functions
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
@@ -183,7 +183,7 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 		//make a copy of the current mailbox, then empty it so can receive message from iprocesses without hassle
 		PCB* curr = NULL;
 		getCurrentPcb(&curr);
-		Queue temp = curr->copy_mailbox();
+		Queue* temp = curr->copy_mailbox();
 		curr->empty_mailbox();
 		
 		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
@@ -200,22 +200,28 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	return res;
 }
 
-/* Invoking process provides a message envelope (previously allocated) - NON BLOCKING!
+/* Invoking process provides a message envelope (previously allocated)
  * A message is sent to the invoking process using the envelope provided once the end of line character is received or the buffer is filled. 
  * Message type is "console_input"; message contains characters received
  * End of keyboard string is indicated by null character
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (i.e. no characters waiting) */
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
-	int res = EXIT_ERROR;
+	int res;
 	if(atomic(true))
-	{
-		if(gUserInputs->get_length() == 0)
-			return EXIT_ERROR;
-	
+	{	
 		int invoker = (*msg_envelope).getOriginPid();
-		(*msg_envelope).setMsgData(*(*gUserInputs).dequeue_string());
-		(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);
+		if(gUserInputs->get_length() == 0) //no user input is available
+		{
+		  (*msg_envelope).setMsgData("");
+		  (*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);
+			res = EXIT_ERROR;
+		}
+		else
+		{
+			(*msg_envelope).setMsgData(*(*gUserInputs).dequeue_string());
+			(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);
+		}
 		res = K_send_message(invoker, msg_envelope);
 	}
 	atomic(false);

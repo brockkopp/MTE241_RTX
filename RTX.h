@@ -58,7 +58,6 @@ class RTX
 		MsgTrace* _msgTrace;
 
 		MsgServ* 				_mailMan;
-		Queue						_userInputs;
 };
 
 #endif
