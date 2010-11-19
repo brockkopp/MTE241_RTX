@@ -110,6 +110,23 @@ int PCB::check_mail( )
 { 
 	return (_mailbox.get_length());
 }
+
+Queue PCB::copy_mailbox()
+{
+	return _mailbox;
+}
+
+void PCB::empty_mailbox()
+{
+	delete &(_mailbox);
+	return;
+}
+
+void PCB::set_mailbox(Queue q)
+{
+	_mailbox = q;
+	return;
+}
 		
 
 

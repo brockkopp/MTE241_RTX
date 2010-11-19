@@ -1,4 +1,6 @@
 #include "RTX.h"
+extern Queue* gUserInputs;
+extern Queue* gMsgsToCRT;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
@@ -78,8 +80,7 @@ int RTX::atomic(bool on)
 	}
 	else
 		ret = EXIT_ERROR;
-
-	
+			
 	return ret;
 }
 
@@ -155,10 +156,10 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 
 /* Message envelope contains messages (character string) to sent to console. 
  * String must be in usual C/C++ string format terminated by null character
- * send_console_chars sends then message onto the i_crt_handler who then deals with outputting to the console
+ * send_console_chars sends then adds the message onto the global gMsgsToCRT Queue then sends a signal to the i_crt_handler who outputs to the console
  * After tranmission is complete, the same envelope is returned to invoking process with message_type "display_ack" as confirmation
- * Inovking process does not block! 
- * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission times out */
+ * Inovking process does not block! So if the CRT is busy, will return EXIT_ERROR and invoking process must loop to ensure transmission is complete
+ * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
 	if(msg_envelope == NULL) //error check
@@ -169,7 +170,7 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 		return EXIT_ERROR;
 	
 	//validated that message is in correct format
-	int iCRTProcId = -2;
+	int iCRTProcId = getpid(); //send a signal to the RTX
 	int invoker = (*msg_envelope).getOriginPid();
 	//send message to i_crt_handler to deal with transmission of the message to the console
 	(*msg_envelope).setMsgType((*msg_envelope).TRANSMIT_TO_CRT_REQUEST);
@@ -177,26 +178,22 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	
 	if(res != EXIT_ERROR)
 	{
+		//make a copy of the current mailbox, then empty it so can receive message from iprocesses without hassle
+		PCB* curr = NULL;
+		getCurrentPcb(&curr);
+		Queue temp = curr->copy_mailbox();
+		curr->empty_mailbox();
+		
 		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
-	
-		bool transmission_complete = false;
-		int failCount = 0;
-		while(!transmission_complete && failCount < 10) //should this loop be done here or in i_process? ANG
-		{
-			msg_envelope = _mailMan->recieveMsg(); //this is blocking call!
-			if(msg_envelope->getMsgType() == (*msg_envelope).DISPLAY_ACK)
-			{
-				transmission_complete = true;
-				res = K_send_message(invoker, msg_envelope);
-			}			
-			else
-				failCount++;
-		}
-		if(msg_envelope->getMsgType() == (*msg_envelope).DISPLAY_FAIL)
-			res = K_send_message(invoker, msg_envelope);
-			
-		if(!transmission_complete) //i.e. operation timed out
-			return EXIT_ERROR;
+	  msg_envelope = K_receive_message(); //this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the 				i_crt_handler sends a message before exiting	  
+	  
+	  curr->set_mailbox(temp); //restore mailbox
+	  
+		bool transmission_failed = (msg_envelope == NULL);
+		if(!transmission_failed)
+			res = K_send_message(invoker, msg_envelope); //the message type will be set to DISPLAY_ACK by the iprocess
+		else
+			res = EXIT_ERROR;
 	}
 	return res;
 }
@@ -208,14 +205,19 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (i.e. no characters waiting) */
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
-//	if(gUserInputs->get_length() == 0)
-//		return EXIT_ERROR;
-//	
-//	int invoker = (*msg_envelope).getOriginPid();
-//	(*msg_envelope).setMsgData(*(gUserInputs.dequeue_string()));
-//	(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);
-//	return K_send_message(invoker, msg_envelope);
-	return -2;
+	int res = EXIT_ERROR;
+	if(atomic(true))
+	{
+		if(gUserInputs->get_length() == 0)
+			return EXIT_ERROR;
+	
+		int invoker = (*msg_envelope).getOriginPid();
+		(*msg_envelope).setMsgData(*(*gUserInputs).dequeue_string());
+		(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);
+		res = K_send_message(invoker, msg_envelope);
+	}
+	atomic(false);
+	return res;
 }
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)

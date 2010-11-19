@@ -1,6 +1,7 @@
 #include "iprocesses.h"
 extern CCI* gCCI;
 extern RTX* gRTX;
+extern Queue* gUserInputs;
 
 void i_timing_process()
 {
@@ -35,7 +36,7 @@ void i_keyboard_handler()
 	{
 		//extract information from shared memory
 		string userMsg = "";		
-		//gUserInputs->enqueue(&userMsg);
+		gUserInputs->enqueue(&userMsg);
 	}
 	return;
 }
@@ -44,25 +45,26 @@ void i_keyboard_handler()
  * Before sending the signal, K_send_console_chars also sends the i_crt_handler a message envelope containing the message to be transmitted to the crt
  * The i_crt_handler therefore takes the message from its mailbox and adds it to the shared memory. Once added to shmem, the message is as good as sent.
  * The i_crt_handler WILL NOT write to the shmem if the CRT process is busy
- * If the transmission is complete, i_crt_handler will return the envelope to the invoking process as acknowledgement */
+ * The i_crt_handler will send a message envelope before exiting; envelope will be NULL if there's an error
+ * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
 	debugMsg("Signal Received: SIGUSR2: CRT",0,1);
 	bool CRTisBusy = false;
+	MsgEnv* retMsg;
+	int invoker;
 	
 	PCB* currPcb = NULL;
-	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS) //current PCB is valid
+	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).check_mail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
-		if((*currPcb).check_mail() > 0 ) //Someone is trying to send chars to the console
-		{
-			MsgEnv* retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
+			retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
 			if(retMsg == NULL) //make the check anyways
-			{
-				assure(true,"Null envelope in I_CRT mailbox. Cannot transmit, don't know who I'm supposed to tattle on!",__FILE__,__LINE__,__func__,true);
+			{				
+		   	gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error
 				return;
 			}
 			
-			int invoker = (*retMsg).getOriginPid();				
+			invoker = (*retMsg).getOriginPid();				
 			if(!CRTisBusy) //CRT is NOT busy - perform transmission
 			{
 				CRTisBusy = true;
@@ -74,8 +76,12 @@ void i_crt_handler()
 			{
 				(*retMsg).setMsgType((*retMsg).DISPLAY_FAIL);
 			}		
-			gRTX->K_send_message(invoker, retMsg);	
-		}
 	}
+	else //an error occurred, send a NULL envelope
+	{
+		retMsg = NULL;
+		invoker = getpid();
+	}
+	gRTX->K_send_message(invoker, retMsg);	
 	return;
 }
