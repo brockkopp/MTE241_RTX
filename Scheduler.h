@@ -11,8 +11,8 @@
 class Scheduler {
     public:
 
-		Scheduler(Queue readyProcs);	//Constructor!
-		
+		Scheduler(Queue* readyProcs);	//Constructor!
+		~Scheduler();
 		
 			void release_processor( );   
 			int change_priority( PCB * target, int newPriority );
@@ -41,9 +41,9 @@ class Scheduler {
 			//Members
       PCB * _currentProcess; // Executing state
 
-			PQ _readyProcs; // Ready to execute state
-      Queue _blockedEnv; // Blocked on resource state
-      Queue _blockedMsgRecieve;
+			PQ* _readyProcs; // Ready to execute state
+      Queue* _blockedEnv; // Blocked on resource state
+      Queue* _blockedMsgRecieve;
 };
 
 

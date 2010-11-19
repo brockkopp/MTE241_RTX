@@ -6,9 +6,8 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
 
-	_scheduler = NULL;
 	_msgTrace = NULL;																					//allows mailMan access to trace functions
-	_mailMan = new MsgServ(_scheduler, _msgTrace);						//allows mailMan access to functions
+	_mailMan = new MsgServ();						//allows mailMan access to functions
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
@@ -22,7 +21,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	for(int i=0; i < PROCESS_COUNT; i++)
 		pcbTmpList->enqueue(_pcbList[i]);
 	
-	_scheduler = new Scheduler (*pcbTmpList);
+	_scheduler = new Scheduler (pcbTmpList);
 	delete pcbTmpList;
 	
 	_signalHandler->setSigMasked(false);
