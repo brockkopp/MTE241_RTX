@@ -23,6 +23,7 @@ class Scheduler {
 			
 		//Returns if a process is currently blocked on envelope
 		int is_blocked( PCB * target );
+		PCB* get_blocked_on_env();
 		
 		PCB* get_current_process();
 

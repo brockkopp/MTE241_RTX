@@ -5,13 +5,15 @@ extern Queue* gUserInputs;
 
 void i_timing_process()
 {
-//	//overall clock count used for trace buffer time stamp
-//	static int timeCount = 0;//make global, put it in file where it has been decided to place global variables
+//	
+
 //	
 //	static Queue* waitingProcesses; //internal Q
 //	static int tickCount = 0; // used to determine when a delay request is expired
-//	
-//	timeCount++;
+
+//	//overall rtx clock count used for trace buffer time stamp
+//	MsgTrace::totalRunTime ++;
+//	//i_timing_process internal count	
 //	tickCount++;
 //	
 //	//retrieve PCB of currently excecuting process (i_timing_process) 

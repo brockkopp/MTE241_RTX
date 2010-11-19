@@ -252,6 +252,11 @@ int Scheduler::is_blocked( PCB * target )
 	return target->get_state();
 }
 
+PCB* Scheduler::get_blocked_on_env()
+{
+	return _blockedEnv.dequeue_PCB();
+}
+
 PCB* Scheduler::get_current_process() {
 	return _currentProcess;
 }
