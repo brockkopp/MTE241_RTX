@@ -39,10 +39,6 @@ int pidKB = 0,
 int main(void)
 {
 
-///////////////////////////////
-	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed (init)", __FILE__, __LINE__, __func__, false);
-///////////////////////////////
-
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
 
@@ -53,13 +49,13 @@ int main(void)
 	//Create and initialize signal handler
 	//Signals are masked by default
 	SignalHandler* sigHandler = new SignalHandler();
-
+	sigHandler->setSigMasked(false);
 	//Create shared memory and assure that initialization is successful
 	assure(initializeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, true);
 
 	//Initialize init table and assure initialization is successful
 	assure(createInitTable(initTable) == EXIT_SUCCESS, "Init table failed to initialize", __FILE__, __LINE__, __func__, true);
-	
+
 	//Create and initialize rtx and its child members (schedling services etc)
 	debugMsg("\n");
 
@@ -69,7 +65,6 @@ int main(void)
 	debugMsg("\n");
 
 	//Create keyboad thread
-
 	if ((pidKB = fork()) == 0)
 	{
 		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
@@ -86,9 +81,7 @@ int main(void)
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
-#ifdef karlRocks
-#endif
-cout << "Here #3\n";
+
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
 	debugMsg("\n");
@@ -98,7 +91,7 @@ cout << "Here #3\n";
 	gCCI = new CCI();
 
 #if TESTS_MODE == 1
-	doTests();
+	//doTests();
 #endif
 
 //	Signal cci init failed, program should not normally reach this point
@@ -116,7 +109,7 @@ void doTests()
 	debugMsg("\tQueue Test: \t");    
 	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tMessaging Test:\t"); 
-	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	   debugMsg("Not Implemented\n");
 	debugMsg("\tAnother Test:\t");   
 	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tAnother Test:\t");   
@@ -128,6 +121,7 @@ void die(int sigNum)
 	debugMsg("Terminate command initiated ",2,0);
 	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + getSigDesc(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
 
+	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed (init)", __FILE__, __LINE__, __func__, false);
 	ualarm(0,0);	//Disable alarm
 
 	//Cleanup rtx, including signal handler
