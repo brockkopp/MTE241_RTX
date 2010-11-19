@@ -18,7 +18,7 @@ SignalHandler::SignalHandler()
 
 	//Initialize blocked signal set
 	sigemptyset(&_sigSetBlocked);
-	sigaddset(&_sigSetBlocked, SIGINT);
+//	sigaddset(&_sigSetBlocked, SIGINT);
 	sigaddset(&_sigSetBlocked, SIGALRM);
 	sigaddset(&_sigSetBlocked, SIGUSR1);
 	sigaddset(&_sigSetBlocked, SIGUSR2);

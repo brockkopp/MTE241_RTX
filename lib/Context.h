@@ -16,6 +16,6 @@ class Context
     	void restore(); 	//Restore context
    
    private:
-    	jmp_buf local_jmp_buf; 	//Actual context, in the for of a jmp buffer
+    	jmp_buf _localJmpBuf; 	//Actual context, in the for of a jmp buffer
 };
 #endif

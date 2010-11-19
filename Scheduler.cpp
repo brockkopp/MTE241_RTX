@@ -8,19 +8,19 @@ arguments:
 	
 */
 
-Scheduler::Scheduler(PCB* currentProcess, Queue readyProcs):
+Scheduler::Scheduler(Queue readyProcs):
 _readyProcs(4), _blockedEnv( Queue::PROCCONBLOCK ), _blockedMsgRecieve( Queue::PROCCONBLOCK )
- {
-	_currentProcess = currentProcess;
-	//PQ _readyProcs( 4 );
-	
-	
+{
+
 	//Add all readyProcs to the ready queue.
 	for(int i=0; i<readyProcs.get_length(); i++) {
-		PCB* temp = static_cast<PCB*>(_readyProcs.pq_dequeue());
+		PCB* temp = static_cast<PCB*>(readyProcs.dequeue_PCB());
 		_readyProcs.pq_enqueue( temp, temp->get_priority() );
 	}
 
+	/*
+	Somehow start the first proc.... Must set currentProc
+	*/
 }
 
 ///*
@@ -177,7 +177,7 @@ return -2;
 /*
 
 arguments: 
-	reason: 1 - blocked on envelope
+	reason: g1 - blocked on envelope
 					2 - blocked on message recieve
 					
 */

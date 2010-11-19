@@ -39,6 +39,11 @@ int pidKB = 0,
 
 int main(void)
 {
+
+///////////////////////////////
+cleanupShmem();
+///////////////////////////////
+
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
 
@@ -66,6 +71,7 @@ int main(void)
 	debugMsg("\n");
 
 	//Create keyboad thread
+#ifdef karlRocks
 	if ((pidKB = fork()) == 0)
 	{
 		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
@@ -82,6 +88,8 @@ int main(void)
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
+#endif
+cout << "Here #3\n";
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
 	debugMsg("\n");

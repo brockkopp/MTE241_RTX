@@ -5,14 +5,26 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
+
 	_scheduler = NULL;
-	_msgTrace = NULL;																					//added by Eric, allows mailMan access to trace functions
-	_mailMan = new MsgServ(_scheduler, _msgTrace);						//added by Eric, allows mailMan access to functions
+	_msgTrace = NULL;																					//allows mailMan access to trace functions
+	_mailMan = new MsgServ(_scheduler, _msgTrace);						//allows mailMan access to functions
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
 		_pcbList[i] = new PCB(initTable[i]);
 
+	/* Transfer the _pcbList into a queue for use with the scheduler... 
+	*/
+	
+	Queue* pcbTmpList = new Queue(Queue::PROCCONBLOCK); //Init queue of PCBs
+	//Loop through _pcbList, enqueue each item into pcbTmpList.
+	for(int i=0; i < PROCESS_COUNT; i++)
+		pcbTmpList->enqueue(_pcbList[i]);
+	
+	_scheduler = new Scheduler (*pcbTmpList);
+	delete pcbTmpList;
+	
 	_signalHandler->setSigMasked(false);
 
 	debugMsg("RTX Init Done",0,1);

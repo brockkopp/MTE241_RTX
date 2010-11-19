@@ -13,14 +13,15 @@ Please explain what values the qtype can be.
 //Returns NULL if there is no node to dequeue.
 itemType Queue::dequeue_gen()
 {
-	QueueNode* currentNode = _rear;
-	
 	//Special case: length = 0
-	if (isEmpty()) //return null 
+	if (isEmpty()) {//return null 
 		return NULL;
+		}
 	
+	QueueNode* currentNode = _rear;
+
 	//Deal with special case of length = 1
-	else if ( _length == 1 ) 
+	if ( _length == 1 ) 
 	{
 		_front = NULL;
 		_rear = NULL;
@@ -133,7 +134,8 @@ Queue::~Queue()
 		{
 			currNode = nextNode;
 			nextNode = currNode->link;
-			delete[] currNode;
+//			delete[] currNode;
+			delete currNode;
 		}
  	}
 }

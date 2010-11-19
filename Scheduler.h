@@ -1,3 +1,7 @@
+#ifndef H_SCHEDULER
+#define H_SCHEDULER
+
+
 #include <string>
 #include "debug.h"
 #include "lib/PCB.h"
@@ -7,8 +11,9 @@
 class Scheduler {
     public:
 
-		Scheduler(PCB* currentProcess, Queue readyProcs); //Constructor!
-			
+		Scheduler(Queue readyProcs);	//Constructor!
+		
+		
 			void release_processor( );   
 			int change_priority( PCB * target, int newPriority );
 			int process_switch( );
@@ -40,3 +45,6 @@ class Scheduler {
       Queue _blockedEnv; // Blocked on resource state
       Queue _blockedMsgRecieve;
 };
+
+
+#endif
