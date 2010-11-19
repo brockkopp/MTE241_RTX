@@ -1,12 +1,15 @@
 #ifndef H_RTX
 #define H_RTX
 
+#include <sys/types.h>
+#include <signal.h>
 #include "debug.h"
 #include "SignalHandler.h"
 #include "Scheduler.h"
 #include "MsgServ.h"
 #include "lib/PCB.h"
 #include "lib/MsgEnv.h"
+#include "MsgTrace.h"
 
 class PcbInfo;
 class SignalHandler;
@@ -48,10 +51,14 @@ class RTX
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
 	
 	private:
-		PCB*			_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
-		Scheduler* 		_scheduler;
+		PCB*						_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
+		Scheduler* 			_scheduler;
 		SignalHandler* 	_signalHandler;
-		MsgServ* 		_mailMan;
+
+		MsgTrace* _msgTrace;
+
+		MsgServ* 				_mailMan;
+		Queue						_userInputs;
 };
 
 #endif

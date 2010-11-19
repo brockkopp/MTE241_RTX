@@ -14,6 +14,7 @@
 //Globals
 RTX* gRTX;
 CCI* gCCI;
+Queue* gUserInputs;
 
 //Private method declarations
 void doTests();
@@ -38,6 +39,11 @@ int pidKB = 0,
 
 int main(void)
 {
+
+///////////////////////////////
+cleanupShmem();
+///////////////////////////////
+
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
 
@@ -58,10 +64,14 @@ int main(void)
 	//Create and initialize rtx and its child members (schedling services etc)
 	debugMsg("\n");
 	
+	Queue q(q.STRING);
+	gUserInputs = new Queue();
+	gUserInputs->set_queueType((*gUserInputs).STRING);
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
 
 	//Create keyboad thread
+#ifdef karlRocks
 	if ((pidKB = fork()) == 0)
 	{
 		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
@@ -78,6 +88,8 @@ int main(void)
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
+#endif
+cout << "Here #3\n";
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
 	debugMsg("\n");
@@ -124,6 +136,7 @@ void die(int sigNum)
 	{
 		delete gRTX;
 		delete gCCI;
+		delete gUserInputs;
 	}
 	catch(int e)
 	{

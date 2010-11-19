@@ -1,5 +1,6 @@
 #include "MsgTrace.h"
 
+
 int MsgTrace::addTrace(MsgEnv* msg, int callingFunction)
 {
 	

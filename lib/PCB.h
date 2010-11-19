@@ -18,9 +18,7 @@ class Queue;
 
 class PCB 
 {
-	public:	
-		
-		
+	public:			
 		/*~*~* Member functions ~*~*~*~*/
 		//Constructors
 		PCB( PcbInfo* tableEntry ); 
@@ -77,7 +75,7 @@ class PCB
 		int _processType;
 		char* _stack;
 		int _state;
-		Queue _mailbox; //Message mailbox
+		Queue* _mailbox; //Message mailbox
 		//Context is a public member - WHY?
 };
 #endif
