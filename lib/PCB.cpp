@@ -16,10 +16,8 @@ PCB::PCB(PcbInfo* info)
 
 	_state = STATE;
 	
-//	Queue q (q.MSG_ENV);
-//	_mailbox = q;
-	_mailbox = new Queue( Queue::MSG_ENV );
-	
+	_mailbox = new Queue(Queue::MSG_ENV);
+
 	_context = new Context(_stack, info->stackSize);		//process will suspend here until enqueued by scheduler I think
 	
 	//Execution returns here after process is enqueued (in Context constructor).
@@ -30,9 +28,15 @@ PCB::PCB(PcbInfo* info)
 /*~*~*~*~*~*~* Destructors *~*~*~*~*~*~*~*/
 PCB::~PCB()
 {
+<<<<<<< HEAD
 	//free(_fPtr); //void*, can't use delete because it'll try to dereference
 	free(_stack);
 	delete _mailbox;
+=======
+	free(_fPtr); //void*, can't use delete because it'll try to dereference
+	delete[] _stack;
+	delete[] _mailbox;
+>>>>>>> 1dbcb2db1d191d0381efce399bbd1ef61d746c2d
 	delete[] _context;
 }
 
@@ -110,6 +114,26 @@ bool PCB::add_mail( MsgEnv* message )
 int PCB::check_mail( ) 
 { 
 	return (_mailbox->get_length());
+<<<<<<< HEAD
+=======
+}
+
+Queue* PCB::copy_mailbox()
+{
+	return _mailbox;
+}
+
+void PCB::empty_mailbox()
+{
+	delete (_mailbox);
+	return;
+}
+
+void PCB::set_mailbox(Queue* q)
+{
+	_mailbox = q;
+	return;
+>>>>>>> 1dbcb2db1d191d0381efce399bbd1ef61d746c2d
 }
 		
 

@@ -63,6 +63,10 @@ class PCB
 		bool add_mail( MsgEnv* message );
 		int check_mail( ); //returns number of messages in mailbox
 		
+		//ONLY USED BY SEND_CONSOLE_CHARS!!!
+		Queue* copy_mailbox();
+		void empty_mailbox();
+    void set_mailbox(Queue* q);			
 
 	private:
 		/*~*~*~*~*~* Members *~*~*~*~*~*/

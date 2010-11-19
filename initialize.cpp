@@ -64,9 +64,9 @@ cleanupShmem();
 	//Create and initialize rtx and its child members (schedling services etc)
 	debugMsg("\n");
 	
-	Queue q(q.STRING);
 	gUserInputs = new Queue();
 	gUserInputs->set_queueType((*gUserInputs).STRING);
+	
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
 

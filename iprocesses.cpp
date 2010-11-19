@@ -1,46 +1,46 @@
 #include "iprocesses.h"
 extern CCI* gCCI;
 extern RTX* gRTX;
+extern Queue* gUserInputs;
 
 void i_timing_process()
+{
+//	//overall clock count used for trace buffer time stamp
+//	static int timeCount = 0;//make global, put it in file where it has been decided to place global variables
+//	
+//	static Queue* waitingProcesses; //internal Q
+//	static int tickCount = 0; // used to determine when a delay request is expired
+//	
+//	timeCount++;
+//	tickCount++;
+//	
+//	//retrieve PCB of currently excecuting process (i_timing_process) 
+//	PCB* tempPCB = get_current_process();
+//		
+//	MsgEnv* tempMsg = tempPCB->retrieve_mail();
+//	if (tempMsg != NULL)
+//	{
+//		//compare time_delay with those in the internal Q
+//		//insert msg into correct place, subtract the time_delay request o all msg infrount of this one
+//		tempMsg = NULL;
+//	}
+//	if (waitingProcesses->_front->_timeDelay == tickCount) //if we add the timeDelay private member
+//	{
+//		tempMsg = waitingProcesses.dequeue_MsgEnv();
+//		tempMsg.setMsgType(WAKE_UP);
+//		int returnAddress = tempMsg->_originPid;
+//		sendMsg(returnAddress, tempMsg);
+//		tickCount = 0; 
+//	}
+//			
+//	gCCI->wallClock->increment();
 
-{/*
-	//overall clock count used for trace buffer time stamp
-	static int timeCount = 0;//make global, put it in file where it has been decided to place global variables
-	
-	static Queue* waitingProcesses; //internal Q
-	static int tickCount = 0; // used to determine when a delay request is expired
-	
-	timeCount++;
-	tickCount++;
-	
-	//retrieve PCB of currently excecuting process (i_timing_process) 
-	PCB* tempPCB = get_current_process();
-		
-	MsgEnv* tempMsg = tempPCB->retrieve_mail();
-	if (tempMsg != NULL)
-	{
-		//compare time_delay with those in the internal Q
-		//insert msg into correct place, subtract the time_delay request o all msg infrount of this one
-		tempMsg = NULL;
-	}
-	if (waitingProcesses->_front->_timeDelay == tickCount) //if we add the timeDelay private member
-	{
-		tempMsg = waitingProcesses.dequeue_MsgEnv();
-		tempMsg.setMsgType(WAKE_UP);
-		int returnAddress = tempMsg->_originPid;
-		sendMsg(returnAddress, tempMsg);
-		tickCount = 0; 
-	}
-			
-	gCCI->wallClock->increment();
-
-	string time;
-	if((time = gCCI->wallClock->toString()) != "")
-		cout << time << endl;
+//	string time;
+//	if((time = gCCI->wallClock->toString()) != "")
+//		cout << time << endl;
 
 	//ualarm(0,0);
-	*/
+	
 	return;
 }
 
@@ -57,7 +57,7 @@ void i_keyboard_handler()
 	{
 		//extract information from shared memory
 		string userMsg = "";		
-		//gUserInputs->enqueue(&userMsg);
+		gUserInputs->enqueue(&userMsg);
 	}
 	return;
 }
@@ -66,25 +66,26 @@ void i_keyboard_handler()
  * Before sending the signal, K_send_console_chars also sends the i_crt_handler a message envelope containing the message to be transmitted to the crt
  * The i_crt_handler therefore takes the message from its mailbox and adds it to the shared memory. Once added to shmem, the message is as good as sent.
  * The i_crt_handler WILL NOT write to the shmem if the CRT process is busy
- * If the transmission is complete, i_crt_handler will return the envelope to the invoking process as acknowledgement */
+ * The i_crt_handler will send a message envelope before exiting; envelope will be NULL if there's an error
+ * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
 	debugMsg("Signal Received: SIGUSR2: CRT",0,1);
 	bool CRTisBusy = false;
+	MsgEnv* retMsg;
+	int invoker;
 	
 	PCB* currPcb = NULL;
-	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS) //current PCB is valid
+	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).check_mail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
-		if((*currPcb).check_mail() > 0 ) //Someone is trying to send chars to the console
-		{
-			MsgEnv* retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
+			retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
 			if(retMsg == NULL) //make the check anyways
-			{
-				assure(true,"Null envelope in I_CRT mailbox. Cannot transmit, don't know who I'm supposed to tattle on!",__FILE__,__LINE__,__func__,true);
+			{				
+		   	gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error
 				return;
 			}
 			
-			int invoker = (*retMsg).getOriginPid();				
+			invoker = (*retMsg).getOriginPid();				
 			if(!CRTisBusy) //CRT is NOT busy - perform transmission
 			{
 				CRTisBusy = true;
@@ -96,8 +97,12 @@ void i_crt_handler()
 			{
 				(*retMsg).setMsgType((*retMsg).DISPLAY_FAIL);
 			}		
-			gRTX->K_send_message(invoker, retMsg);	
-		}
 	}
+	else //an error occurred, send a NULL envelope
+	{
+		retMsg = NULL;
+		invoker = getpid();
+	}
+	gRTX->K_send_message(invoker, retMsg);	
 	return;
 }

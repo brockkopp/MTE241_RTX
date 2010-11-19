@@ -56,7 +56,6 @@ class RTX
 		SignalHandler* 	_signalHandler;
 
 		MsgServ* 				_mailMan;
-		Queue						_userInputs;
 };
 
 #endif
