@@ -82,7 +82,7 @@ MsgEnv* MsgServ::recieveMsg()
 		gRTX->K_release_processor();
 	}
 	MsgEnv* tempMsg = tempPCB->retrieve_mail();
-	_msgTrace->add_trace(tempMsg, RECEIVE);
+	_msgTrace->addTrace(tempMsg, RECEIVE);
 	
 	return tempMsg;
 }
