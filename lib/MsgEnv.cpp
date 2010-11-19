@@ -1,12 +1,13 @@
 #include "MsgEnv.h"
 
+string MsgEnv::TRANSMIT_TO_CRT_REQUEST = "transmit_to_crt_request";
 string MsgEnv::DISPLAY_ACK = "display_ack";
 string MsgEnv::DISPLAY_FAIL = "display_fail";
 
 string MsgEnv::WAKE_UP = "wake_up";
 string MsgEnv::DELAY_REQUEST = "delay_request";
 
-string MsgEnv::TRANSMIT_TO_CRT_REQUEST = "transmit to CRT request";
+string MsgEnv::NO_INPUT = "";
 string MsgEnv::CONSOLE_INPUT = "console_input";
 
 int MsgEnv::getDestPid()

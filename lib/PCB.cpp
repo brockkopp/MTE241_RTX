@@ -16,8 +16,7 @@ PCB::PCB(PcbInfo* info)
 
 	_state = STATE;
 	
-	Queue q(q.MSG_ENV);
-	_mailbox = q;
+	_mailbox = new Queue(Queue::MSG_ENV);
 	
 	_context = new Context(_stack, info->stackSize);		//process will suspend here until enqueued by scheduler I think
 	
@@ -31,7 +30,7 @@ PCB::~PCB()
 {
 	free(_fPtr); //void*, can't use delete because it'll try to dereference
 	delete[] _stack;
-	delete[] &(_mailbox);
+	delete[] _mailbox;
 	delete[] _context;
 }
 
@@ -96,19 +95,36 @@ void PCB::restore_context() { _context->restore(); }
 //Dequeues oldest message in the mailbox (FIFO)
 MsgEnv* PCB::retrieve_mail( )
 {
-	return _mailbox.dequeue_MsgEnv();
+	return _mailbox->dequeue_MsgEnv();
 }
 
 //Enqueue message onto mailbox queue
 bool PCB::add_mail( MsgEnv* message )
 {
-	return (_mailbox.enqueue(message));
+	return (_mailbox->enqueue(message));
 }
 
 //Returns the number of messages in the mailbox
 int PCB::check_mail( ) 
 { 
-	return (_mailbox.get_length());
+	return (_mailbox->get_length());
+}
+
+Queue* PCB::copy_mailbox()
+{
+	return _mailbox;
+}
+
+void PCB::empty_mailbox()
+{
+	delete (_mailbox);
+	return;
+}
+
+void PCB::set_mailbox(Queue* q)
+{
+	_mailbox = q;
+	return;
 }
 		
 
