@@ -7,6 +7,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_signalHandler = signalHandler;
 
 	_scheduler = NULL;
+
 	_msgTrace = NULL;																					//allows mailMan access to trace functions
 	_mailMan = new MsgServ(_scheduler, _msgTrace);						//allows mailMan access to functions
 

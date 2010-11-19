@@ -72,6 +72,10 @@ MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
 	
 MsgServ.o:MsgServ.cpp MsgServ.h
 	@$(CMP) $(CMPFLGS) MsgServ.cpp
+
+MsgTrace.o:MsgTrace.cpp MsgTrace.h
+	@$(CMP) $(CMPFLGS) MsgTrace.cpp
+
 	
 MsgTrace.o:MsgTrace.cpp MsgTrace.h
 	@$(CMP) $(CMPFLGS) MsgTrace.cpp
