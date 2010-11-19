@@ -51,7 +51,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		gRTX->getPcb(destPid, &tempDestPCB);//is this right to send a PCB**? Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q
 		
 		bool temp;
-		int tempStatus = tempDestPCB->get_state();//// issue with msg vs pcb
+		int tempStatus = tempDestPCB->get_state();
 		if(tempStatus == BLOCKED_MSG_RECIEVE)
 			temp = _scheduler->unblock_process(tempDestPCB);
 		else if(tempStatus == SLEEPING)
@@ -63,6 +63,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		tempDestPCB->add_mail(msg);
 		return EXIT_SUCCESS;
 	}
+	return EXIT_ERROR;
 }
 
 MsgEnv* MsgServ::recieveMsg()
@@ -77,11 +78,11 @@ MsgEnv* MsgServ::recieveMsg()
 		if (tempPCB->get_processType() == PROCESS_I)
     	return NULL;
   		
-		//block_process(tempPCB, BLOCKED_MSG_RECIEVE); 		//should probably be moved to RTX primitive to allow access to scheduler -Brock
+		_scheduler->block_process(tempPCB, BLOCKED_MSG_RECIEVE); 		
 		gRTX->K_release_processor();
 	}
 	MsgEnv* tempMsg = tempPCB->retrieve_mail();
-	//add_trace(tempMsg, RECEIVE);
+	_msgTrace->add_trace(tempMsg, RECEIVE);
 	
 	return tempMsg;
 }
@@ -113,7 +114,7 @@ MsgEnv* MsgServ::requestEnv()
 	if( _freeEnvQ->isEmpty() ) 
 	{
 		//do i need to do something to prevent blocking an i_process Q*Q*Q*Q*Q*Q*Q*Q*Q
- 		//block_process(tempPCB, BLOCKED_ENV); 			
+ 		_scheduler->block_process(tempPCB, BLOCKED_ENV); 			
 		gRTX->K_release_processor();
 	}
 	MsgEnv* ptrMsg = _freeEnvQ->dequeue_MsgEnv();
