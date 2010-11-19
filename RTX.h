@@ -9,6 +9,7 @@
 #include "MsgServ.h"
 #include "lib/PCB.h"
 #include "lib/MsgEnv.h"
+#include "MsgTrace.h"
 
 class PcbInfo;
 class SignalHandler;
@@ -53,6 +54,9 @@ class RTX
 		PCB*						_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
 		Scheduler* 			_scheduler;
 		SignalHandler* 	_signalHandler;
+
+		MsgTrace* _msgTrace;
+
 		MsgServ* 				_mailMan;
 		Queue						_userInputs;
 };

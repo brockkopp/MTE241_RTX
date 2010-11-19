@@ -8,6 +8,7 @@
 #include "lib/PCB.h"
 
 
+
 class MsgServ
 {
 	public:
@@ -17,6 +18,8 @@ class MsgServ
 		MsgEnv* requestEnv();
 	private:
 		Queue* freeEnvQ;
+		Scheduler* _scheduler;
+		MsgTrace* _msgTrace;
 };
 
 #endif

@@ -8,8 +8,8 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
 	_scheduler = NULL;
-
-	_mailMan = new MsgServ();
+	_msgTrace = NULL;																					//added by Eric, allows mailMan access to trace functions
+	_mailMan = new MsgServ(_scheduler, _msgTrace);						//added by Eric, allows mailMan access to functions
 
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
@@ -148,8 +148,10 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
 	if(msg_envelope != NULL)
 	{
-		//msg_envelope->setMsgData(time_delay);
-		
+		msg_envelope->setTimeStamp(time_delay); 
+		msg_envelope->setMsgType(msg_envelope->WAKE_UP);
+		//need to have the PID of the timeing_Iprocess, #define I_TIMING_PID? Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q
+		//return K_send_message(I_TIMING_PID, msg_envelope);
 	}
 	return -2;
 }
@@ -222,5 +224,6 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
+	//return _msgTrace->getTraces(); // waiting on approval of _msgTrace in RTX.h private members - Eric
 	return -2;
 }
