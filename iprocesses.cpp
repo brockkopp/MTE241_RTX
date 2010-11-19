@@ -39,7 +39,7 @@ void i_timing_process()
 //	if((time = gCCI->wallClock->toString()) != "")
 //		cout << time << endl;
 
-//	//ualarm(0,0);
+	//ualarm(0,0);
 	
 	return;
 }

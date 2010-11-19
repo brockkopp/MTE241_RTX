@@ -12,14 +12,16 @@
 class MsgServ
 {
 	public:
+		MsgServ(Scheduler* scheduler);
+		~MsgServ();
 		int sendMsg(int destPid, MsgEnv* msg);
 		MsgEnv* recieveMsg();
 		int releaseEnv(MsgEnv* msg);
 		MsgEnv* requestEnv();
 	private:
-		Queue* freeEnvQ;
-		Scheduler* _scheduler;
+		Queue* _freeEnvQ;
 		MsgTrace* _msgTrace;
+		Scheduler* _scheduler;
 };
 
 #endif
