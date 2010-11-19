@@ -24,7 +24,7 @@ noRunMsg:
 run: all execute
 
 preclean:
-	@rm -f $(TITLE) $(KB) $(CRT) $(OBJ) $(KB_OBJ) $(CRT_OBJ)
+	@rm -f $(TITLE) $(KB) $(CRT) $(OBJ) $(KB_OBJ) $(CRT_OBJ) *.buf
 
 clean:
 	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ)	#Delete all object files
@@ -61,7 +61,7 @@ Context.o: lib/Context.cpp lib/Context.h
 debug.o: debug.cpp debug.h
 	@$(CMP) $(CMPFLGS) debug.cpp
 
-initialize.o: initialize.cpp RTX.h lib/PcbInfo.h
+initialize.o: initialize.cpp debug.h RTX.h CCI.h lib/PcbInfo.h
 	@$(CMP) $(CMPFLGS) initialize.cpp
 	
 iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h
@@ -70,12 +70,8 @@ iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h
 MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
 	@$(CMP) $(CMPFLGS) lib/MsgEnv.cpp
 	
-MsgServ.o:MsgServ.cpp MsgServ.h
+MsgServ.o:MsgServ.cpp MsgServ.h MsgTrace.h
 	@$(CMP) $(CMPFLGS) MsgServ.cpp
-
-MsgTrace.o:MsgTrace.cpp MsgTrace.h
-	@$(CMP) $(CMPFLGS) MsgTrace.cpp
-
 	
 MsgTrace.o:MsgTrace.cpp MsgTrace.h
 	@$(CMP) $(CMPFLGS) MsgTrace.cpp
@@ -89,7 +85,7 @@ PQ.o: lib/PQ.cpp lib/PQ.h lib/Queue.h lib/PCB.h
 Queue.o: lib/Queue.cpp lib/Queue.h debug.h
 	@$(CMP) $(CMPFLGS) lib/Queue.cpp
 
-RTX.o: RTX.cpp RTX.h lib/PcbInfo.h lib/PCB.h 
+RTX.o: RTX.cpp RTX.h lib/PcbInfo.h lib/PCB.h MsgServ.h Scheduler.h
 	@$(CMP) $(CMPFLGS) RTX.cpp
 
 SignalHandler.o: SignalHandler.cpp SignalHandler.h CCI.h

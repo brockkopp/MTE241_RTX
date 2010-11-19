@@ -4,6 +4,7 @@ extern Queue* gMsgsToCRT;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
+
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
@@ -16,6 +17,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	*/
 	
 	Queue* pcbTmpList = new Queue(Queue::PROCCONBLOCK); //Init queue of PCBs
+	
 	//Loop through _pcbList, enqueue each item into pcbTmpList.
 	for(int i=0; i < PROCESS_COUNT; i++)
 		pcbTmpList->enqueue(_pcbList[i]);

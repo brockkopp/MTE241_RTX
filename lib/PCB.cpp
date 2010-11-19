@@ -127,7 +127,6 @@ void PCB::set_mailbox(Queue* q)
 {
 	_mailbox = q;
 	return;
-
 }
 		
 

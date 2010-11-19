@@ -15,7 +15,7 @@ Scheduler::Scheduler(Queue* readyProcs)
 	_blockedMsgRecieve = new Queue( Queue::PROCCONBLOCK  );
 	
 	//Add all readyProcs to the ready queue.
-	for(int i=0; i<readyProcs->get_length(); i++) {
+	for(int i=0; i < readyProcs->get_length(); i++) {
 		PCB* temp = static_cast<PCB*>(readyProcs->dequeue_PCB());
 		_readyProcs->pq_enqueue( temp, temp->get_priority() );
 	}

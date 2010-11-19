@@ -27,14 +27,17 @@ int CCI::processCCI()
 		command = "";
 		input[0] = input[1] = input[2] = "";
 		errMsg = "";
-		
+
 		do
 		{
 			cout << ">RTX$ ";
 			getline(cin,command);
 		}
 		while(command.length() == 0);
-
+		
+		cout << "'" <<  command << "'";
+		//return EXIT_ERROR;
+		
 		params = parseString( command, input, ' ', 3);
 
 		if(params >= 1 && params <= 3)
