@@ -20,6 +20,7 @@ class MsgEnv
 	public:
 		
 		static string TRANSMIT_TO_CRT_REQUEST;
+		static string BUFFER_OVERFLOW;
 		static string DISPLAY_ACK;
 		static string DISPLAY_FAIL;
 

@@ -1,12 +1,3 @@
-#include <stdio.h> //printf(), getchar()
-#include <stdlib.h> //for exit()
-#include <signal.h> //sigset
-#include <unistd.h> //usleep
-//#include <fcntl.h>
-#include <sys/mman.h> //mmap, flags
-#include <sys/types.h> //off_t
-#include <sys/wait.h> //kill, sigset
-
 #include "Shmem.h"
 #include "debug.h"
 
@@ -17,7 +8,7 @@ void die(int signal)
 
 int main(int arg1, char* arg[])
 {
-	//debugMsg("CRT child initialized\n");
+	debugMsg("CRT child initialized\n");
 	
 	sigset(SIGINT, die); //set signal handler in case parent process terminates us
 	
@@ -31,54 +22,34 @@ int main(int arg1, char* arg[])
 	//now perform actual mapping of the shared memory file via the inputbuffer*
 	
 	tx_mmap_ptr = (char*)mmap((caddr_t) 0,  //memory Location, 0 lets OS choose
-														BUFSIZE,								//the number of bytes to map
-														PROT_READ | PROT_WRITE, //read/write permissions
-														MAP_SHARED,    					//indicate it's accesible by another process
-														fileId,           			//fileId of the file associated with the memory mapping
-														(off_t) 0);    					//offset in page frame
+							BUFSIZE,								//the number of bytes to map
+							PROT_READ | PROT_WRITE, //read/write permissions
+							MAP_SHARED,    					//indicate it's accesible by another process
+							fileId,           			//fileId of the file associated with the memory mapping
+							(off_t) 0);    					//offset in page frame
   if (tx_mmap_ptr == MAP_FAILED) //ensure mapping was successful; if not, this is a fatal error
   {
-    printf("Memory Mapping in CRT Child Has Failed. CRT is ABORTING!\n");
-		die(0);
+  	printf("Memory Mapping in CRT Child Has Failed. CRT is ABORTING!\n");
+	die(0);
   }
 	
-	inputBuffer* tx_mem_buf = (inputBuffer*) tx_mmap_ptr;  //tx_mem_buf is now a pointer to mapped shared memory! :)
+	inputBuffer* tx_mem_buf = (inputBuffer*) tx_mmap_ptr;  //x_mem_buf is now a pointer to mapped shared memory! :)
 
-//	//polling to read input from the keyboard
-//	int indexInBuf = 0;
-//	rx_mem_buf->busyFlag = 0; 
-//	char userInput;
-//	do
-//	{
-//		userInput = getchar();
-//		if (userInput == '\n') //indicates end of message. Keyboard process must add information to the shared memory and send a signal to the RTX
-//		{
-//			rx_mem_buf->data[indexInBuf] = '\n';
-//			rx_mem_buf->busyFlag = 1; //set flag that keyboard is "busy" i.e. trying to transmit something from shared memory to parent process
-//			kill(parentPid, SIGUSR1); //send a signal to the RTX indicating that data has been provided by the user -> COMPLETE MESSAGE SENT
-//			//do not reset indexInBuf until the i_keyboard_handler resets the busyFlag after extracting all information from shmem
-//			while(rx_mem_buf->busyFlag == 1) //wait for i_keyboard_handler to process signal
-//				usleep(100000); //wait 10^5 usec, or 0.1sec   !!!This may be considered an error on some systems; must be min 1000000 sometimes!
-//			
-//			//at this point, after leaving the while loop, this means the i_keyboard_handler has extracted information from the shared memory and reset the busy flag
-//			//this means the keyboard process is ready to take in more information! Reset the indexInBuf:
-//			indexInBuf = 0; 
-//		}	
-//		else //user is still inputting data...
-//		{
-//			rx_mem_buf->data[indexInBuf] = userInput;
-//			indexInBuf++;
-//			//check if memory is full!
-//			if(indexInBuf == MAXDATA)
-//			{
-//				rx_mem_buf->busyFlag = 1; //set flag that keyboard is "busy" i.e. trying to transmit something from shared memory to parent process
-//				kill(parentPid, SIGUSR1); //send a signal to the RTX indicating that data has been provided by the user -> MEMORY IS FULL!
-//				while(rx_mem_buf->busyFlag == 1) //wait for i_keyboard_handler to process signal and resets the busyFlag after extracting all information from shmem
-//					usleep(100000); //wait 10^5 usec, or 0.1sec   !!!This may be considered an error on some systems; must be min 1000000 sometimes!
-//			}			
-//		}
-//	}	
-//	while(1);  //an infinite loop - exit when parent signals us
-
+	//polling to read input from the keyboard
+	if(tx_mem_buf->busyFlag == 1) //synchronized with crt_i_process; set to 1 once iprocess started inputting values
+	{
+		int indexInBuf = 0;
+		char c = tx_mem_buf->data[indexInBuf];
+		while (c != '\0')
+		{
+			cout<<c;
+			indexInBuf++;
+			c = tx_mem_buf->data[indexInBuf];
+			if(indexInBuf == MAXDATA) //should  never happen
+				break;
+		}
+		tx_mem_buf->busyFlag = 0; //indicate that the entire message has been transmitted and the crt process is no longer busy
+		cout<<'\n';
+	}
 	return 0;
 }

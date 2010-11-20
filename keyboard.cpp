@@ -1,12 +1,3 @@
-#include <stdio.h> //printf(), getchar()
-#include <stdlib.h> //for exit()
-#include <signal.h> //sigset
-#include <unistd.h> //usleep
-//#include <fcntl.h>
-#include <sys/mman.h> //mmap, flags
-#include <sys/types.h> //off_t
-#include <sys/wait.h> //kill, sigset
-
 #include "Shmem.h"
 #include "debug.h"
 
