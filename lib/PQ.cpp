@@ -87,6 +87,13 @@ pItemType PQ::pq_pluck( pItemType target) {
 	return NULL;
 }
 
-
+string PQ::toString()
+{
+	string output = "PQ:";
+	int size = (int)(sizeof(_master)/sizeof(_master[0]));
+	for(int i = 0; i < size; i++)
+		output += "\t" + _master[i]->toString() + "\n";
+	return output;
+}
 
 

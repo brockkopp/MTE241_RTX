@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "MsgEnv.h"
+#include "PCB.h"
 #include "../debug.h"
 #include "../tools.h"
 
@@ -19,6 +20,7 @@ typedef struct QueueNodeTag
 {
 	itemType item;
 	struct QueueNodeTag *link;
+	int priority;				//Not used in FIFO queues
 }QueueNode;
 
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -49,6 +51,7 @@ class Queue
 	 ~Queue();
 	 
 	 bool enqueue( itemType value ); 
+	 bool sortedEnqueue( MsgEnv* newMsg, int priority );
 	 
 	 itemType 		dequeue_itemType();
 	 int* 				dequeue_int();
@@ -78,6 +81,7 @@ class Queue
 	 PCB* 				select( PCB* value );
 	 
 	 void printIntQueue(); //for testing purposes
+	 string toString();
 };
 
 #endif
