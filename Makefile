@@ -6,7 +6,7 @@ OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o T
 KB=KB.out
 KB_OBJ=keyboard.o debug.o
 CRT=CRT.out
-CRT_OBJ=crt.o
+CRT_OBJ=crt.o debug.o
 
 ##Command List
 all: compileMsg preclean $(KB) $(CRT) $(TITLE) clean noRunMsg

@@ -17,7 +17,7 @@ void die(int signal)
 
 int main(int arg1, char* arg[])
 {
-	//debugMsg("CRT child initialized\n");
+	debugMsg("CRT child initialized\n");
 	
 	sigset(SIGINT, die); //set signal handler in case parent process terminates us
 	
@@ -44,6 +44,7 @@ int main(int arg1, char* arg[])
 	
 	inputBuffer* tx_mem_buf = (inputBuffer*) tx_mmap_ptr;  //tx_mem_buf is now a pointer to mapped shared memory! :)
 
+	//polling to read input from the keyboard
 //	//polling to read input from the keyboard
 //	int indexInBuf = 0;
 //	rx_mem_buf->busyFlag = 0; 

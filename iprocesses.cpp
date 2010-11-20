@@ -86,7 +86,7 @@ void i_crt_handler()
 	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).check_mail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 			retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
-			string msgToConsole = "hello"; //retMsg->getMsgData();
+			string msgToConsole = retMsg->getMsgData();
 			if(retMsg == NULL || msgToConsole == "") //make the check anyways
 			{				
 				retMsg = NULL;
@@ -99,7 +99,7 @@ void i_crt_handler()
 			{
 			  int indexInBuf = 0; //CRT is NOT busy means that the buffer is empty
 				gTxMemBuf->busyFlag = 1;
-				for(int i=0; i<4; i++) //strlen(msgToConsole); i++)
+				for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
 				{
 					gTxMemBuf->data[indexInBuf] = msgToConsole[i];
 					indexInBuf++;
