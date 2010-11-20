@@ -4,7 +4,7 @@ LNKFLGS= -o
 TITLE=RTX.out
 OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o MsgServ.o MsgTrace.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
 KB=KB.out
-KB_OBJ=keyboard.o
+KB_OBJ=keyboard.o debug.o
 CRT=CRT.out
 CRT_OBJ=crt.o
 
