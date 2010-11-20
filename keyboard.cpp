@@ -9,20 +9,20 @@
 
 #include "Shmem.h"
 
-//#include "debug.h"
+#include "debug.h"
 
 
-void keyboard_die(int signal)
+void die(int signal)
 {
 	exit(0); //don't have to do anything since the RTX cleans up the shared memory
 }
 
 int main(int arg1, char* arg[])
 {
-	printf("KB  child initialized\n");
-	//debugMsg("KB  child initialized\n");
+	//printf("KB  child initialized\n");
+	debugMsg("KB  child initialized\n");
 	
-	sigset(SIGINT,keyboard_die); //set signal handler in case parent process terminates us
+	sigset(SIGINT, die); //set signal handler in case parent process terminates us
 	
 	int parentPid, fileId;
 	caddr_t rx_mmap_ptr;
@@ -42,7 +42,7 @@ int main(int arg1, char* arg[])
   if (rx_mmap_ptr == MAP_FAILED) //ensure mapping was successful; if not, this is a fatal error
   {
     printf("Memory Mapping in Keyboard Child Has Failed. Keyboard is ABORTING!\n");
-		keyboard_die(0);
+		die(0);
   }
 	
 	inputBuffer* rx_mem_buf = (inputBuffer*) rx_mmap_ptr;  //rx_mem_buf is now a pointer to mapped shared memory! :)
