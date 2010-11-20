@@ -3,6 +3,8 @@ extern CCI* gCCI;
 extern RTX* gRTX;
 extern Queue* gUserInputs;
 extern int gRunTime;
+extern inputBuffer* gRxMemBuf;
+extern inputBuffer* gTxMemBuf;
 
 void i_timing_process()
 {	
@@ -46,32 +48,23 @@ void i_timing_process()
 void i_keyboard_handler()
 {
 	debugMsg("Signal Received: SIGUSR1: KB",0,1);
-	bool KEYBOARDisBusy = false; //!!!*!*!*!*!*!*!*QQQQQQ*~!*!*!*!*!* Why do I need this? ~Ang
 	
 	PCB* currPcb = NULL;
-	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && !KEYBOARDisBusy) //current PCB is valid
+	char* userMsg;
+	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS) //current PCB is valid
 	{
 		//extract information from shared memory
-		string userMsg = "";		
-		gUserInputs->enqueue(&userMsg);
+		if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
+		{
+			userMsg = gRxMemBuf->data;
+			string s_UserMsg = userMsg;
+			debugMsg("Keyboard input was: ");
+			debugMsg(s_UserMsg);
+			gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
+			gCCI->userInputs->enqueue(&s_UserMsg); 
+		}
 	}
 	return;
-	
-			/*void kbd_handler(int signum)
-		{
-		inputbuf command;
-		// copy input buffer
-		if (in_mem_p->indata[0] != '\0')
-		{
-		strcpy(command.indata,in_mem_p->indata);
-		// we should parse the input string and execute the command given,
-		// but for now we just echo the input
-		//
-		printf("Keyboard input was: %s\n",command.indata);
-		in_mem_p->ok_flag = 0; // tell child that the buffer has been emptied
-		}
-		}
-		*/
 }
 
 /* Signal is sent to the i_crt_handler from the K_send_console_chars primitive. 
@@ -83,7 +76,6 @@ void i_keyboard_handler()
 void i_crt_handler()
 {
 	debugMsg("Signal Received: SIGUSR2: CRT",0,1);
-	bool CRTisBusy = false;
 	MsgEnv* retMsg;
 	int invoker;
 	
@@ -91,23 +83,33 @@ void i_crt_handler()
 	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).check_mail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 			retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
-			if(retMsg == NULL) //make the check anyways
+			string msgToConsole = "hello"; //retMsg->getMsgData();
+			if(retMsg == NULL || msgToConsole == "") //make the check anyways
 			{				
+				retMsg = NULL;
 		   	gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error
 				return;
 			}
 			
-			invoker = (*retMsg).getOriginPid();				
-			if(!CRTisBusy) //CRT is NOT busy - perform transmission
+			invoker = retMsg->getOriginPid();				
+			if(gTxMemBuf->busyFlag == 0) //CRT is NOT busy - perform transmission
 			{
-				CRTisBusy = true;
-				//add message to shmem
-				//what if have to wait for crt process?
-				(*retMsg).setMsgType((*retMsg).DISPLAY_ACK);
+			  int indexInBuf = 0; //CRT is NOT busy means that the buffer is empty
+				gTxMemBuf->busyFlag = 1;
+				for(int i=0; i<4; i++) //strlen(msgToConsole); i++)
+				{
+					gTxMemBuf->data[indexInBuf] = msgToConsole[i];
+					indexInBuf++;
+				}
+				//while loop below shouldn't even execute, because crt process is polling and will immediately print data to the screen and empty the buffer
+				while(gTxMemBuf->busyFlag == 1) //wait for crt process to copy information to the screen
+					usleep(100000); //wait 10^5 usec, or 0.1sec   !!!This may be considered an error on some systems; must be min 1000000 sometimes!
+					
+				retMsg->setMsgType(retMsg->DISPLAY_ACK);
 			}
 			else //return message that transmission failed
 			{
-				(*retMsg).setMsgType((*retMsg).DISPLAY_FAIL);
+				retMsg->setMsgType(retMsg->DISPLAY_FAIL);
 			}		
 	}
 	else //an error occurred, send a NULL envelope

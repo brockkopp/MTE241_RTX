@@ -113,5 +113,5 @@ WallClock.o: lib/WallClock.cpp lib/WallClock.h
 keyboard.o: keyboard.cpp Shmem.h
 	@$(CMP) $(CMPFLGS) keyboard.cpp
 
-crt.o: crt.cpp
+crt.o: crt.cpp Shmem.h
 	@$(CMP) $(CMPFLGS) crt.cpp

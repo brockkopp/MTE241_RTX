@@ -2,6 +2,7 @@
 #include "RTX.h"
 #include "CCI.h"
 #include "Shmem.h"
+#include <string.h>
 
 
 //#include <iostream>

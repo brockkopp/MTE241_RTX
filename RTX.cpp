@@ -1,6 +1,5 @@
 #include "RTX.h"
-extern Queue* gUserInputs;
-extern Queue* gMsgsToCRT;
+extern CCI* gCCI;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
@@ -174,7 +173,8 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 
 /* Message envelope contains messages (character string) to sent to console. 
  * String must be in usual C/C++ string format terminated by null character
- * send_console_chars sends then adds the message onto the global gMsgsToCRT Queue then sends a signal to the i_crt_handler who outputs to the console
+ * send_console_chars sends then adds the message into the message envelope, and then sends the envelope to i_crt_handler 
+ * send_console_chars then sends a signal to i_crt_handler who outputs to the console
  * After tranmission is complete, the same envelope is returned to invoking process with message_type "display_ack" as confirmation
  * Inovking process does not block! So if the CRT is busy, will return EXIT_ERROR and invoking process must loop to ensure transmission is complete
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
@@ -183,15 +183,15 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	if(msg_envelope == NULL) //error check
 		return EXIT_ERROR;
 		
-	string toSend = (*msg_envelope).getMsgData();
-	if(toSend[toSend.length()-1] != '\n') //ensure message is terminated by null character	
+	string toSend = msg_envelope->getMsgData();
+	if(toSend[toSend.length()-1] != '\0') //ensure message is terminated by null character	
 		return EXIT_ERROR;
 	
 	//validated that message is in correct format
 	int iCRTProcId = getpid(); //send a signal to the RTX
-	int invoker = (*msg_envelope).getOriginPid();
+	int invoker = msg_envelope->getOriginPid();
 	//send message to i_crt_handler to deal with transmission of the message to the console
-	(*msg_envelope).setMsgType((*msg_envelope).TRANSMIT_TO_CRT_REQUEST);
+	msg_envelope->setMsgType(msg_envelope->TRANSMIT_TO_CRT_REQUEST);
 	int res = K_send_message(iCRTProcId, msg_envelope);
 	
 	if(res != EXIT_ERROR)
@@ -226,18 +226,18 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 	int res;
 	if(atomic(true))
 	{	
-		int invoker = (*msg_envelope).getOriginPid();
-		if(gUserInputs->get_length() == 0) //no user input is available
+		int invoker = msg_envelope->getOriginPid();
+		if(gCCI->userInputs->get_length() == 0) //no user input is available
 		{
-		  (*msg_envelope).setMsgData("");
-		  (*msg_envelope).setMsgType((*msg_envelope).NO_INPUT);
+		  msg_envelope->setMsgData("");
+		  msg_envelope->setMsgType(msg_envelope->NO_INPUT);
 		  K_send_message(invoker, msg_envelope);
 			res = EXIT_ERROR;
 		}
 		else
 		{
-			(*msg_envelope).setMsgData(*(*gUserInputs).dequeue_string());
-			(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);			
+			msg_envelope->setMsgData(*(gCCI->userInputs->dequeue_string()));
+			msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);			
 			res = K_send_message(invoker, msg_envelope);
 		}
 	}

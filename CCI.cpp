@@ -7,12 +7,14 @@ extern RTX* gRTX;
 CCI::CCI()
 {
 	wallClock = new WallClock(100000);
+	userInputs = new Queue(Queue::STRING);
 	//ualarm(100000,100000);
 }
 
 CCI::~CCI()
 {
 	delete wallClock;
+	delete userInputs;
 }
 
 int CCI::processCCI()
