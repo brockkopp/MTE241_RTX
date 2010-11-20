@@ -116,7 +116,7 @@ void i_crt_handler()
 					}
 					
 					//CRT process will set busyFlag back to 0 once it has taken everything out of the buffer
-				  //So can assume that once things are in the buffer, they have been "successfully transmitted"
+				    //So can assume that once things are in the buffer, they have been "successfully transmitted"
 					retMsg->setMsgType(retMsg->DISPLAY_ACK); 
 				}
 			}

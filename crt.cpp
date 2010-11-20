@@ -33,7 +33,7 @@ int main(int arg1, char* arg[])
 	die(0);
   }
 	
-	inputBuffer* tx_mem_buf = (inputBuffer*) tx_mmap_ptr;  //tx_mem_buf is now a pointer to mapped shared memory! :)
+	inputBuffer* tx_mem_buf = (inputBuffer*) tx_mmap_ptr;  //x_mem_buf is now a pointer to mapped shared memory! :)
 
 	//polling to read input from the keyboard
 	if(tx_mem_buf->busyFlag == 1) //synchronized with crt_i_process; set to 1 once iprocess started inputting values
