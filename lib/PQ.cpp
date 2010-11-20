@@ -12,7 +12,7 @@ PQ::PQ( int nPriority )
 	try
 	{
 		for(int i = 0; i < nPriority; i++)
-			_master[i] = new Queue(4); 		//hard coded for compilability (brock)
+			_master[i] = new Queue( Queue::PROCCONBLOCK ); 		//hard coded for compilability (brock)
 	}
 	catch(char* c)
 	{
@@ -39,7 +39,7 @@ Return true if enqueue is successful, return false otherwise
 bool PQ::pq_enqueue (pItemType newData, int priorityLevel)
 {
 	//Check to make sure that the priority level exists
-	int masterLength = sizeof(_master); //I think this needs to be sizeof(master) / sizeof(master[0]) -karl
+	int masterLength = sizeof(_master)/sizeof(_master[0]);
 	if (priorityLevel >= masterLength) 
 	{
 		//Then the priorityLevel is too high, so return error
@@ -90,9 +90,9 @@ pItemType PQ::pq_pluck( pItemType target) {
 int PQ::length() {
 	int length = 0;
 	
-	for (int i; i < PRIORITY_LEVELS; i++)
-		length += _master[i]->get_length();
-		
+	for (int i=0; i < PRIORITY_LEVELS; i++) {
+			length += _master[i]->get_length();
+	}
 	return length;
 }
 
