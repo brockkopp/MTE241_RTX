@@ -13,7 +13,8 @@
 //Globals
 RTX* gRTX;
 CCI* gCCI;
-Queue* gUserInputs;
+inputBuffer* gRxMemBuf;
+inputBuffer* gTxMemBuf;
 
 //Private method declarations
 void doTests();
@@ -24,7 +25,7 @@ int createInitTable(PcbInfo* initTable[]);
 struct Shmem
 {
 	caddr_t rx_mmap_ptr;
-	caddr_t txPtr;
+	caddr_t tx_mmap_ptr;
 	char* 	rxFileName;
 	char* 	txFileName;
 	int 	rxId;
@@ -58,8 +59,6 @@ int main(void)
 
 	//Create and initialize rtx and its child members (schedling services etc)
 	debugMsg("\n");
-
-	gUserInputs = new Queue(Queue::STRING);
 
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
@@ -129,11 +128,12 @@ void die(int sigNum)
 	{
 		delete gRTX;
 		delete gCCI;
-		delete gUserInputs;
+		delete gRxMemBuf;
+		delete gTxMemBuf;
 	}
 	catch(int e)
 	{
-		debugMsg("RTX or CCI cleanup failed",0,1);
+		debugMsg("Global variable cleanup failed",0,1);
 	}
 
 	//Kill KB and CRT child processes
@@ -191,9 +191,13 @@ int initializeShmem()
 	fail += assure(shmem.rx_mmap_ptr != MAP_FAILED,"RX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
 	//Create TX buffer association
-	shmem.txPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.txId, (off_t) 0);
-	fail += assure(shmem.txPtr != MAP_FAILED,"TX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
+	shmem.tx_mmap_ptr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.txId, (off_t) 0);
+	fail += assure(shmem.tx_mmap_ptr != MAP_FAILED,"TX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
+	//Create pointers to communicate with shared memory
+	gRxMemBuf = (inputBuffer*)shmem.rx_mmap_ptr;
+	gTxMemBuf = (inputBuffer*)shmem.tx_mmap_ptr;
+	
 	//Assure that all functions returned success
 	if(fail == 0)
 		debugMsg("Shared Memory Initialization Successful");
@@ -210,7 +214,7 @@ int cleanupShmem()
 	try
 	{
 		munmap(shmem.rx_mmap_ptr,shmem.bufferSize);
-		munmap(shmem.txPtr,shmem.bufferSize);
+		munmap(shmem.tx_mmap_ptr,shmem.bufferSize);
 
 		close(shmem.rxId);    
 		close(shmem.txId);
