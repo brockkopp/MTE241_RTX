@@ -18,11 +18,12 @@ void i_timing_process()
 	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
 	MsgEnv* tempMsg = tempPCB->retrieve_mail();
-//	if (tempMsg != NULL)
-//	{
-//		call sorted EnQ() function in queue class
-//		tempMsg = NULL;
-//	}
+	if (tempMsg != NULL)
+	{
+		int expire = gRunTime + tempMsg->getTimeStamp();
+		waitingProcesses->sortedEnqueue(tempMsg, expire);
+		tempMsg = NULL;
+	}
 	if (waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
 	{
 		tempMsg = waitingProcesses->dequeue_MsgEnv();
@@ -30,12 +31,12 @@ void i_timing_process()
 		int returnAddress = tempMsg->getOriginPid();
 		gRTX->K_send_message(returnAddress, tempMsg);
 	}
-//			
-//	gCCI->wallClock->increment();
+			
+	gCCI->wallClock->increment();
 
-//	string time;
-//	if((time = gCCI->wallClock->toString()) != "")
-//		cout << time << endl;
+	string time;
+	if((time = gCCI->wallClock->toString()) != "")
+		cout << time << endl;
 
 	ualarm(0,0);
 	
