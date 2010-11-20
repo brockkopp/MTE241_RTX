@@ -95,25 +95,34 @@ void i_crt_handler()
 			}
 			
 			invoker = retMsg->getOriginPid();				
-			if(gTxMemBuf->busyFlag == 0) //CRT is NOT busy - perform transmission
-			{
-			  int indexInBuf = 0; //CRT is NOT busy means that the buffer is empty
-				gTxMemBuf->busyFlag = 1;
-				for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
-				{
-					gTxMemBuf->data[indexInBuf] = msgToConsole[i];
-					indexInBuf++;
-				}
-				//while loop below shouldn't even execute, because crt process is polling and will immediately print data to the screen and empty the buffer
-				while(gTxMemBuf->busyFlag == 1) //wait for crt process to copy information to the screen
-					usleep(100000); //wait 10^5 usec, or 0.1sec   !!!This may be considered an error on some systems; must be min 1000000 sometimes!
-					
-				retMsg->setMsgType(retMsg->DISPLAY_ACK);
-			}
-			else //return message that transmission failed
+			
+			//if busy, return fail 
+			if(gTxMemBuf->busyFlag == 1) //CRT is busy (currently transmitting something to , cannot output to screen
 			{
 				retMsg->setMsgType(retMsg->DISPLAY_FAIL);
-			}		
+			}	
+			else //CRT is NOT busy - perform transmission
+			{
+				if(msgToConsole.size() > MAXDATA) //buffer would overflows
+				{
+					//don't bother copying message into buffer; partial messages are not acceptable. Invoking process must do it line by line
+					retMsg->setMsgType(retMsg->BUFFER_OVERFLOW);
+				}
+				else
+				{
+					gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
+					int indexInBuf = 0; //start writing from beginning of the shmem
+					for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
+					{
+						gTxMemBuf->data[indexInBuf] = msgToConsole[i];
+						indexInBuf++;
+					}
+					
+					//CRT process will set busyFlag back to 0 once it has taken everything out of the buffer
+				  //So can assume that once things are in the buffer, they have been "successfully transmitted"
+					retMsg->setMsgType(retMsg->DISPLAY_ACK); 
+				}
+			}
 	}
 	else //an error occurred, send a NULL envelope
 	{

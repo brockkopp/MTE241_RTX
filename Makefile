@@ -61,7 +61,7 @@ Context.o: lib/Context.cpp lib/Context.h
 debug.o: debug.cpp debug.h
 	@$(CMP) $(CMPFLGS) debug.cpp
 
-initialize.o: initialize.cpp debug.h RTX.h CCI.h lib/PcbInfo.h
+initialize.o: initialize.cpp debug.h RTX.h CCI.h lib/PcbInfo.h Shmem.h
 	@$(CMP) $(CMPFLGS) initialize.cpp
 	
 iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h Shmem.h

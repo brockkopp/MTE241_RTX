@@ -1,13 +1,11 @@
 #include "debug.h"
 #include "RTX.h"
 #include "CCI.h"
-#include <sys/mman.h>
-#include <sys/wait.h>
-#include <fcntl.h>
 #include "SignalHandler.h"
 #include "tests.h"
+#include "Shmem.h"
 
-#include <sys/types.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 
 //Globals
