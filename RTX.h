@@ -54,9 +54,7 @@ class RTX
 		PCB*						_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
 		Scheduler* 			_scheduler;
 		SignalHandler* 	_signalHandler;
-
 		MsgServ* 				_mailMan;
 };
 
 #endif
-

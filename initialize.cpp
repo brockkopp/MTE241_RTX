@@ -14,6 +14,7 @@
 RTX* gRTX;
 CCI* gCCI;
 Queue* gUserInputs;
+int gRunTime = 0;
 
 //Private method declarations
 void doTests();

@@ -96,21 +96,25 @@ int RTX::atomic(bool on)
 
 int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
 {
+	//call MsgServ class function sendMsg
 	return _mailMan->sendMsg(dest_process_id, msg_envelope);
 }
 
 MsgEnv* RTX::K_receive_message()
 {
+	//call MsgServ class function recieveMsg
 	return _mailMan->recieveMsg();
 }
 
 MsgEnv* RTX::K_request_msg_env()
 {
+	//call MsgServ class function requestEnv
 	return _mailMan->requestEnv();
 }
 
 int RTX::K_release_msg_env(MsgEnv* memory_block)
 {
+	//call MsgServ class function releaseEnv
 	return _mailMan->releaseEnv(memory_block);
 }
 
@@ -122,7 +126,7 @@ int RTX::K_release_processor()
 	return -2;
 }
 
-int RTX::K_request_process_status(MsgEnv* memory_block) //why does this requre a msg envelope? shouldn't it just require the PCB and return the status? -Eric
+int RTX::K_request_process_status(MsgEnv* memory_block) 
 {
 //	array returnArray
 //	for each PCB
@@ -156,14 +160,16 @@ int RTX::K_change_priority(int new_priority, int target_process_id)
 
 int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
+	
 	if(msg_envelope != NULL)
 	{
+		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay); 
 		msg_envelope->setMsgType(msg_envelope->WAKE_UP);
-		//need to have the PID of the timeing_Iprocess, #define I_TIMING_PID? Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q
-		//return K_send_message(I_TIMING_PID, msg_envelope);
+		//call Kernal send message to send to timing iProcess
+		return K_send_message(0, msg_envelope); //i_timing_process PID is 0
 	}
-	return -2;
+	return EXIT_ERROR;
 }
 
 /* Message envelope contains messages (character string) to sent to console. 
@@ -241,6 +247,6 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
-	//return _msgTrace->getTraces(); // waiting on approval of _msgTrace in RTX.h private members - Eric
+	//return _msgTrace->getTraces(); 
 	return -2;
 }

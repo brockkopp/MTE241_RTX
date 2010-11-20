@@ -4,6 +4,7 @@
 #include "../debug.h"
 #include "../tools.h"
 
+
 class MsgEnv
 {
 	private:
@@ -17,8 +18,7 @@ class MsgEnv
 		}msgFields;
 		
 	public:
-		//possible message types - Not sure implementation is correct of these constants...
-		//i thought we wanted to use const int rather than strings-Eric
+		
 		static string TRANSMIT_TO_CRT_REQUEST;
 		static string DISPLAY_ACK;
 		static string DISPLAY_FAIL;

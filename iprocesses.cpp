@@ -2,38 +2,32 @@
 extern CCI* gCCI;
 extern RTX* gRTX;
 extern Queue* gUserInputs;
+extern int gRunTime;
 
 void i_timing_process()
-{
-//	
+{	
+	static Queue* waitingProcesses = new Queue(Queue::MSG_ENV); //internal Q
 
-//	
-//	static Queue* waitingProcesses; //internal Q
-//	static int tickCount = 0; // used to determine when a delay request is expired
+	//overall rtx clock count used for trace buffer time stamp
+	gRunTime ++;
 
-//	//overall rtx clock count used for trace buffer time stamp
-//	MsgTrace::totalRunTime ++;
-//	//i_timing_process internal count	
-//	tickCount++;
-//	
-//	//retrieve PCB of currently excecuting process (i_timing_process) 
-//	PCB* tempPCB = get_current_process();
-//		
-//	MsgEnv* tempMsg = tempPCB->retrieve_mail();
+	//retrieve PCB of currently excecuting process (i_timing_process) 
+	PCB* tempPCB;
+	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+	
+	MsgEnv* tempMsg = tempPCB->retrieve_mail();
 //	if (tempMsg != NULL)
 //	{
-//		//compare time_delay with those in the internal Q
-//		//insert msg into correct place, subtract the time_delay request o all msg infrount of this one
+//		call sorted EnQ() function in queue class
 //		tempMsg = NULL;
 //	}
-//	if (waitingProcesses->_front->_timeDelay == tickCount) //if we add the timeDelay private member
-//	{
-//		tempMsg = waitingProcesses.dequeue_MsgEnv();
-//		tempMsg.setMsgType(WAKE_UP);
-//		int returnAddress = tempMsg->_originPid;
-//		sendMsg(returnAddress, tempMsg);
-//		tickCount = 0; 
-//	}
+	if (waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
+	{
+		tempMsg = waitingProcesses->dequeue_MsgEnv();
+		tempMsg->setMsgType(MsgEnv::WAKE_UP);
+		int returnAddress = tempMsg->getOriginPid();
+		gRTX->K_send_message(returnAddress, tempMsg);
+	}
 //			
 //	gCCI->wallClock->increment();
 

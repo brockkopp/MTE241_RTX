@@ -1,6 +1,6 @@
 #include "MsgServ.h"
 
-static string WAKE_UP = "wake_up";
+//static string WAKE_UP = "wake_up";
 
 extern RTX* gRTX;
 
@@ -9,7 +9,7 @@ MsgServ::MsgServ(Scheduler* scheduler)
 	_scheduler = scheduler;
 	
 	int msgTotal = 0;
-	while(msgTotal <= 10)
+	while(msgTotal <= 20)
 	{
 		MsgEnv* msg = new MsgEnv;
 		_freeEnvQ->enqueue(msg);
@@ -19,7 +19,7 @@ MsgServ::MsgServ(Scheduler* scheduler)
 
 MsgServ::~MsgServ()
 {
-	int msgTotal = 10;
+	int msgTotal = 20;
 	MsgEnv* msg;
 	while(msgTotal >= 0)
 	{
