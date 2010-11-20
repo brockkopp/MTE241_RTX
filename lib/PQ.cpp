@@ -87,6 +87,15 @@ pItemType PQ::pq_pluck( pItemType target) {
 	return NULL;
 }
 
+int PQ::length() {
+	int length = 0;
+	
+	for (int i; i < PRIORITY_LEVELS; i++)
+		length += _master[i]->get_length();
+		
+	return length;
+}
+
 
 
 
