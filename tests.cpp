@@ -153,7 +153,7 @@ int testPQ() {
 
 	const int VERBAL = 0; // Turn this to zero to turn off output.
 
-return -2;
+//return -2;
 
 	PQ* pq = new PQ(4);
 	
@@ -211,10 +211,18 @@ return -2;
 		
 if (VERBAL) debugMsg("\n\nPQ length:" + intToStr(pq->length()) + "\n");
 if (VERBAL) debugMsg("Enqueue one pcb\n");
-PCB* pcb = new PCB (initTable[1]);
-if (VERBAL) debugMsg("check\n");
-pq->pq_enqueue(pcb, initTable[1]->priority);
-if (VERBAL) debugMsg("check2\n");
+PCB* pcb = new PCB (initTable[0]);
+pq->pq_enqueue(pcb, initTable[0]->priority);
+if (VERBAL) debugMsg("PQ length:" +  intToStr(pq->length()) + "\n");
+
+if (VERBAL) debugMsg("Enqueue rest of pcbs\n");
+for (int i=1; i<7; i++){
+	if (VERBAL) debugMsg("Enqueue pcb: " + intToStr(i) + "\n" );
+	PCB* pcb = new PCB (initTable[i]);
+	pq->pq_enqueue(pcb, initTable[i]->priority);
+	if (VERBAL) debugMsg("PQ length:" +  intToStr(pq->length()) + "\n");
+}
+
 if (VERBAL) debugMsg("PQ length:" +  intToStr(pq->length()) + "\n");
 
 return -1;

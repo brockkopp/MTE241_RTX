@@ -89,8 +89,8 @@ int main(void)
 
 	gCCI = new CCI();
 	
-	//Start scheduler <-- Brock, is this correct here? --Karl *must be BEFORE doTests*
-//	gRTX->start_execution();
+	//Start scheduler. Put the first process onto the CPU
+	gRTX->start_execution();
 	
 #if TESTS_MODE == 1
 	doTests();

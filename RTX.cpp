@@ -27,7 +27,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 			pcbTmpList->enqueue(_pcbList[i]);
 	}
 	
-	//_scheduler = new Scheduler (pcbTmpList);
+	_scheduler = new Scheduler (pcbTmpList);
 	delete pcbTmpList;
 	
 	_signalHandler->setSigMasked(false);

@@ -93,8 +93,10 @@ int PQ::length() {
 	int length = 0;
 	
 	for (int i=0; i < PRIORITY_LEVELS; i++) {
+	
 			length += _master[i]->get_length();
 	}
+	
 	return length;
 }
 
