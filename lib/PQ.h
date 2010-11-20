@@ -16,10 +16,13 @@ class PQ {
 	pItemType pq_dequeue( );
 	pItemType pq_pluck( pItemType target); 
 	string toString();  
+  	int length();
   
   private:
+  
+  static const int PRIORITY_LEVELS = 4;
 	//Queue* _master[];
-	Queue* _master[4];
+	Queue* _master[ PRIORITY_LEVELS ]; //<-- I still believe this should not be hardcoded (!) --Karl
 };
 
 #endif

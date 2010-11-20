@@ -1,16 +1,5 @@
-#include <stdio.h> //printf(), getchar()
-#include <stdlib.h> //for exit()
-#include <signal.h> //sigset
-#include <unistd.h> //usleep
-//#include <fcntl.h>
-#include <sys/mman.h> //mmap, flags
-#include <sys/types.h> //off_t
-#include <sys/wait.h> //kill, sigset
-
 #include "Shmem.h"
-
 #include "debug.h"
-
 
 void die(int signal)
 {
@@ -19,8 +8,7 @@ void die(int signal)
 
 int main(int arg1, char* arg[])
 {
-	//printf("KB  child initialized\n");
-	debugMsg("KB  child initialized\n");
+	debugMsg("KB child initialized\n");
 	
 	sigset(SIGINT, die); //set signal handler in case parent process terminates us
 	

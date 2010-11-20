@@ -1,6 +1,7 @@
 #include "MsgEnv.h"
 
 string MsgEnv::TRANSMIT_TO_CRT_REQUEST = "transmit_to_crt_request";
+string MsgEnv::BUFFER_OVERFLOW = "buffer_overflow";
 string MsgEnv::DISPLAY_ACK = "display_ack";
 string MsgEnv::DISPLAY_FAIL = "display_fail";
 
@@ -18,7 +19,7 @@ int MsgEnv::getDestPid()
 int MsgEnv::setDestPid(int newDestPid)
 {
 	//check if a valid destPID was passed
-	if(newDestPid >=0 && newDestPid <=0)           //PROCESS_COUNT)
+	if(newDestPid >=0 && newDestPid <=7)           //PROCESS_COUNT)
 
 	{
 		msgFields._destPid = newDestPid;
@@ -35,12 +36,7 @@ int MsgEnv::getOriginPid()
 int MsgEnv::setOriginPid(int newOriginPid)
 {
 	//check if passed PID is valid
-		/* ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * 
-	~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ *
-	~ * ~ * ~ * ~ * ~ * Using processCOUNT or no? If so, make it compile ~ * ~ * ~ * ~ * ~ * ~ * ~ * 
-	~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ * ~ */
-	//if(newOriginPid >=0 && newOriginPid <=PROCESS_COUNT)//confirm # of processes
-	if(newOriginPid >=0 && newOriginPid <=0)
+	if(newOriginPid >=0 && newOriginPid <= 7)           //PROCESS_COUNT)
 	{
 		msgFields._originPid = newOriginPid;
 		return EXIT_SUCCESS;

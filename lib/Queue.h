@@ -54,31 +54,31 @@ class Queue
 	 bool sortedEnqueue( MsgEnv* newMsg, int priority );
 	 
 	 itemType 		dequeue_itemType();
-	 int* 				dequeue_int();
-	 std::string* dequeue_string();
-	 MsgEnv* 			dequeue_MsgEnv();
-	 PCB*					dequeue_PCB();
+	 int* 			dequeue_int();
+	 std::string* 	dequeue_string();
+	 MsgEnv* 		dequeue_MsgEnv();
+	 PCB*			dequeue_PCB();
 	 
-	 bool 				contains( itemType value );	
-	 MsgEnv*			get_front(); 
-	 int 					get_length();
-	 int 					get_queueType(); //constants declared in Queue class!
-	 void 				set_queueType( int type ); //may only be done if _queueType not already defined
-	 bool 				isEmpty();	
+	 bool 			contains( itemType value );	
+	 MsgEnv*		get_front(); 
+	 int 			get_length();
+	 int 			get_queueType(); //constants declared in Queue class!
+	 void 			set_queueType( int type ); //may only be done if _queueType not already defined
+	 bool 			isEmpty();	
 	  
 	 itemType 		pluck ( itemType value );
-	 int* 				pluck ( int* value );
-	 std::string* pluck ( std::string* value );
-	 MsgEnv* 			pluck ( MsgEnv* value );
-	 PCB* 				pluck ( PCB* value );
+	 int* 			pluck ( int* value );
+	 std::string* 	pluck ( std::string* value );
+	 MsgEnv* 		pluck ( MsgEnv* value );
+	 PCB* 			pluck ( PCB* value );
 	 
 	 bool replace( itemType currValue, itemType newValue );
 	 
 	 itemType 		select( itemType value );
-	 int* 				select( int* value );
-	 std::string* select( std::string* value );
-	 MsgEnv* 			select( MsgEnv* value );
-	 PCB* 				select( PCB* value );
+	 int* 			select( int* value );
+	 std::string* 	select( std::string* value );
+	 MsgEnv* 		select( MsgEnv* value );
+	 PCB* 			select( PCB* value );
 	 
 	 void printIntQueue(); //for testing purposes
 	 string toString();

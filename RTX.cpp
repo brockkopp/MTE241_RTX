@@ -1,6 +1,5 @@
 #include "RTX.h"
-extern Queue* gUserInputs;
-extern Queue* gMsgsToCRT;
+extern CCI* gCCI;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
@@ -94,21 +93,25 @@ int RTX::atomic(bool on)
 	return ret;
 }
 
+//Call MsgServ class function sendMsg
 int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
 {
 	return _mailMan->sendMsg(dest_process_id, msg_envelope);
 }
 
+//Call MsgServ class function recieveMsg
 MsgEnv* RTX::K_receive_message()
 {
 	return _mailMan->recieveMsg();
 }
 
+//Call MsgServ class function requestEnv
 MsgEnv* RTX::K_request_msg_env()
-{
+{	
 	return _mailMan->requestEnv();
 }
 
+//Call MsgServ class function releaseEnv
 int RTX::K_release_msg_env(MsgEnv* memory_block)
 {
 	return _mailMan->releaseEnv(memory_block);
@@ -122,7 +125,7 @@ int RTX::K_release_processor()
 	return -2;
 }
 
-int RTX::K_request_process_status(MsgEnv* memory_block) //why does this requre a msg envelope? shouldn't it just require the PCB and return the status? -Eric
+int RTX::K_request_process_status(MsgEnv* memory_block) 
 {
 //	array returnArray
 //	for each PCB
@@ -156,19 +159,22 @@ int RTX::K_change_priority(int new_priority, int target_process_id)
 
 int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
+	
 	if(msg_envelope != NULL)
 	{
+		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay); 
 		msg_envelope->setMsgType(msg_envelope->WAKE_UP);
-		//need to have the PID of the timeing_Iprocess, #define I_TIMING_PID? Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q
-		//return K_send_message(I_TIMING_PID, msg_envelope);
+		//call Kernal send message to send to timing iProcess
+		return K_send_message(0, msg_envelope); //i_timing_process PID is 0
 	}
-	return -2;
+	return EXIT_ERROR;
 }
 
 /* Message envelope contains messages (character string) to sent to console. 
  * String must be in usual C/C++ string format terminated by null character
- * send_console_chars sends then adds the message onto the global gMsgsToCRT Queue then sends a signal to the i_crt_handler who outputs to the console
+ * send_console_chars sends then adds the message into the message envelope, and then sends the envelope to i_crt_handler 
+ * send_console_chars then sends a signal to i_crt_handler who outputs to the console
  * After tranmission is complete, the same envelope is returned to invoking process with message_type "display_ack" as confirmation
  * Inovking process does not block! So if the CRT is busy, will return EXIT_ERROR and invoking process must loop to ensure transmission is complete
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
@@ -177,15 +183,15 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	if(msg_envelope == NULL) //error check
 		return EXIT_ERROR;
 		
-	string toSend = (*msg_envelope).getMsgData();
-	if(toSend[toSend.length()-1] != '\n') //ensure message is terminated by null character	
+	string toSend = msg_envelope->getMsgData();
+	if(toSend[toSend.length()-1] != '\0') //ensure message is terminated by null character	
 		return EXIT_ERROR;
 	
 	//validated that message is in correct format
 	int iCRTProcId = getpid(); //send a signal to the RTX
-	int invoker = (*msg_envelope).getOriginPid();
+	int invoker = msg_envelope->getOriginPid();
 	//send message to i_crt_handler to deal with transmission of the message to the console
-	(*msg_envelope).setMsgType((*msg_envelope).TRANSMIT_TO_CRT_REQUEST);
+	msg_envelope->setMsgType(msg_envelope->TRANSMIT_TO_CRT_REQUEST);
 	int res = K_send_message(iCRTProcId, msg_envelope);
 	
 	if(res != EXIT_ERROR)
@@ -197,13 +203,22 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 		curr->empty_mailbox();
 		
 		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
-	  msg_envelope = K_receive_message(); //this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the 				i_crt_handler sends a message before exiting	  
+	  	//this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the i_crt_handler sends a message before exiting	  
+	  	msg_envelope = K_receive_message(); 
 	  
-	  curr->set_mailbox(temp); //restore mailbox
+	 	curr->set_mailbox(temp); //restore mailbox
 	  
 		bool transmission_failed = (msg_envelope == NULL);
 		if(!transmission_failed)
-			res = K_send_message(invoker, msg_envelope); //the message type will be set to DISPLAY_ACK by the iprocess
+		{
+			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+			{
+				res = EXIT_ERROR;
+				K_send_message(invoker, msg_envelope);
+			}
+			else
+				res = K_send_message(invoker, msg_envelope); //the message type was set to DISPLAY_ACK by the iprocess
+		}
 		else
 			res = EXIT_ERROR;
 	}
@@ -220,18 +235,18 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 	int res;
 	if(atomic(true))
 	{	
-		int invoker = (*msg_envelope).getOriginPid();
-		if(gUserInputs->get_length() == 0) //no user input is available
+		int invoker = msg_envelope->getOriginPid();
+		if(gCCI->userInputs->get_length() == 0) //no user input is available
 		{
-		  (*msg_envelope).setMsgData("");
-		  (*msg_envelope).setMsgType((*msg_envelope).NO_INPUT);
+		  msg_envelope->setMsgData("");
+		  msg_envelope->setMsgType(msg_envelope->NO_INPUT);
 		  K_send_message(invoker, msg_envelope);
 			res = EXIT_ERROR;
 		}
 		else
 		{
-			(*msg_envelope).setMsgData(*(*gUserInputs).dequeue_string());
-			(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);			
+			msg_envelope->setMsgData(*(gCCI->userInputs->dequeue_string()));
+			msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);			
 			res = K_send_message(invoker, msg_envelope);
 		}
 	}
@@ -241,6 +256,6 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
-	//return _msgTrace->getTraces(); // waiting on approval of _msgTrace in RTX.h private members - Eric
+	//return _msgTrace->getTraces(); 
 	return -2;
 }

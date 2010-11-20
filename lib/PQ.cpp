@@ -39,14 +39,14 @@ Return true if enqueue is successful, return false otherwise
 bool PQ::pq_enqueue (pItemType newData, int priorityLevel)
 {
 	//Check to make sure that the priority level exists
-	int masterLength = sizeof(_master); //I think this needs to be sizeof(master) / sizeof(master[0]) -karl
+	int masterLength = sizeof(_master)/sizeof(_master[0]); 
 	if (priorityLevel >= masterLength) 
 	{
 		//Then the priorityLevel is too high, so return error
 		return false;
 	}
 	
-	//Enqueue the data at t"int""int"he requested priority level.	
+	//Enqueue the data at the requested priority level.	
 	return (_master[priorityLevel]->enqueue(newData));	
 }
 
@@ -56,7 +56,7 @@ Dequeues a pointer to an pItemType. Returns null if there is nothing to dequeue.
 
 pItemType PQ::pq_dequeue() 
 {
-	int masterLength = sizeof(_master);
+	int masterLength = sizeof(_master)/sizeof(_master[0]);
 	itemType returnVal;
 	for( int i = 0; i < masterLength; i++) 
 	{
@@ -96,4 +96,11 @@ string PQ::toString()
 	return output;
 }
 
-
+int PQ::length() {
+	int length = 0;
+	
+	for (int i; i < PRIORITY_LEVELS; i++)
+		length += _master[i]->get_length();
+		
+	return length;
+}

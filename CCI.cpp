@@ -7,12 +7,14 @@ extern RTX* gRTX;
 CCI::CCI()
 {
 	wallClock = new WallClock(100000);
+	userInputs = new Queue(Queue::STRING);
 	//ualarm(100000,100000);
 }
 
 CCI::~CCI()
 {
 	delete wallClock;
+	delete userInputs;
 }
 
 int CCI::processCCI()
@@ -49,8 +51,7 @@ int CCI::processCCI()
 					myEnv->setDestPid(USER_PROC_A);
 					//Set other appropriate fields
 					if(gRTX->K_send_message(USER_PROC_A, myEnv) != EXIT_SUCCESS)
-						errMsg = "Message failed to send";
-					
+						errMsg = "Message failed to send";					
 				}
 			}
 			else if(input[0] == "ps")	//to complete
