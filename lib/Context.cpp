@@ -8,14 +8,13 @@ It is used to keep track of a PCB/Proc's context.
 */
 Context::Context (char* stackPtr, int stackSize) 
 {
-	//SEE rtxInitialization on UW-ACE
 	jmp_buf tempBuf;
-//	setjmp( tempBuf ); //Might this be needed? pdf doesn't say it is --karl
+
 	if( setjmp(tempBuf) == 0 )
 	{
 		//_set_sp(stackPtr + stackSize);
 		if( setjmp(_localJmpBuf ) == 0 )
-			longjmp(tempBuf ,1 ); //Error accessing memory occuring at this line --karl
+			longjmp(tempBuf ,1 );
 	}
 }
 
