@@ -11,8 +11,11 @@
 //Globals
 RTX* gRTX;
 CCI* gCCI;
+Queue* gUserInputs;
+int gRunTime = 0;
 inputBuffer* gRxMemBuf;
 inputBuffer* gTxMemBuf;
+
 
 //Private method declarations
 void doTests();
