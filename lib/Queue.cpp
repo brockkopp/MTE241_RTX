@@ -186,17 +186,17 @@ bool Queue::sortedEnqueue( MsgEnv* newMsg, int priority )
 		tempNode->item = newMsg;
 		tempNode->priority = priority;
 		
-		if(_front == NULL)									//0 Items
+		if(_front == NULL)										//Empty Queue
 		{
 			tempNode->link = NULL;
 			_front = tempNode;	
 			_rear  = tempNode;
 		}
-		else												//0+ Items
+		else
 		{
-			QueueNode* curr = _rear;			//higher
+			QueueNode* curr = _rear;
 
-			if(curr->link == NULL)								//1 Item
+			if(curr->link == NULL)								//Only 1 Node
 			{
 				if(curr->priority > tempNode->priority)
 				{

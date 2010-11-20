@@ -14,6 +14,7 @@
 RTX* gRTX;
 CCI* gCCI;
 Queue* gUserInputs;
+int gRunTime;
 
 //Private method declarations
 void doTests();
@@ -38,7 +39,6 @@ int pidKB = 0,
 
 int main(void)
 {
-
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
 
