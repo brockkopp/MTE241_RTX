@@ -7,12 +7,14 @@ extern RTX* gRTX;
 CCI::CCI()
 {
 	wallClock = new WallClock(100000);
+	userInputs = new Queue(Queue::STRING);
 	//ualarm(100000,100000);
 }
 
 CCI::~CCI()
 {
 	delete wallClock;
+	delete userInputs;
 }
 
 int CCI::processCCI()
@@ -34,10 +36,7 @@ int CCI::processCCI()
 			getline(cin,command);
 		}
 		while(command.length() == 0);
-		
-		cout << "'" <<  command << "'";
-		//return EXIT_ERROR;
-		
+
 		params = parseString( command, input, ' ', 3);
 
 		if(params >= 1 && params <= 3)

@@ -13,7 +13,8 @@
 //Globals
 RTX* gRTX;
 CCI* gCCI;
-Queue* gUserInputs;
+inputBuffer* gRxMemBuf;
+inputBuffer* gTxMemBuf;
 
 //Private method declarations
 void doTests();
@@ -23,13 +24,13 @@ int createInitTable(PcbInfo* initTable[]);
 
 struct Shmem
 {
-	caddr_t rxPtr;
-	caddr_t txPtr;
+	caddr_t rx_mmap_ptr;
+	caddr_t tx_mmap_ptr;
 	char* 	rxFileName;
 	char* 	txFileName;
 	int 	rxId;
 	int		txId;
-	const static int 	bufferSize = 128;
+	const static int 	bufferSize = BUFSIZE;
 } shmem;
 
 int pidKB = 0, 
@@ -58,8 +59,6 @@ int main(void)
 
 	//Create and initialize rtx and its child members (schedling services etc)
 	debugMsg("\n");
-
-	gUserInputs = new Queue(Queue::STRING);
 
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
@@ -141,11 +140,10 @@ void die(int sigNum)
 	{
 		delete gRTX;
 		delete gCCI;
-		delete gUserInputs;
 	}
 	catch(int e)
 	{
-		debugMsg("RTX or CCI cleanup failed",0,1);
+		debugMsg("Global variable cleanup failed",0,1);
 	}
 
 	//Kill KB and CRT child processes
@@ -199,16 +197,24 @@ int initializeShmem()
 	fail += assure(result == 0,"TX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
 	//Create RX buffer association
-	shmem.rxPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.rxId, (off_t) 0);
-	fail += assure(shmem.rxPtr != MAP_FAILED,"RX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
+	shmem.rx_mmap_ptr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.rxId, (off_t) 0);
+	fail += assure(shmem.rx_mmap_ptr != MAP_FAILED,"RX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
 	//Create TX buffer association
-	shmem.txPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.txId, (off_t) 0);
-	fail += assure(shmem.txPtr != MAP_FAILED,"TX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
+	shmem.tx_mmap_ptr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.txId, (off_t) 0);
+	fail += assure(shmem.tx_mmap_ptr != MAP_FAILED,"TX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
+	gRxMemBuf = NULL;
+	gTxMemBuf = NULL;
+	
 	//Assure that all functions returned success
 	if(fail == 0)
+	{
 		debugMsg("Shared Memory Initialization Successful");
+		//Create pointers to communicate with shared memory
+		gRxMemBuf = (inputBuffer*)shmem.rx_mmap_ptr;
+		gTxMemBuf = (inputBuffer*)shmem.tx_mmap_ptr;
+	}
 	else
 		ret = EXIT_ERROR;
 
@@ -221,8 +227,8 @@ int cleanupShmem()
 
 	try
 	{
-		munmap(shmem.rxPtr,shmem.bufferSize);
-		munmap(shmem.txPtr,shmem.bufferSize);
+		munmap(shmem.rx_mmap_ptr,shmem.bufferSize);
+		munmap(shmem.tx_mmap_ptr,shmem.bufferSize);
 
 		close(shmem.rxId);    
 		close(shmem.txId);
