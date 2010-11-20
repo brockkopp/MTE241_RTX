@@ -91,10 +91,10 @@ int main(void)
 	gCCI = new CCI();
 	
 	//Start scheduler <-- Brock, is this correct here? --Karl *must be BEFORE doTests*
-	gRTX->start_execution();
+//	gRTX->start_execution();
 	
 #if TESTS_MODE == 1
-//	doTests();
+	doTests();
 #endif
 
 
@@ -116,9 +116,15 @@ void doTests()
 	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tMessaging Test:\t"); 
 	   debugMsg("Not Implemented\n");
-	debugMsg("\tScheduler Test:\t");   
-	   debugMsg((testScheduler( gRTX->getScheduler() ) == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+//	debugMsg("\tScheduler Test:\t");   
+//	   debugMsg((testScheduler( gRTX->getScheduler() ) == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tPQ Test:\t");   
+	   debugMsg((testPQ() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+ 	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+ 	debugMsg("\tAnother Test:\t");   
 	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 }
 
