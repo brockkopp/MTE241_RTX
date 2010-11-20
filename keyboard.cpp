@@ -1,6 +1,7 @@
 #include <stdio.h> //printf(), getchar()
 #include <stdlib.h> //for exit()
 #include <signal.h> //sigset
+#include <unistd.h> //usleep
 //#include <fcntl.h>
 #include <sys/mman.h> //mmap, flags
 #include <sys/types.h> //off_t
@@ -8,10 +9,8 @@
 
 #include "Shmem.h"
 
-#include <iostream>
 //#include "debug.h"
 
-//using namespace std;
 
 void keyboard_die(int signal)
 {
@@ -20,7 +19,7 @@ void keyboard_die(int signal)
 
 int main(int arg1, char* arg[])
 {
-	std::cout<<"KB  child initialized\n";
+	printf("KB  child initialized\n");
 	//debugMsg("KB  child initialized\n");
 	
 	sigset(SIGINT,keyboard_die); //set signal handler in case parent process terminates us
@@ -40,11 +39,11 @@ int main(int arg1, char* arg[])
 														MAP_SHARED,    					//indicate it's accesible by another process
 														fileId,           			//fileId of the file associated with the memory mapping
 														(off_t) 0);    					//offset in page frame
-    if (rx_mmap_ptr == MAP_FAILED) //ensure mapping was successful; if not, this is a fatal error
-    {
-      printf("Memory Mapping in Keyboard Child Has Failed. Keyboard is ABORTING!\n");
-	  	keyboard_die(0);
-    }
+  if (rx_mmap_ptr == MAP_FAILED) //ensure mapping was successful; if not, this is a fatal error
+  {
+    printf("Memory Mapping in Keyboard Child Has Failed. Keyboard is ABORTING!\n");
+		keyboard_die(0);
+  }
 	
 	inputBuffer* rx_mem_buf = (inputBuffer*) rx_mmap_ptr;  //rx_mem_buf is now a pointer to mapped shared memory! :)
 

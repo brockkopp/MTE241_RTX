@@ -23,13 +23,13 @@ int createInitTable(PcbInfo* initTable[]);
 
 struct Shmem
 {
-	caddr_t rxPtr;
+	caddr_t rx_mmap_ptr;
 	caddr_t txPtr;
 	char* 	rxFileName;
 	char* 	txFileName;
 	int 	rxId;
 	int		txId;
-	const static int 	bufferSize = 128;
+	const static int 	bufferSize = BUFSIZE;
 } shmem;
 
 int pidKB = 0, 
@@ -187,8 +187,8 @@ int initializeShmem()
 	fail += assure(result == 0,"TX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
 	//Create RX buffer association
-	shmem.rxPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.rxId, (off_t) 0);
-	fail += assure(shmem.rxPtr != MAP_FAILED,"RX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
+	shmem.rx_mmap_ptr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.rxId, (off_t) 0);
+	fail += assure(shmem.rx_mmap_ptr != MAP_FAILED,"RX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
 	//Create TX buffer association
 	shmem.txPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.txId, (off_t) 0);
@@ -209,7 +209,7 @@ int cleanupShmem()
 
 	try
 	{
-		munmap(shmem.rxPtr,shmem.bufferSize);
+		munmap(shmem.rx_mmap_ptr,shmem.bufferSize);
 		munmap(shmem.txPtr,shmem.bufferSize);
 
 		close(shmem.rxId);    
