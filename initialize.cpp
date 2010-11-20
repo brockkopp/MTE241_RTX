@@ -64,7 +64,7 @@ int main(void)
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
 
-	//Create keyboad thread
+	//Create keyborad thread
 	if ((pidKB = fork()) == 0)
 	{
 		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
@@ -89,10 +89,16 @@ int main(void)
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gCCI = new CCI();
-
+	
+	//Start scheduler <-- Brock, is this correct here? --Karl *must be BEFORE doTests*
+	gRTX->start_execution();
+	
 #if TESTS_MODE == 1
-	//doTests();
+//	doTests();
 #endif
+
+
+
 
 //	Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
@@ -110,8 +116,8 @@ void doTests()
 	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tMessaging Test:\t"); 
 	   debugMsg("Not Implemented\n");
-	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tScheduler Test:\t");   
+	   debugMsg((testScheduler( gRTX->getScheduler() ) == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tAnother Test:\t");   
 	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 }
@@ -259,7 +265,7 @@ int createInitTable(PcbInfo* initTable[])
 		initTable[2]->processType = PROCESS_I;
 		initTable[2]->address = 	NULL;
 
-		initTable[3]->name =		"null";	
+		initTable[3]->name =		"null_proc";	
 		initTable[3]->priority =    3;
 		initTable[3]->processType = PROCESS_K;
 		initTable[3]->address = 	NULL;
@@ -267,17 +273,17 @@ int createInitTable(PcbInfo* initTable[])
 	//User Processes
 		initTable[4]->name =		"user1";	
 		initTable[4]->priority =    2;
-		initTable[4]->processType = PROCESS_I;
+		initTable[4]->processType = PROCESS_U;
 		initTable[4]->address = 	NULL;
 
 		initTable[5]->name =		"user2";	
 		initTable[5]->priority =    2;
-		initTable[5]->processType = PROCESS_I;
+		initTable[5]->processType = PROCESS_U;
 		initTable[5]->address = 	NULL;
 
 		initTable[6]->name =		"user3";	
 		initTable[6]->priority =    2;
-		initTable[6]->processType = PROCESS_I;
+		initTable[6]->processType = PROCESS_U;
 		initTable[6]->address = 	NULL;
 	}
 	catch(int e)

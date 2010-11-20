@@ -19,8 +19,14 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	Queue* pcbTmpList = new Queue(Queue::PROCCONBLOCK); //Init queue of PCBs
 	
 	//Loop through _pcbList, enqueue each item into pcbTmpList.
-	for(int i=0; i < PROCESS_COUNT; i++)
-		pcbTmpList->enqueue(_pcbList[i]);
+	for(int i=0; i < PROCESS_COUNT; i++) {
+			
+		//Put all processes from the intialize table into the queue to be passed
+		//to the scheduler to put on the ready queue. Do not allow i_processes onto
+		//this list.	
+		if ( !(_pcbList[i]->get_processType() == PROCESS_I) )
+			pcbTmpList->enqueue(_pcbList[i]);
+	}
 	
 	_scheduler = new Scheduler (pcbTmpList);
 	delete pcbTmpList;
@@ -243,3 +249,11 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 	//return _msgTrace->getTraces(); // waiting on approval of _msgTrace in RTX.h private members - Eric
 	return -2;
 }
+
+//Starts the first process executing on the CPU
+void RTX::start_execution() { _scheduler->start(); }
+
+#if TESTS_MODE == 1
+Scheduler* RTX::getScheduler() { return _scheduler; }
+#endif
+

@@ -148,4 +148,38 @@ int testQueues()
 	return ret;
 }
 
+int testScheduler( Scheduler* S )
+{
+	const int VERBAL = 1; // Turn this to zero to turn off output.
+
+	int ret = EXIT_SUCCESS;
+	
+	debugMsg("\n&&&&&&&&&&&&&&&&&&&&&&&&\n");
+
+/*--- Functions to test---*/			
+//			void release_processor( );   
+//			int change_priority( PCB * target, int newPriority );
+//			int process_switch( );
+
+//			//Place new process on ready queue
+//		  int add_ready_process( PCB * target );
+//			int block_process (PCB * target, int reason );
+//			int unblock_process( PCB * target );
+//			
+//			//Returns if a process is currently blocked on envelope
+//			int is_blocked( PCB * target );
+//		
+//			PCB* get_current_process();
+
+	//Check how many processes are on the queues
+	debugMsg("\nerror in context_Restore ::: lib/Context.cpp:35\n");
+
+	debugMsg("\nI think the invalid memory reference is caused by the get_current_process call as tehre is not yet a current process.\n");
+	//TEST process_switch()
+if (VERBAL) debugMsg("current_process:"+ S->get_current_process()->get_name() + "\n");
+//	S->process_switch();
+	
+	return ret;
+}
+
 

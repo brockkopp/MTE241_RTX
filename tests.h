@@ -9,5 +9,6 @@
 int testParser();
 int testQueues();
 int testSignals();
+int testScheduler( Scheduler* S);
 
 #endif

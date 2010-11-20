@@ -21,7 +21,7 @@ class MsgServ;
 
 //Constants used to denote process types
 #define PROCESS_I		1	
-#define PROCESS_USER	2
+#define PROCESS_U	2
 #define PROCESS_K		3
 
 #define USER_PROC_A		4
@@ -49,6 +49,11 @@ class RTX
 		int K_send_console_chars(MsgEnv* msg_envelope);
 		int K_get_console_chars(MsgEnv* msg_envelope);
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
+		
+		void start_execution();//Starts execution of processes on the CPU
+#if TESTS_MODE == 1
+		Scheduler* getScheduler(); //Used only for scheduler's test cases.
+#endif
 	
 	private:
 		PCB*						_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid

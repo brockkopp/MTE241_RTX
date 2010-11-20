@@ -10,7 +10,7 @@ arguments:
 
 Scheduler::Scheduler(Queue* readyProcs)
 {
-	_readyProcs = new PQ(4);;
+	_readyProcs = new PQ(4);
 	_blockedEnv = new Queue( Queue::PROCCONBLOCK  );
 	_blockedMsgRecieve = new Queue( Queue::PROCCONBLOCK  );
 	
@@ -19,7 +19,7 @@ Scheduler::Scheduler(Queue* readyProcs)
 		PCB* temp = static_cast<PCB*>(readyProcs->dequeue_PCB());
 		_readyProcs->pq_enqueue( temp, temp->get_priority() );
 	}
-
+cout<<"***\n\nbeast\n\n";
 	/*
 	Somehow start the first proc.... Must set currentProc
 	*/
@@ -29,6 +29,22 @@ Scheduler::~Scheduler() {
 	delete _readyProcs;
 	delete _blockedEnv;
 	delete _blockedMsgRecieve;
+}
+
+//This is called to kick off CPU execution. It puts the first process to execute
+//onto the cpu
+
+void Scheduler::start() {
+	//set current process to highest priority process 
+	_currentProcess = _readyProcs->pq_dequeue();
+	
+	//set status to exec
+//	_currentProcess->set_state( PCB::EXECUTING );
+	_currentProcess->set_state( EXECUTING );
+	
+	//Restore context 
+	_currentProcess->restore_context();	
+
 }
 
 ///*

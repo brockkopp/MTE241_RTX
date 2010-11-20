@@ -24,7 +24,7 @@ Saves state by calling the set_jmp function
 */
 int Context::save() 
 {
-	return setjmp( (*this)._localJmpBuf );
+	return setjmp( _localJmpBuf );
 }
 
 /*
@@ -32,5 +32,5 @@ Saves state by calling long_jmp()
 */
 void Context::restore() 
 {
-	longjmp( (*this)._localJmpBuf, 1);
+	longjmp( _localJmpBuf, 1);
 }
