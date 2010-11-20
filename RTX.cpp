@@ -22,7 +22,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	for(int i=0; i < PROCESS_COUNT; i++)
 		pcbTmpList->enqueue(_pcbList[i]);
 	
-	_scheduler = new Scheduler (pcbTmpList);
+	//_scheduler = new Scheduler (pcbTmpList);
 	delete pcbTmpList;
 	
 	_signalHandler->setSigMasked(false);
@@ -224,15 +224,16 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 		if(gUserInputs->get_length() == 0) //no user input is available
 		{
 		  (*msg_envelope).setMsgData("");
-		  (*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);
+		  (*msg_envelope).setMsgType((*msg_envelope).NO_INPUT);
+		  K_send_message(invoker, msg_envelope);
 			res = EXIT_ERROR;
 		}
 		else
 		{
 			(*msg_envelope).setMsgData(*(*gUserInputs).dequeue_string());
-			(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);
+			(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);			
+			res = K_send_message(invoker, msg_envelope);
 		}
-		res = K_send_message(invoker, msg_envelope);
 	}
 	atomic(false);
 	return res;

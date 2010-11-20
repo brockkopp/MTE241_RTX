@@ -40,7 +40,7 @@ $(TITLE):  $(OBJ)
 	@$(CMP) $(LNKFLGS) $(TITLE) $(OBJ)
 
 $(KB): $(KB_OBJ)
-	@$(CMP) $(LNKFLGS) $(KB) $(KB_OBJ)
+	@$(CMP) $(LNKFLGS) $(KB) $(KB_OBJ) 
 
 $(CRT): $(CRT_OBJ)
 	@$(CMP) $(LNKFLGS) $(CRT) $(CRT_OBJ)
@@ -64,7 +64,7 @@ debug.o: debug.cpp debug.h
 initialize.o: initialize.cpp debug.h RTX.h CCI.h lib/PcbInfo.h
 	@$(CMP) $(CMPFLGS) initialize.cpp
 	
-iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h
+iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h Shmem.h
 	@$(CMP) $(CMPFLGS) iprocesses.cpp
 
 MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
@@ -110,7 +110,7 @@ WallClock.o: lib/WallClock.cpp lib/WallClock.h
 	@$(CMP) $(CMPFLGS) lib/WallClock.cpp
 
 #external processes
-keyboard.o: keyboard.cpp
+keyboard.o: keyboard.cpp Shmem.h
 	@$(CMP) $(CMPFLGS) keyboard.cpp
 
 crt.o: crt.cpp
