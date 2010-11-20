@@ -41,7 +41,7 @@ void i_timing_process()
 //	if((time = gCCI->wallClock->toString()) != "")
 //		cout << time << endl;
 
-	//ualarm(0,0);
+	ualarm(0,0);
 	
 	return;
 }
@@ -62,6 +62,22 @@ void i_keyboard_handler()
 		gUserInputs->enqueue(&userMsg);
 	}
 	return;
+	
+			/*void kbd_handler(int signum)
+		{
+		inputbuf command;
+		// copy input buffer
+		if (in_mem_p->indata[0] != '\0')
+		{
+		strcpy(command.indata,in_mem_p->indata);
+		// we should parse the input string and execute the command given,
+		// but for now we just echo the input
+		//
+		printf("Keyboard input was: %s\n",command.indata);
+		in_mem_p->ok_flag = 0; // tell child that the buffer has been emptied
+		}
+		}
+		*/
 }
 
 /* Signal is sent to the i_crt_handler from the K_send_console_chars primitive. 

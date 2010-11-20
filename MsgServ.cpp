@@ -64,6 +64,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		return EXIT_SUCCESS;
 	}
 	return EXIT_ERROR;
+
 }
 
 MsgEnv* MsgServ::recieveMsg()

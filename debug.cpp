@@ -18,13 +18,16 @@ void debugMsg(int message)
 
 void debugMsg(string message, int newLinesB, int newLinesA)
 {
-	stringstream msg;
+	string msg;
 	for(int i=0; i < newLinesB; i++)
-		msg << "\n";
-	msg << message;
+		msg += "\n";
+
+	msg += message;
+	
 	for(int i=0; i < newLinesA; i++)
-		msg << "\n";
-	debugMsg(msg.str());
+		msg += "\n";
+
+	debugMsg(msg);
 }
 
 int assure(bool condition, string message, string fileName, int lineNum, string func, bool isFatal)

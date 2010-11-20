@@ -4,15 +4,27 @@ extern Queue* gMsgsToCRT;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
+
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
-	_scheduler = NULL;
-	
+
 	//Initialize each PCB from init table
 	for(int i=0; i < PROCESS_COUNT; i++)
 		_pcbList[i] = new PCB(initTable[i]);
 
+	/* Transfer the _pcbList into a queue for use with the scheduler... 
+	*/
+	
+	Queue* pcbTmpList = new Queue(Queue::PROCCONBLOCK); //Init queue of PCBs
+	
+	//Loop through _pcbList, enqueue each item into pcbTmpList.
+	for(int i=0; i < PROCESS_COUNT; i++)
+		pcbTmpList->enqueue(_pcbList[i]);
+	
+	//_scheduler = new Scheduler (pcbTmpList);
+	delete pcbTmpList;
+	
 	_signalHandler->setSigMasked(false);
 
 	debugMsg("RTX Init Done",0,1);
@@ -212,15 +224,16 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 		if(gUserInputs->get_length() == 0) //no user input is available
 		{
 		  (*msg_envelope).setMsgData("");
-		  (*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);
+		  (*msg_envelope).setMsgType((*msg_envelope).NO_INPUT);
+		  K_send_message(invoker, msg_envelope);
 			res = EXIT_ERROR;
 		}
 		else
 		{
 			(*msg_envelope).setMsgData(*(*gUserInputs).dequeue_string());
-			(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);
+			(*msg_envelope).setMsgType((*msg_envelope).CONSOLE_INPUT);			
+			res = K_send_message(invoker, msg_envelope);
 		}
-		res = K_send_message(invoker, msg_envelope);
 	}
 	atomic(false);
 	return res;

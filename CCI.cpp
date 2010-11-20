@@ -27,7 +27,7 @@ int CCI::processCCI()
 		command = "";
 		input[0] = input[1] = input[2] = "";
 		errMsg = "";
-		
+
 		do
 		{
 			cout << ">RTX$ ";

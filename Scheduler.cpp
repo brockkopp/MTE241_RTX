@@ -8,19 +8,27 @@ arguments:
 	
 */
 
-Scheduler::Scheduler(PCB* currentProcess, Queue readyProcs):
-_readyProcs(4), _blockedEnv( Queue::PROCCONBLOCK ), _blockedMsgRecieve( Queue::PROCCONBLOCK )
- {
-	_currentProcess = currentProcess;
-	//PQ _readyProcs( 4 );
-	
+Scheduler::Scheduler(Queue* readyProcs)
+{
+	_readyProcs = new PQ(4);;
+	_blockedEnv = new Queue( Queue::PROCCONBLOCK  );
+	_blockedMsgRecieve = new Queue( Queue::PROCCONBLOCK  );
 	
 	//Add all readyProcs to the ready queue.
-	for(int i=0; i<readyProcs.get_length(); i++) {
-		PCB* temp = static_cast<PCB*>(_readyProcs.pq_dequeue());
-		_readyProcs.pq_enqueue( temp, temp->get_priority() );
+	for(int i=0; i < readyProcs->get_length(); i++) {
+		PCB* temp = static_cast<PCB*>(readyProcs->dequeue_PCB());
+		_readyProcs->pq_enqueue( temp, temp->get_priority() );
 	}
 
+	/*
+	Somehow start the first proc.... Must set currentProc
+	*/
+}
+
+Scheduler::~Scheduler() {
+	delete _readyProcs;
+	delete _blockedEnv;
+	delete _blockedMsgRecieve;
 }
 
 ///*
@@ -32,14 +40,14 @@ void Scheduler::release_processor( ) {
 	_currentProcess->save_context();
 
 	//Put currentProcess on the ready queue.
-	_readyProcs.pq_enqueue( _currentProcess, _currentProcess->get_priority() );
+	_readyProcs->pq_enqueue( _currentProcess, _currentProcess->get_priority() );
 	
 	//Allow next process to start executing.
 	//Note that if there is nothing waiting,
 	//Then the single existing proc will be
 	//put back on the CPU. Therefore, this
 	//edgecase is covered.
-	_currentProcess = _readyProcs.pq_dequeue();
+	_currentProcess = _readyProcs->pq_dequeue();
 	
 	//Restore this proc's context
 	_currentProcess->save_context();
@@ -60,41 +68,41 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 	//Case 1: PCB is on ready queue
 	
 	//If the target exists in the ready queue...
-	if ( _readyProcs.pq_pluck( target ) ) { 
+	if ( _readyProcs->pq_pluck( target ) ) { 
 		
 		//Change priority
 		target->set_priority( newPriority );
 		
 		//Re-enqueue the PCB
-		_readyProcs.pq_enqueue( target, target->get_priority() );
+		_readyProcs->pq_enqueue( target, target->get_priority() );
 		
 		return 1;
 	}
 	//Case 2a: PCB is on blockedEnv queue
 	
-	else if ( _blockedEnv.select( target ) ){
+	else if ( _blockedEnv->select( target ) ){
 		//Remove PCB from queue
-		 _blockedEnv.pluck( target );
+		 _blockedEnv->pluck( target );
 		
 		//Change priority
 		target->set_priority( newPriority );
 		
 		//Re-enqueue the PCB
-		 _blockedEnv.enqueue( target );
+		 _blockedEnv->enqueue( target );
 		
 		return 1;
 	}
 	
 	//Case 2b: PCB is on blockedMsg queue
-	else if ( _blockedMsgRecieve.select( target ) ){
+	else if ( _blockedMsgRecieve->select( target ) ){
 		//Remove PCB from queue
-		 _blockedMsgRecieve.pluck( target );
+		 _blockedMsgRecieve->pluck( target );
 		
 		//Change priority
 		target->set_priority( newPriority );
 		
 		//Re-enqueue the PCB
-		 _blockedMsgRecieve.enqueue( target );
+		 _blockedMsgRecieve->enqueue( target );
 		 
 		 return 1;
 	}
@@ -123,7 +131,7 @@ Switches the currently executing process off the CPU and replaces it
 with the next available ready process.
 */
 int Scheduler::process_switch( ) {
-	PCB* nextProc =  _readyProcs.pq_dequeue();
+	PCB* nextProc =  _readyProcs->pq_dequeue();
 	
 	context_switch( nextProc );
 	
@@ -177,7 +185,7 @@ return -2;
 /*
 
 arguments: 
-	reason: 1 - blocked on envelope
+	reason: g1 - blocked on envelope
 					2 - blocked on message recieve
 					
 */
@@ -192,12 +200,12 @@ int Scheduler::block_process (PCB * target, int reason )
 	if (reason == BLOCKED_ENV)
 	{
 		target->set_state( BLOCKED_ENV );
-		return_value = _blockedEnv.enqueue( target );
+		return_value = _blockedEnv->enqueue( target );
 			
 	}	
 	else if (reason == BLOCKED_MSG_RECIEVE){
 		target->set_state( BLOCKED_MSG_RECIEVE );
-		return_value = _blockedMsgRecieve.enqueue( target );
+		return_value = _blockedMsgRecieve->enqueue( target );
 	}
 
 	//Put the next available process on the ready queue
@@ -222,18 +230,18 @@ int Scheduler::unblock_process( PCB * target )
 {
 	//If process is blocked on msg recieve
 	if (target->get_state() == BLOCKED_MSG_RECIEVE){
-		_blockedMsgRecieve.pluck(target);	
+		_blockedMsgRecieve->pluck(target);	
 		target->set_state( READY );
 
 		//Re-enqueue on ready queue
-		return _readyProcs.pq_enqueue( target , target->get_priority());
+		return _readyProcs->pq_enqueue( target , target->get_priority());
 	}
 	//If process is blocked on envelope
 	else if (target->get_state() == BLOCKED_ENV) {
-		_blockedEnv.pluck(target);
+		_blockedEnv->pluck(target);
 		target->set_state( READY );
 
-		return _readyProcs.pq_enqueue( target , target->get_priority());
+		return _readyProcs->pq_enqueue( target , target->get_priority());
 	}
 	else //Process was not blocked in the first place...
 		return 1;

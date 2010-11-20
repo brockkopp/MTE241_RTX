@@ -25,7 +25,7 @@ SignalHandler::SignalHandler()
 
 	//Set blocked signal set to current set as well as store default signal set to _sigSetHandled
 	sigprocmask(SIG_BLOCK, &_sigSetBlocked, &_sigSetHandled);	
-
+	
 	debugMsg("Done",0,1);
 	debugMsg("Signals Masked(init)",0,1);
 }

@@ -4,7 +4,6 @@
 #include <sys/mman.h>
 #include <sys/wait.h>
 #include <fcntl.h>
-//#include <unistd.h>
 #include "SignalHandler.h"
 #include "tests.h"
 
@@ -24,13 +23,13 @@ int createInitTable(PcbInfo* initTable[]);
 
 struct Shmem
 {
-	caddr_t rxPtr;
+	caddr_t rx_mmap_ptr;
 	caddr_t txPtr;
 	char* 	rxFileName;
 	char* 	txFileName;
 	int 	rxId;
 	int		txId;
-	const static int 	bufferSize = 128;
+	const static int 	bufferSize = BUFSIZE;
 } shmem;
 
 int pidKB = 0, 
@@ -39,6 +38,7 @@ int pidKB = 0,
 
 int main(void)
 {
+
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
 
@@ -49,19 +49,18 @@ int main(void)
 	//Create and initialize signal handler
 	//Signals are masked by default
 	SignalHandler* sigHandler = new SignalHandler();
-
+	sigHandler->setSigMasked(false);
 	//Create shared memory and assure that initialization is successful
 	assure(initializeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, true);
 
 	//Initialize init table and assure initialization is successful
 	assure(createInitTable(initTable) == EXIT_SUCCESS, "Init table failed to initialize", __FILE__, __LINE__, __func__, true);
-	
+
 	//Create and initialize rtx and its child members (schedling services etc)
 	debugMsg("\n");
-	
-	gUserInputs = new Queue();
-	gUserInputs->set_queueType((*gUserInputs).STRING);
-	
+
+	gUserInputs = new Queue(Queue::STRING);
+
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
 
@@ -82,19 +81,20 @@ int main(void)
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
+
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
 	debugMsg("\n");
 
-	debugMsg("Type 'help' at any time to list possible CCI commands",0,2);	
+	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gCCI = new CCI();
 
 #if TESTS_MODE == 1
-	doTests();
+	//doTests();
 #endif
 
-	//Signal cci init failed, program should not normally reach this point
+//	Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
 }
 
@@ -109,7 +109,7 @@ void doTests()
 	debugMsg("\tQueue Test: \t");    
 	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tMessaging Test:\t"); 
-	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	   debugMsg("Not Implemented\n");
 	debugMsg("\tAnother Test:\t");   
 	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tAnother Test:\t");   
@@ -121,6 +121,7 @@ void die(int sigNum)
 	debugMsg("Terminate command initiated ",2,0);
 	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + getSigDesc(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
 
+	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed (init)", __FILE__, __LINE__, __func__, false);
 	ualarm(0,0);	//Disable alarm
 
 	//Cleanup rtx, including signal handler
@@ -186,8 +187,8 @@ int initializeShmem()
 	fail += assure(result == 0,"TX Shared memory file failed to truncate",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
 	//Create RX buffer association
-	shmem.rxPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.rxId, (off_t) 0);
-	fail += assure(shmem.rxPtr != MAP_FAILED,"RX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
+	shmem.rx_mmap_ptr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.rxId, (off_t) 0);
+	fail += assure(shmem.rx_mmap_ptr != MAP_FAILED,"RX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
 	//Create TX buffer association
 	shmem.txPtr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.txId, (off_t) 0);
@@ -208,7 +209,7 @@ int cleanupShmem()
 
 	try
 	{
-		munmap(shmem.rxPtr,shmem.bufferSize);
+		munmap(shmem.rx_mmap_ptr,shmem.bufferSize);
 		munmap(shmem.txPtr,shmem.bufferSize);
 
 		close(shmem.rxId);    
