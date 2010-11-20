@@ -93,27 +93,27 @@ int RTX::atomic(bool on)
 	return ret;
 }
 
+//Call MsgServ class function sendMsg
 int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
 {
-	//call MsgServ class function sendMsg
 	return _mailMan->sendMsg(dest_process_id, msg_envelope);
 }
 
+//Call MsgServ class function recieveMsg
 MsgEnv* RTX::K_receive_message()
 {
-	//call MsgServ class function recieveMsg
 	return _mailMan->recieveMsg();
 }
 
+//Call MsgServ class function requestEnv
 MsgEnv* RTX::K_request_msg_env()
-{
-	//call MsgServ class function requestEnv
+{	
 	return _mailMan->requestEnv();
 }
 
+//Call MsgServ class function releaseEnv
 int RTX::K_release_msg_env(MsgEnv* memory_block)
 {
-	//call MsgServ class function releaseEnv
 	return _mailMan->releaseEnv(memory_block);
 }
 
@@ -203,13 +203,22 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 		curr->empty_mailbox();
 		
 		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
-	  msg_envelope = K_receive_message(); //this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the 				i_crt_handler sends a message before exiting	  
+	  	//this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the i_crt_handler sends a message before exiting	  
+	  	msg_envelope = K_receive_message(); 
 	  
-	  curr->set_mailbox(temp); //restore mailbox
+	 	curr->set_mailbox(temp); //restore mailbox
 	  
 		bool transmission_failed = (msg_envelope == NULL);
 		if(!transmission_failed)
-			res = K_send_message(invoker, msg_envelope); //the message type will be set to DISPLAY_ACK by the iprocess
+		{
+			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+			{
+				res = EXIT_ERROR;
+				K_send_message(invoker, msg_envelope);
+			}
+			else
+				res = K_send_message(invoker, msg_envelope); //the message type was set to DISPLAY_ACK by the iprocess
+		}
 		else
 			res = EXIT_ERROR;
 	}
