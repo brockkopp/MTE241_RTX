@@ -128,8 +128,6 @@ void die(int sigNum)
 	{
 		delete gRTX;
 		delete gCCI;
-		delete gRxMemBuf;
-		delete gTxMemBuf;
 	}
 	catch(int e)
 	{
@@ -194,13 +192,17 @@ int initializeShmem()
 	shmem.tx_mmap_ptr = (char *)mmap((caddr_t) 0, shmem.bufferSize, PROT_READ | PROT_WRITE, MAP_SHARED, shmem.txId, (off_t) 0);
 	fail += assure(shmem.tx_mmap_ptr != MAP_FAILED,"TX memory map failed to initialize",__FILE__,__LINE__,__func__,false) ? 0 : 1;
 
-	//Create pointers to communicate with shared memory
-	gRxMemBuf = (inputBuffer*)shmem.rx_mmap_ptr;
-	gTxMemBuf = (inputBuffer*)shmem.tx_mmap_ptr;
+	gRxMemBuf = NULL;
+	gTxMemBuf = NULL;
 	
 	//Assure that all functions returned success
 	if(fail == 0)
+	{
 		debugMsg("Shared Memory Initialization Successful");
+		//Create pointers to communicate with shared memory
+		gRxMemBuf = (inputBuffer*)shmem.rx_mmap_ptr;
+		gTxMemBuf = (inputBuffer*)shmem.tx_mmap_ptr;
+	}
 	else
 		ret = EXIT_ERROR;
 

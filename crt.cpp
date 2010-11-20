@@ -17,7 +17,7 @@ void die(int signal)
 
 int main(int arg1, char* arg[])
 {
-	debugMsg("CRT child initialized\n");
+	//debugMsg("CRT child initialized\n");
 	
 	sigset(SIGINT, die); //set signal handler in case parent process terminates us
 	

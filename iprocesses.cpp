@@ -86,7 +86,7 @@ void i_crt_handler()
 	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).check_mail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 			retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
-			string msgToConsole = retMsg->getMsgData();
+			string msgToConsole = "hello"; //retMsg->getMsgData();
 			if(retMsg == NULL || msgToConsole == "") //make the check anyways
 			{				
 				retMsg = NULL;
@@ -98,16 +98,16 @@ void i_crt_handler()
 			if(gTxMemBuf->busyFlag == 0) //CRT is NOT busy - perform transmission
 			{
 			  int indexInBuf = 0; //CRT is NOT busy means that the buffer is empty
-				CRTisBusy->busyFlag = 1;
-				for(int i=0; i<strlen(msgToConsole); i++)
+				gTxMemBuf->busyFlag = 1;
+				for(int i=0; i<4; i++) //strlen(msgToConsole); i++)
 				{
 					gTxMemBuf->data[indexInBuf] = msgToConsole[i];
 					indexInBuf++;
 				}
 				//while loop below shouldn't even execute, because crt process is polling and will immediately print data to the screen and empty the buffer
-				while(gTxMemBug->busyFlag == 1) //wait for crt process to copy information to the screen
+				while(gTxMemBuf->busyFlag == 1) //wait for crt process to copy information to the screen
 					usleep(100000); //wait 10^5 usec, or 0.1sec   !!!This may be considered an error on some systems; must be min 1000000 sometimes!
-			}			
+					
 				retMsg->setMsgType(retMsg->DISPLAY_ACK);
 			}
 			else //return message that transmission failed
