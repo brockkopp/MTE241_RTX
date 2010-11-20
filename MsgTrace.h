@@ -3,7 +3,7 @@
 
 #include "lib/MsgEnv.h"
 #include "tools.h"
-
+#include <stdlib.h>
 #define SEND 0
 #define RECEIVE 1
 
@@ -25,9 +25,9 @@ class MsgTrace
 			int _timeStamp;
 		}traceElement;
 
-		TraceElement _sendArray[16];
+		TraceElement* _sendArray[16];
 		int _sendArrayPosition;
-		TraceElement _receiveArray[16];
+		TraceElement* _receiveArray[16];
 		int _receiveArrayPosition;
 };
 
