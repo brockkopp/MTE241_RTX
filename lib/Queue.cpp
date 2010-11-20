@@ -220,6 +220,13 @@ bool Queue::contains( itemType value )
 }
 
 /*~*~*~*~*~*~*	  GETTERS   *~*~*~*~*~*~*~*~*/
+MsgEnv* Queue::get_front()
+{
+	if(_queueType == Queue::MSG_ENV)
+		return (MsgEnv*)_front;
+	return NULL;
+}
+
 int Queue::get_length()
 {
 	return _length;

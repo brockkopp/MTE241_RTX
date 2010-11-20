@@ -34,10 +34,7 @@ int CCI::processCCI()
 			getline(cin,command);
 		}
 		while(command.length() == 0);
-		
-		cout << "'" <<  command << "'";
-		//return EXIT_ERROR;
-		
+
 		params = parseString( command, input, ' ', 3);
 
 		if(params >= 1 && params <= 3)

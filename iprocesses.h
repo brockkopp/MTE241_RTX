@@ -1,6 +1,7 @@
 #include "debug.h"
 #include "RTX.h"
 #include "CCI.h"
+#include "Shmem.h"
 
 
 //#include <iostream>
