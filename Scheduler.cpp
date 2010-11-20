@@ -10,16 +10,17 @@ arguments:
 
 Scheduler::Scheduler(Queue* readyProcs)
 {
-	_readyProcs = new PQ(4);
+	_readyProcs = new PQ( 4 );
 	_blockedEnv = new Queue( Queue::PROCCONBLOCK  );
 	_blockedMsgRecieve = new Queue( Queue::PROCCONBLOCK  );
 	
 	//Add all readyProcs to the ready queue.
-	for(int i=0; i < readyProcs->get_length(); i++) {
-		PCB* temp = static_cast<PCB*>(readyProcs->dequeue_PCB());
+	int numProcs =	readyProcs->get_length();
+	for(int i=0; i < numProcs; i++) {
+		PCB* temp = readyProcs->dequeue_PCB();
 		_readyProcs->pq_enqueue( temp, temp->get_priority() );
 	}
-cout<<"***\n\nbeast\n\n";
+
 	/*
 	Somehow start the first proc.... Must set currentProc
 	*/
