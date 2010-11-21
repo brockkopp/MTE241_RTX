@@ -216,11 +216,14 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 				res = EXIT_ERROR;
 				K_send_message(invoker, msg_envelope);
 			}
-			else
+			else //display_ack
 				res = K_send_message(invoker, msg_envelope); //the message type was set to DISPLAY_ACK by the iprocess
 		}
 		else
+		{
 			res = EXIT_ERROR;
+			K_send_message(invoker, msg_envelope);
+		}
 	}
 	return res;
 }
@@ -238,10 +241,10 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 		int invoker = msg_envelope->getOriginPid();
 		if(gCCI->userInputs->get_length() == 0) //no user input is available
 		{
-		  msg_envelope->setMsgData("");
-		  msg_envelope->setMsgType(msg_envelope->NO_INPUT);
-		  K_send_message(invoker, msg_envelope);
-			res = EXIT_ERROR;
+		  	msg_envelope->setMsgData("");
+		  	msg_envelope->setMsgType(msg_envelope->NO_INPUT);
+		  	K_send_message(invoker, msg_envelope);
+		  	res = EXIT_ERROR;
 		}
 		else
 		{
