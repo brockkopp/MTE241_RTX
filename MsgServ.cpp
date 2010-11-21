@@ -7,6 +7,7 @@ extern RTX* gRTX;
 MsgServ::MsgServ(Scheduler* scheduler)
 {
 	_scheduler = scheduler;
+	_freeEnvQ = new Queue(Queue::MSG_ENV);
 	
 	int msgTotal = 0;
 	while(msgTotal <= 20)
@@ -111,7 +112,6 @@ MsgEnv* MsgServ::requestEnv()
 	PCB* tempPCB;
 	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 
-	
 	if( _freeEnvQ->isEmpty() ) 
 	{
 		//i_process cannot be blocked

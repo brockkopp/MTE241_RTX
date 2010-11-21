@@ -14,6 +14,7 @@
 class PcbInfo;
 class SignalHandler;
 class MsgServ;
+class Scheduler;
 
 //RTX Global Constants
 #define PROCESS_COUNT 	7		//Total number of processes existing in the RTX
@@ -36,6 +37,8 @@ class RTX
 		int getPcb(int pid, PCB** pcb);
 		int getCurrentPcb(PCB** pcb);
 		int atomic(bool on);
+		
+		int setCurrentProcess(int pid);
 		
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
 		MsgEnv* K_receive_message();

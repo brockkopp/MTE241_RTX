@@ -24,6 +24,8 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_scheduler = new Scheduler (pcbTmpList);
 	delete pcbTmpList;
 	
+	_mailMan = new MsgServ(_scheduler);
+	
 	_signalHandler->setSigMasked(false);
 
 	debugMsg("RTX Init Done",0,1);
@@ -46,6 +48,19 @@ int RTX::getPcb(int pid, PCB** pcb)
 
 	if(pid >= 0 && pid < PROCESS_COUNT)
 		*pcb = _pcbList[pid];
+	else
+		ret = EXIT_ERROR;
+	
+	return ret;
+}
+
+int RTX::setCurrentProcess(int pid)
+{
+	PCB* tempPcb;
+	int ret = EXIT_SUCCESS;
+	
+	if( getPcb(pid,&tempPcb) == EXIT_SUCCESS)
+		_scheduler->setCurrentProcess(tempPcb);
 	else
 		ret = EXIT_ERROR;
 	
@@ -125,27 +140,35 @@ int RTX::K_release_processor()
 	return -2;
 }
 
-int RTX::K_request_process_status(MsgEnv* memory_block) 
+int RTX::K_request_process_status(MsgEnv* msg) 
 {
-//	array returnArray
-//	for each PCB
-//	{
-//		status = PCB.get_status
-//		priority = PCB.get_priority
-//		Add status and priority to returnArray
-//	}
-//	Put returnArray into message contents
-//	send_message( invoking_process, msg_env_ptr )
-//	;
-return -2;
+	if(msg != NULL)
+	{
+		string output = "\tPID\tSTATUS\tPRIORITY\n\t---\t------\t--------\n";
+		//string data[PROCESS_COUNT,3];
+		PCB* curr;
+		for(int i=0; i < PROCESS_COUNT && getPcb(i,&curr) == EXIT_SUCCESS; i++)
+		{
+			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->get_state()) + "\t" + intToStr(curr->get_priority()) + "\n";
+	//		data[i][0] = intToStr(i);
+	//		data[i][1] = intToStr(curr->getState());
+	//		data[i][2] = intToStr(curr->get_priority());
+		}
+		
+		debugMsg(output);
 	
+	//	msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
+	//	msg->setMsgData(output);
+		return EXIT_SUCCESS;
+	}
+	return EXIT_ERROR;
 }
 
 int RTX::K_terminate()
 {
 	//Execute final cleanup and program termination, 0 denotes normal exit
 	die(0);
-	return 1;
+	return EXIT_ERROR;		//Should never reach this point
 }
 
 int RTX::K_change_priority(int new_priority, int target_process_id)

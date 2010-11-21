@@ -62,6 +62,7 @@ int main(void)
 
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
+	gRTX->setCurrentProcess(5);
 
 	//Create keyboad thread
 	if ((pidKB = fork()) == 0)

@@ -57,6 +57,7 @@ class PCB
 		
 		int get_state( );
 		void set_state( int state );
+		string getStateName();
 				
 		//Mailbox modifiers
 		MsgEnv* retrieve_mail( );

@@ -17,6 +17,8 @@ class CCI
 
 		WallClock* wallClock;
 		Queue*  userInputs;
+		
+		MsgEnv* ioLetter;
 };
 
 #endif

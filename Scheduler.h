@@ -8,6 +8,10 @@
 #include "lib/PQ.h"
 #include "lib/Queue.h"
 
+//Testing
+#include "RTX.h"
+class RTX;
+
 class Scheduler {
     public:
 
@@ -31,6 +35,7 @@ class Scheduler {
 		PCB* get_blocked_on_env();
 		
 		PCB* get_current_process();
+		int setCurrentProcess(PCB* newProcess);
 
     private:
 
