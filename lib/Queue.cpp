@@ -13,37 +13,36 @@ Please explain what values the qtype can be.
 //Returns NULL if there is no node to dequeue.
 itemType Queue::dequeue_gen()
 {
-	//Special case: length = 0
-	if (isEmpty()) {//return null 
-		return NULL;
-	}
+	void* retData = NULL;
 	
-	QueueNode* currentNode = _rear;
+	if (!isEmpty()) 
+	{
+		QueueNode* currentNode = _rear;
 
-	//Deal with special case of length = 1
-	if ( _length == 1 ) 
-	{
-		_front = NULL;
-		_rear = NULL;
-	} 
-	
-	//Normal case
-	else 
-	{
-		//Loop through queue until we reach the second last entry
-		for( int i = 0; i < _length - 2; i++) 
+		//Deal with special case of length = 1
+		if ( _rear == _front ) 
 		{
-			currentNode = currentNode->link;
+			retData = _rear->item;
+			delete _rear;
+			_front = NULL;
+			_rear = NULL;
+		} 
+		else 
+		{
+			//Loop through queue until we reach the second last entry
+			for( int i = 0; i < _length - 2; i++) 
+				currentNode = currentNode->link;
+
+			_front = currentNode;			//Set _front to second last node (last node to be deleted)
+			retData = _front->link->item;	//Save data of last node
+			
+			delete _front->link;			//Delete last node
+			_front->link = NULL;
 		}
-		//Now currentNode = second to last node 
-	
-		//Set head to equal the second to last node
-		_front = currentNode;
+	  	_length--;
 	}
-  _length--;
-		
 	//Return old front of queue
-	return currentNode->item;	
+	return retData;	
 }
 
 //Remove the specified value from the queue and return a pointer to it
@@ -167,7 +166,6 @@ bool Queue::enqueue( itemType value )
 		_front = Temp;	
 		_rear	= Temp;
 	}
-	
 	else 
 	{
 		Temp->link = _rear; 
