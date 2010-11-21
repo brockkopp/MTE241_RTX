@@ -2,6 +2,7 @@
 extern RTX* gRTX;
 
 //REMOVE AFTER I/O IS IMPLEMENTED
+#define IO 1
 #include <stdio.h>
 
 CCI::CCI()
@@ -27,21 +28,34 @@ int CCI::processCCI()
 	string errMsg;
 	int params;
 
-	cout << "\n\na\n";
-	cout << ioLetter;
-	cout << "\nb\n\n";
-	
-
 	while(true)
 	{
 		command = "";
 		input[0] = input[1] = input[2] = "";
-		errMsg = "";
+		errMsg = "";		
 
 		do
 		{
-			cout << ">RTX$ ";
-			getline(cin,command);
+			if(IO) cout << ">RTX$ ";
+//			messageEnvIO->setMsgData(">RTX$ ");
+//			messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
+//			do
+//			{ 
+//				result = gRTX->K_send_console_chars(messageEnvIO);
+//				messageEnvIO = gRTX->K_receive_message(); 
+//			} while (result == EXIT_ERROR);
+			
+			
+			if(IO) getline(cin,command);
+//			messageEnvIO->setMsgData("");
+//			messageEnvIO->setMsgType(messageEnvIO->GET_CONSOLE_CHARS);
+//			do
+//			{ 
+//				result = gRTX->K_get_console_chars(messageEnvIO); 
+//				messageEnvIO = gRTX->K_receive_message(); 
+//			} while (result == EXIT_ERROR);
+//			command = messageEnvIO->getMsgData();
+						
 		}
 		while(command.length() == 0);
 
