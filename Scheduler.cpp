@@ -50,22 +50,27 @@ void Scheduler::start() {
 //Yields the CPU to the next available process, if there is one waiting.
 //*/
 void Scheduler::release_processor( ) { 
+
 	//Save the context of the currently executing proc.
 	//Does some crazy context save shinanigans need to be done here???
-	_currentProcess->save_context();
+	if (_currentProcess->save_context() == 0 ) {
 
-	//Put currentProcess on the ready queue.
-	_readyProcs->pq_enqueue( _currentProcess, _currentProcess->get_priority() );
+		//Put currentProcess on the ready queue.
+		_readyProcs->pq_enqueue( _currentProcess, _currentProcess->get_priority() );
+		_currentProcess->set_state( READY );
+		
+		//Allow next process to start executing.
+		//Note that if there is nothing waiting,
+		//Then the single existing proc will be
+		//put back on the CPU. Therefore, this
+		//edgecase is covered.
+		_currentProcess = _readyProcs->pq_dequeue();
+		
+		_currentProcess->set_state( EXECUTING );
 	
-	//Allow next process to start executing.
-	//Note that if there is nothing waiting,
-	//Then the single existing proc will be
-	//put back on the CPU. Therefore, this
-	//edgecase is covered.
-	_currentProcess = _readyProcs->pq_dequeue();
-	
-	//Restore this proc's context
-	_currentProcess->restore_context();
+		//Restore this proc's context
+		_currentProcess->restore_context();
+	}
 } 
 
 /* Will change the priority of the target proc.
@@ -150,7 +155,7 @@ int Scheduler::process_switch( ) {
 	
 	context_switch( nextProc );
 	
-	return -2;
+	return 1;
 }
 
 /*
@@ -164,7 +169,9 @@ int Scheduler::context_switch( PCB * nextProc )
 	//Switch out _currentProcessfor nextProc.
 	PCB* oldProc = _currentProcess;
 	_currentProcess = nextProc;
-
+	_currentProcess->set_state( EXECUTING );
+	oldProc->set_state( READY );
+	
 	//Perform context_save shinanigans. See page in Sample Kernel Design
 	//doc to see the suggested code that this is based on.
 	int save_return = oldProc->save_context();
@@ -172,10 +179,11 @@ int Scheduler::context_switch( PCB * nextProc )
 	//Restore context of next_proc iff setjmp is not returning from
 	//a long_jmp
 	if (save_return == 0) {
+		_readyProcs->pq_enqueue( oldProc, oldProc->get_priority() );
 		_currentProcess->restore_context();
 	}
 	
-	return 0;
+	return 1;
 }
 
 /*
