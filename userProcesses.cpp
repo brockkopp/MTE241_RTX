@@ -1,54 +1,57 @@
 #include "userProcesses.h"
 
+extern RTX* gRTX;
+
 void userProcessA()
 {
-/*	MsgEnv* myMsg = K_receive_message();
-	K_release_msg_env(myMsg);
-	
+	MsgEnv* myMsg = gRTX->K_receive_message();
+	gRTX->K_release_msg_env(myMsg);
+	string data;
 	int num = 0;
 	
 	while(true)
 	{
-		myMsg = K_request_msg_env();
-		myMsg->setMsgType(COUNT_REPORT);
-		myMsg->setMsgData(num);
-		K_send_message(USER_PROC_B,myMsg);
+		myMsg = gRTX->K_request_msg_env();
+		myMsg->setMsgType(MsgEnv::COUNT_REPORT);
+		strToInt(data,&num);
+		myMsg->setMsgData(data);
+		gRTX->K_send_message(USER_PROC_B,myMsg);
 		num++;
-		K_release_processor();
-	}*/
+		gRTX->K_release_processor();
+	}
 }
 
 void userProcessB()
 {
-	/*MsgEnv* myMsg;
+	MsgEnv* myMsg;
 	while(true)
 	{
-		myMsg = K_receive_message();
-		K_send_message(USER_PROC_C, myMsg);
-		K_release_processor();
-	}*/
+		myMsg = gRTX->K_receive_message();
+		gRTX->K_send_message(USER_PROC_C, myMsg);
+		gRTX->K_release_processor();
+	}
 }
 
 void userProcessC()
 {
-	/*	
 	int num = 0;
 	MsgEnv* myMsg;
-	Queue* msgQ = new Queue("MsgEnv");
+	//Queue* msgQ = new Queue(Queue::MSG_ENV);
 
 	while(true)
 	{
-		myMsg = K_receive_message();
-		if(myMsg->getMsgData() == COUNT_REPORT)
+		myMsg = gRTX->K_receive_message();
+		
+		if(myMsg->getMsgType() == MsgEnv::COUNT_REPORT)
 		{
 			num++;
 			if(++num %20 == 0)
 			{
-				myMsg->setMsgType("display");
 				myMsg->setMsgData("Process C");
-				K_send_console_chars(myMsg);
-				myMsg = K_receive_message();
-				K_request_delay(100, 20, myMsg);
+				while(gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS);
+				myMsg = gRTX->K_receive_message();
+
+				gRTX->K_request_delay(100, 20, myMsg);
 				//do
 				//{
 				//	myMsg = K_receive_message();
@@ -56,9 +59,6 @@ void userProcessC()
 				//while(myMsg->getMsgData !
 			}
 		}
-		K_release_msg_env(myMsg);
-
-		
-
-	}*/
+		gRTX->K_release_msg_env(myMsg);
+	}
 }

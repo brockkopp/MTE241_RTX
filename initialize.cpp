@@ -56,6 +56,7 @@ int main(void)
 	//Signals are masked by default
 	SignalHandler* sigHandler = new SignalHandler();
 	sigHandler->setSigMasked(false);
+	
 	//Create shared memory and assure that initialization is successful
 	assure(initializeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, true);
 
@@ -96,7 +97,7 @@ int main(void)
 	gCCI = new CCI();
 	
 	//Start scheduler. Put the first process onto the CPU
-//gRTX->start_execution();
+gRTX->start_execution();
 	
 #if TESTS_MODE == 1
 	doTests();
@@ -288,7 +289,7 @@ int createInitTable(PcbInfo* initTable[])
 		initTable[3]->name =		"null_proc";	
 		initTable[3]->priority =    3;
 		initTable[3]->processType = PROCESS_K;
-		//initTable[3]->address = 	(void*)(gRTX->null_proc);
+		initTable[3]->address = 	(void*)(RTX::null_proc);
 		initTable[3]->address = 	(void*) &(nothing);
 
 	//User Processes

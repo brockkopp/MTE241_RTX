@@ -22,7 +22,7 @@ class Scheduler;
 
 //Constants used to denote process types
 #define PROCESS_I		1	
-#define PROCESS_U	2
+#define PROCESS_U		2
 #define PROCESS_K		3
 
 #define USER_PROC_A		4
