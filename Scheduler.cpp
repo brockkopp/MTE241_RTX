@@ -8,6 +8,8 @@ arguments:
 	
 */
 
+extern RTX* gRTX;
+
 Scheduler::Scheduler(Queue* readyProcs)
 {
 	_readyProcs = new PQ( 4 );
@@ -277,6 +279,20 @@ int Scheduler::is_blocked( PCB * target )
 	return target->get_state();
 }
 
+PCB* Scheduler::get_blocked_on_env()
+{
+	return _blockedEnv->dequeue_PCB();
+}
+
 PCB* Scheduler::get_current_process() {
 	return _currentProcess;
+}
+
+int Scheduler::setCurrentProcess(PCB* newProcess)
+{
+	if(newProcess != NULL)
+		_currentProcess = newProcess;
+	else
+		return EXIT_ERROR;
+	return EXIT_SUCCESS;
 }

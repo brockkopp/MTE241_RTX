@@ -94,6 +94,18 @@ void PCB::set_stack( char* stack ) {	_stack = stack; }
 		
 int PCB::get_state() { return _state; }
 void PCB::set_state( int state ) {	_state = state; } 
+string PCB::getStateName()
+{
+	string state = "Unknown State";
+	switch(_state)
+	{
+		case READY: 				state = "Ready"; break;
+		case BLOCKED_ENV: 			state = "Blocked-Env"; break;
+		case BLOCKED_MSG_RECIEVE: 	state = "Blocked-Rx"; break;
+		case SLEEPING: 				state = "Asleep"; break;
+	}
+	return state;
+}
 
 Context* PCB::get_context() { return _context; }
 int PCB::save_context() { return _context->save(); }

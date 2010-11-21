@@ -8,6 +8,10 @@
 #include "lib/PQ.h"
 #include "lib/Queue.h"
 
+//Testing
+#include "RTX.h"
+class RTX;
+
 class Scheduler {
     public:
 
@@ -23,12 +27,16 @@ class Scheduler {
 			int block_process (PCB * target, int reason );
 			int unblock_process( PCB * target );
 			
+
 			//Returns if a process is currently blocked on envelope
 			int is_blocked( PCB * target );
-		
+			PCB*  get_blocked_on_env();
 			PCB* get_current_process();
 			
 			void start(); //Starts the scheduler by putting the first process on the CPU
+		
+			int setCurrentProcess(PCB* newProcess);
+
 
     private:
 

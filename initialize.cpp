@@ -1,22 +1,24 @@
 #include "debug.h"
 #include "RTX.h"
 #include "CCI.h"
-#include <sys/mman.h>
-#include <sys/wait.h>
-#include <fcntl.h>
 #include "SignalHandler.h"
 #include "tests.h"
+#include "Shmem.h"
 
 /* Not sure it'salright to include .cpp's need to review this --Karl */
 //#include "iprocesses.cpp"
 #include "userProcesses.h"
 
 #include <sys/types.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 
 //Globals
 RTX* gRTX;
 CCI* gCCI;
+Queue* gUserInputs;
+
+int gRunTime = 0;
 inputBuffer* gRxMemBuf;
 inputBuffer* gTxMemBuf;
 
@@ -43,7 +45,6 @@ int pidKB = 0,
 
 int main(void)
 {
-
 	//Create init table
 	PcbInfo* initTable[PROCESS_COUNT];
 
@@ -66,6 +67,7 @@ int main(void)
 
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
+	gRTX->setCurrentProcess(0);
 
 	//Create keyborad thread
 	if ((pidKB = fork()) == 0)

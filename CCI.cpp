@@ -2,6 +2,7 @@
 extern RTX* gRTX;
 
 //REMOVE AFTER I/O IS IMPLEMENTED
+#define IO 1
 #include <stdio.h>
 
 CCI::CCI()
@@ -9,10 +10,13 @@ CCI::CCI()
 	wallClock = new WallClock(100000);
 	userInputs = new Queue(Queue::STRING);
 	//ualarm(100000,100000);
+	
+	ioLetter = gRTX->K_request_msg_env();
 }
 
 CCI::~CCI()
 {
+	gRTX->K_release_msg_env(ioLetter);
 	delete wallClock;
 	delete userInputs;
 }
@@ -28,16 +32,37 @@ int CCI::processCCI()
 	{
 		command = "";
 		input[0] = input[1] = input[2] = "";
-		errMsg = "";
+		errMsg = "";		
 
 		do
 		{
-			cout << ">RTX$ ";
-			getline(cin,command);
+			if(IO) cout << ">RTX$ ";
+//			messageEnvIO->setMsgData(">RTX$ ");
+//			messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
+//			do
+//			{ 
+//				result = gRTX->K_send_console_chars(messageEnvIO);
+//				messageEnvIO = gRTX->K_receive_message(); 
+//			} while (result == EXIT_ERROR);
+			
+			
+			if(IO) getline(cin,command);
+//			messageEnvIO->setMsgData("");
+//			messageEnvIO->setMsgType(messageEnvIO->GET_CONSOLE_CHARS);
+//			do
+//			{ 
+//				result = gRTX->K_get_console_chars(messageEnvIO); 
+//				messageEnvIO = gRTX->K_receive_message(); 
+//			} while (result == EXIT_ERROR);
+//			command = messageEnvIO->getMsgData();
+						
 		}
 		while(command.length() == 0);
 
 		params = parseString( command, input, ' ', 3);
+
+
+
 
 		if(params >= 1 && params <= 3)
 		{
@@ -49,18 +74,27 @@ int CCI::processCCI()
 				{
 					MsgEnv* myEnv = gRTX->K_request_msg_env();
 					myEnv->setDestPid(USER_PROC_A);
-					//Set other appropriate fields
-					if(gRTX->K_send_message(USER_PROC_A, myEnv) != EXIT_SUCCESS)
-						errMsg = "Message failed to send";
+					myEnv->setMsgType(MsgEnv::WAKE_UP);
+					myEnv->setMsgData("");
 					
+					if(gRTX->K_send_message(USER_PROC_A, myEnv) != EXIT_SUCCESS)
+						errMsg = "Message failed to send";					
 				}
 			}
-			else if(input[0] == "ps")	//to complete
+			else if(input[0] == "ps")
 			{
 				if(params > 1)
 					errMsg = "Too many parameters for 'Display Process Status' command";
 				else
-					cout << "processStatus\n";
+				{
+					if( gRTX->K_request_process_status(ioLetter) == EXIT_SUCCESS )
+						ioLetter = gRTX->K_receive_message();
+					else
+						ioLetter->setMsgData("Request Process Status Failed\n");
+
+					while(gRTX->K_send_console_chars(ioLetter) != EXIT_SUCCESS);
+					ioLetter = gRTX->K_receive_message();
+				}
 			}
 			else if(input[0] == "c")
 			{
@@ -69,7 +103,6 @@ int CCI::processCCI()
 					errMsg = "Too many parameters for 'Set Clock' command";
 				else if(parseString(input[1],time,':',3) != 3 || wallClock->setTime(time) != EXIT_SUCCESS)
 					errMsg = "Invalid time format";
-
 			}
 			else if(input[0] == "cd")
 			{
@@ -91,11 +124,13 @@ int CCI::processCCI()
 					errMsg = "Too many parameters for 'Display Msg Buffers' command";
 				else
 				{
-					MsgEnv* myEnv = gRTX->K_request_msg_env();
-					if(gRTX->K_get_trace_buffers(myEnv) != EXIT_SUCCESS)
-						errMsg = "Failed to retrieve message buffers";
-					else 
-						gRTX->K_send_console_chars(myEnv);
+					if( gRTX->K_get_trace_buffers(ioLetter) == EXIT_SUCCESS )
+						ioLetter = gRTX->K_receive_message();
+					else
+						ioLetter->setMsgData("Display Trace Buffers Failed\n");
+
+					while(gRTX->K_send_console_chars(ioLetter) != EXIT_SUCCESS);
+					ioLetter = gRTX->K_receive_message();
 				}
 			}
 			else if(input[0] == "t")
@@ -122,15 +157,17 @@ int CCI::processCCI()
 					errMsg = "Too many parameters for 'Help' command";
 				else
 				{
-					cout << "\nRTX Commands:\n";
-					cout << "\tSend Message            s\n";
-					cout << "\tProcess Status          ps\n";
-					cout << "\tSet Wall Clock          c hh:mm:ss\n";
-					cout << "\tDisplay Wall Clock      cd\n";
-					cout << "\tHide Wall Clock         ct\n";
-					cout << "\tDisplay Message Trace   b\n";
-					cout << "\tTerminate               t\n";
-					cout << "\tChange Priority         n pri pid\n\n";
+					string output;
+					output =  "\nRTX Commands:\n";
+					output += "\tSend Message            s\n";
+					output += "\tProcess Status          ps\n";
+					output += "\tSet Wall Clock          c hh:mm:ss\n";
+					output += "\tDisplay Wall Clock      cd\n";
+					output += "\tHide Wall Clock         ct\n";
+					output += "\tDisplay Message Trace   b\n";
+					output += "\tTerminate               t\n";
+					output += "\tChange Priority         n pri pid\n\n";
+					debugMsg(output);
 				}
 			}			
 			else
@@ -140,7 +177,12 @@ int CCI::processCCI()
 			errMsg = "Invalid Command String";
 		
 		if(errMsg.length() > 0)
-			cout << ("\t" + errMsg + "\n");
+		{
+			debugMsg("\t" + errMsg + "\n");
+			ioLetter->setMsgData("\t" + errMsg + "\n");
+			while(gRTX->K_send_console_chars(ioLetter) != EXIT_SUCCESS);
+			ioLetter = gRTX->K_receive_message();
+		}
 	}	
 
 	return EXIT_ERROR;

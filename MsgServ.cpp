@@ -1,15 +1,16 @@
 #include "MsgServ.h"
 
-static string WAKE_UP = "wake_up";
+//static string WAKE_UP = "wake_up";
 
 extern RTX* gRTX;
 
 MsgServ::MsgServ(Scheduler* scheduler)
 {
 	_scheduler = scheduler;
+	_freeEnvQ = new Queue(Queue::MSG_ENV);
 	
 	int msgTotal = 0;
-	while(msgTotal <= 10)
+	while(msgTotal <= 20)
 	{
 		MsgEnv* msg = new MsgEnv;
 		_freeEnvQ->enqueue(msg);
@@ -19,7 +20,7 @@ MsgServ::MsgServ(Scheduler* scheduler)
 
 MsgServ::~MsgServ()
 {
-	int msgTotal = 10;
+	int msgTotal = 20;
 	MsgEnv* msg;
 	while(msgTotal >= 0)
 	{
@@ -42,13 +43,13 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		
 		//insert destination and origin into msg envelope
 		msg->setDestPid(destPid);
-		_msgTrace->addTrace(msg, SEND); //Q*Q*Q*Q*Q*Q*Q*Q*Q**Q*Q*Q*Q should this be a pointer to a pointer to the envelope? &msg 
+		_msgTrace->addTrace(msg, SEND);  
 
 		msg->setOriginPid(tempPCB->get_id()); 
 		
 		//retrieve destination process PCB
 		PCB* tempDestPCB;
-		gRTX->getPcb(destPid, &tempDestPCB);//is this right to send a PCB**? Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q
+		gRTX->getPcb(destPid, &tempDestPCB);
 		
 		bool temp;
 		int tempStatus = tempDestPCB->get_state();
@@ -90,19 +91,19 @@ MsgEnv* MsgServ::recieveMsg()
 
 int MsgServ::releaseEnv(MsgEnv* msg)
 {
-	/*
+	
 	if (msg == NULL)
 		return EXIT_ERROR;
 		
-	_freeEnvQ.enqueue(msg);
-	PCB* tempPcb = is_blocked_on_envelope(); //need to find the function again. Location? this function returned a PCB   
+	_freeEnvQ->enqueue(msg);
+	PCB* tempPcb = _scheduler->get_blocked_on_env();    
 	bool temp;
 	if(tempPcb != NULL)
 		temp = _scheduler->unblock_process(tempPcb);
 	if(!temp)
 		return EXIT_ERROR;
-	*/
-	return -2; //EXIT_SUCCESS;
+	
+	return EXIT_SUCCESS;
 }
 
 MsgEnv* MsgServ::requestEnv()
@@ -111,10 +112,12 @@ MsgEnv* MsgServ::requestEnv()
 	PCB* tempPCB;
 	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 
-	
 	if( _freeEnvQ->isEmpty() ) 
 	{
-		//do i need to do something to prevent blocking an i_process Q*Q*Q*Q*Q*Q*Q*Q*Q
+		//i_process cannot be blocked
+		if (tempPCB->get_processType() == PROCESS_I)
+    	return NULL;
+
  		_scheduler->block_process(tempPCB, BLOCKED_ENV); 			
 		gRTX->K_release_processor();
 	}

@@ -30,6 +30,8 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_scheduler = new Scheduler (pcbTmpList);
 	delete pcbTmpList;
 	
+	_mailMan = new MsgServ(_scheduler);
+	
 	_signalHandler->setSigMasked(false);
 
 	debugMsg("RTX Init Done",0,1);
@@ -52,6 +54,19 @@ int RTX::getPcb(int pid, PCB** pcb)
 
 	if(pid >= 0 && pid < PROCESS_COUNT)
 		*pcb = _pcbList[pid];
+	else
+		ret = EXIT_ERROR;
+	
+	return ret;
+}
+
+int RTX::setCurrentProcess(int pid)
+{
+	PCB* tempPcb;
+	int ret = EXIT_SUCCESS;
+	
+	if( getPcb(pid,&tempPcb) == EXIT_SUCCESS)
+		_scheduler->setCurrentProcess(tempPcb);
 	else
 		ret = EXIT_ERROR;
 	
@@ -99,21 +114,25 @@ int RTX::atomic(bool on)
 	return ret;
 }
 
+//Call MsgServ class function sendMsg
 int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
 {
 	return _mailMan->sendMsg(dest_process_id, msg_envelope);
 }
 
+//Call MsgServ class function recieveMsg
 MsgEnv* RTX::K_receive_message()
 {
 	return _mailMan->recieveMsg();
 }
 
+//Call MsgServ class function requestEnv
 MsgEnv* RTX::K_request_msg_env()
-{
+{	
 	return _mailMan->requestEnv();
 }
 
+//Call MsgServ class function releaseEnv
 int RTX::K_release_msg_env(MsgEnv* memory_block)
 {
 	return _mailMan->releaseEnv(memory_block);
@@ -128,27 +147,35 @@ int RTX::K_release_processor()
 
 }
 
-int RTX::K_request_process_status(MsgEnv* memory_block) //why does this requre a msg envelope? shouldn't it just require the PCB and return the status? -Eric
+int RTX::K_request_process_status(MsgEnv* msg) 
 {
-//	array returnArray
-//	for each PCB
-//	{
-//		status = PCB.get_status
-//		priority = PCB.get_priority
-//		Add status and priority to returnArray
-//	}
-//	Put returnArray into message contents
-//	send_message( invoking_process, msg_env_ptr )
-//	;
-return -2;
+	if(msg != NULL)
+	{
+		string output = "\tPID\tSTATUS\tPRIORITY\n\t---\t------\t--------\n";
+		//string data[PROCESS_COUNT,3];
+		PCB* curr;
+		for(int i=0; i < PROCESS_COUNT && getPcb(i,&curr) == EXIT_SUCCESS; i++)
+		{
+			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->get_state()) + "\t" + intToStr(curr->get_priority()) + "\n";
+	//		data[i][0] = intToStr(i);
+	//		data[i][1] = intToStr(curr->getState());
+	//		data[i][2] = intToStr(curr->get_priority());
+		}
+		
+		debugMsg(output);
 	
+	//	msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
+	//	msg->setMsgData(output);
+		return EXIT_SUCCESS;
+	}
+	return EXIT_ERROR;
 }
 
 int RTX::K_terminate()
 {
 	//Execute final cleanup and program termination, 0 denotes normal exit
 	die(0);
-	return 1;
+	return EXIT_ERROR;		//Should never reach this point
 }
 
 int RTX::K_change_priority(int new_priority, int target_process_id)
@@ -162,14 +189,16 @@ int RTX::K_change_priority(int new_priority, int target_process_id)
 
 int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
+	
 	if(msg_envelope != NULL)
 	{
+		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay); 
 		msg_envelope->setMsgType(msg_envelope->WAKE_UP);
-		//need to have the PID of the timeing_Iprocess, #define I_TIMING_PID? Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q
-		//return K_send_message(I_TIMING_PID, msg_envelope);
+		//call Kernal send message to send to timing iProcess
+		return K_send_message(0, msg_envelope); //i_timing_process PID is 0
 	}
-	return -2;
+	return EXIT_ERROR;
 }
 
 /* Message envelope contains messages (character string) to sent to console. 
@@ -204,15 +233,27 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 		curr->empty_mailbox();
 		
 		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
-	  msg_envelope = K_receive_message(); //this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the 				i_crt_handler sends a message before exiting	  
+	  	//this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the i_crt_handler sends a message before exiting	  
+	  	msg_envelope = K_receive_message(); 
 	  
-	  curr->set_mailbox(temp); //restore mailbox
+	 	curr->set_mailbox(temp); //restore mailbox
 	  
 		bool transmission_failed = (msg_envelope == NULL);
 		if(!transmission_failed)
-			res = K_send_message(invoker, msg_envelope); //the message type will be set to DISPLAY_ACK by the iprocess
+		{
+			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+			{
+				res = EXIT_ERROR;
+				K_send_message(invoker, msg_envelope);
+			}
+			else //display_ack
+				res = K_send_message(invoker, msg_envelope); //the message type was set to DISPLAY_ACK by the iprocess
+		}
 		else
+		{
 			res = EXIT_ERROR;
+			K_send_message(invoker, msg_envelope);
+		}
 	}
 	return res;
 }
@@ -230,10 +271,10 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 		int invoker = msg_envelope->getOriginPid();
 		if(gCCI->userInputs->get_length() == 0) //no user input is available
 		{
-		  msg_envelope->setMsgData("");
-		  msg_envelope->setMsgType(msg_envelope->NO_INPUT);
-		  K_send_message(invoker, msg_envelope);
-			res = EXIT_ERROR;
+		  	msg_envelope->setMsgData("");
+		  	msg_envelope->setMsgType(msg_envelope->NO_INPUT);
+		  	K_send_message(invoker, msg_envelope);
+		  	res = EXIT_ERROR;
 		}
 		else
 		{
@@ -248,7 +289,7 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
-	//return _msgTrace->getTraces(); // waiting on approval of _msgTrace in RTX.h private members - Eric
+	//return _msgTrace->getTraces(); 
 	return -2;
 }
 

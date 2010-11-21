@@ -7,7 +7,7 @@
 #include "MsgTrace.h"
 #include "lib/PCB.h"
 
-
+class Scheduler;
 
 class MsgServ
 {

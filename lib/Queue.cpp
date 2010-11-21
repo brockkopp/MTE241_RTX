@@ -16,7 +16,7 @@ itemType Queue::dequeue_gen()
 	//Special case: length = 0
 	if (isEmpty()) {//return null 
 		return NULL;
-		}
+	}
 	
 	QueueNode* currentNode = _rear;
 
@@ -149,7 +149,8 @@ bool Queue::enqueue( itemType value )
 	QueueNode* Temp;
 	try{Temp = new QueueNode();}
 	catch(char* str) { return false; } //if memory allocation for the pointer fails
-
+	Temp->priority = -1;
+	
 	//perform required type-casting
 	if(_queueType == INT)
 		Temp->item = (int*)value;
@@ -175,6 +176,73 @@ bool Queue::enqueue( itemType value )
 	_length++;
  return true;
 }
+
+
+bool Queue::sortedEnqueue( MsgEnv* newMsg, int priority )
+{
+	if(_queueType == MSG_ENV)
+	{
+		QueueNode* tempNode = new QueueNode();
+		tempNode->item = newMsg;
+		tempNode->priority = priority;
+		
+		if(_front == NULL)										//Empty Queue
+		{
+			tempNode->link = NULL;
+			_front = tempNode;	
+			_rear  = tempNode;
+		}
+		else
+		{
+			QueueNode* curr = _rear;
+
+			if(curr->link == NULL)								//Only 1 Node
+			{
+				if(curr->priority > tempNode->priority)
+				{
+					curr->link = tempNode;
+					_front = tempNode;
+				}
+				else
+				{
+					tempNode->link = curr;
+					_rear = tempNode;
+				}
+			}
+			else if(tempNode->priority < _front->priority)		//Last Item
+			{
+				_front->link = tempNode;
+				_front = tempNode;
+			}
+			else
+			{
+				bool done = false;
+				QueueNode* prev = NULL;			//higher
+				do
+				{
+					if(tempNode->priority > curr->priority)	//Add left
+					{
+						tempNode->link = curr;
+						if(_rear == curr)
+							_rear = tempNode;
+						else
+							prev->link = tempNode;
+						done = true;				
+					}
+					prev = curr;
+					curr = curr->link;
+				}
+				while(!done && curr != NULL);					//2+ items
+			}
+		}
+		_length++;
+		return true;
+	}
+
+	return false;
+
+}
+
 
 /*~*~*~*~*~*~*	  DEQUEUE OVERLOADS   *~*~*~*~*~*~*~*~*/
 itemType Queue::dequeue_itemType()
@@ -341,19 +409,42 @@ PCB* Queue::select(PCB* value)
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*
  *~*~*~*~*~*~*	    FOR TESTING      *~*~*~*~*~*~*~*~*
  *~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*/
-void Queue::printIntQueue() //assume _typeCastType == INT
+ 
+string Queue::toString()
 {
 	QueueNode* Temp = _rear;
 	int position = _length - 1;
-
-	debugMsg("Queue: [ ");
+	string output = "{ ";
+	
 	while(Temp != NULL)
 	{
-		debugMsg(intToStr(*(int*)(Temp->item)));
-		debugMsg(" ");
+		switch(_queueType)
+		{
+			case INT:
+				output += "<-[" + intToStr(position) + ": " + intToStr(*(int*)(Temp->item)) + "]";
+				break;
+			case STRING:
+				output += "<-[" + intToStr(position) + ": " +*(string*)(Temp->item) + "]";
+				break;
+			case MSG_ENV:
+				output += "<-[" + intToStr(position) + ": " + intToStr(Temp->priority) + "]";
+				break;
+			case PROCCONBLOCK:
+				output += "<-[" + intToStr(position) + ": " + ((PCB*)(Temp->item))->get_name() + "]";
+				break;
+		}
 		Temp = Temp->link;
 		position--;
 	}
-	debugMsg("] \n");
+
+
+	return output + " }";
+}
+
+
+void Queue::printIntQueue() //assume _typeCastType == INT
+{
+	if(_queueType == INT)
+		debugMsg("Queue: " + toString());
 }
 

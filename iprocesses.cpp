@@ -1,44 +1,42 @@
 #include "iprocesses.h"
 extern CCI* gCCI;
 extern RTX* gRTX;
+extern Queue* gUserInputs;
+extern int gRunTime;
 extern inputBuffer* gRxMemBuf;
 extern inputBuffer* gTxMemBuf;
 
 void i_timing_process()
-{
-//	//overall clock count used for trace buffer time stamp
-//	static int timeCount = 0;//make global, put it in file where it has been decided to place global variables
-//	
-//	static Queue* waitingProcesses; //internal Q
-//	static int tickCount = 0; // used to determine when a delay request is expired
-//	
-//	timeCount++;
-//	tickCount++;
-//	
-//	//retrieve PCB of currently excecuting process (i_timing_process) 
-//	PCB* tempPCB = get_current_process();
-//		
-//	MsgEnv* tempMsg = tempPCB->retrieve_mail();
-//	if (tempMsg != NULL)
-//	{
-//		//compare time_delay with those in the internal Q
-//		//insert msg into correct place, subtract the time_delay request o all msg infrount of this one
-//		tempMsg = NULL;
-//	}
-//	if (waitingProcesses->_front->_timeDelay == tickCount) //if we add the timeDelay private member
-//	{
-//		tempMsg = waitingProcesses.dequeue_MsgEnv();
-//		tempMsg.setMsgType(WAKE_UP);
-//		int returnAddress = tempMsg->_originPid;
-//		sendMsg(returnAddress, tempMsg);
-//		tickCount = 0; 
-//	}
-//			
-//	gCCI->wallClock->increment();
+{	
+	static Queue* waitingProcesses = new Queue(Queue::MSG_ENV); //internal Q
 
-//	string time;
-//	if((time = gCCI->wallClock->toString()) != "")
-//		cout << time << endl;
+	//overall rtx clock count used for trace buffer time stamp
+	gRunTime ++;
+
+	//retrieve PCB of currently excecuting process (i_timing_process) 
+	PCB* tempPCB;
+	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+	
+	MsgEnv* tempMsg = tempPCB->retrieve_mail();
+	if (tempMsg != NULL)
+	{
+		int expire = gRunTime + tempMsg->getTimeStamp();
+		waitingProcesses->sortedEnqueue(tempMsg, expire);
+		tempMsg = NULL;
+	}
+	if (waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
+	{
+		tempMsg = waitingProcesses->dequeue_MsgEnv();
+		tempMsg->setMsgType(MsgEnv::WAKE_UP);
+		int returnAddress = tempMsg->getOriginPid();
+		gRTX->K_send_message(returnAddress, tempMsg);
+	}
+			
+	gCCI->wallClock->increment();
+
+	string time;
+	if((time = gCCI->wallClock->toString()) != "")
+		cout << time << endl;
 
 	ualarm(0,0);
 	
@@ -86,7 +84,7 @@ void i_crt_handler()
 	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).check_mail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 			retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
-			string msgToConsole = "hello"; //retMsg->getMsgData();
+			string msgToConsole = retMsg->getMsgData();
 			if(retMsg == NULL || msgToConsole == "") //make the check anyways
 			{				
 				retMsg = NULL;
@@ -95,25 +93,34 @@ void i_crt_handler()
 			}
 			
 			invoker = retMsg->getOriginPid();				
-			if(gTxMemBuf->busyFlag == 0) //CRT is NOT busy - perform transmission
-			{
-			  int indexInBuf = 0; //CRT is NOT busy means that the buffer is empty
-				gTxMemBuf->busyFlag = 1;
-				for(int i=0; i<4; i++) //strlen(msgToConsole); i++)
-				{
-					gTxMemBuf->data[indexInBuf] = msgToConsole[i];
-					indexInBuf++;
-				}
-				//while loop below shouldn't even execute, because crt process is polling and will immediately print data to the screen and empty the buffer
-				while(gTxMemBuf->busyFlag == 1) //wait for crt process to copy information to the screen
-					usleep(100000); //wait 10^5 usec, or 0.1sec   !!!This may be considered an error on some systems; must be min 1000000 sometimes!
-					
-				retMsg->setMsgType(retMsg->DISPLAY_ACK);
-			}
-			else //return message that transmission failed
+			
+			//if busy, return fail 
+			if(gTxMemBuf->busyFlag == 1) //CRT is busy (currently transmitting something to , cannot output to screen
 			{
 				retMsg->setMsgType(retMsg->DISPLAY_FAIL);
-			}		
+			}	
+			else //CRT is NOT busy - perform transmission
+			{
+				if(msgToConsole.size() > MAXDATA) //buffer would overflows
+				{
+					//don't bother copying message into buffer; partial messages are not acceptable. Invoking process must do it line by line
+					retMsg->setMsgType(retMsg->BUFFER_OVERFLOW);
+				}
+				else
+				{
+					gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
+					int indexInBuf = 0; //start writing from beginning of the shmem
+					for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
+					{
+						gTxMemBuf->data[indexInBuf] = msgToConsole[i];
+						indexInBuf++;
+					}
+					
+					//CRT process will set busyFlag back to 0 once it has taken everything out of the buffer
+				    //So can assume that once things are in the buffer, they have been "successfully transmitted"
+					retMsg->setMsgType(retMsg->DISPLAY_ACK); 
+				}
+			}
 	}
 	else //an error occurred, send a NULL envelope
 	{

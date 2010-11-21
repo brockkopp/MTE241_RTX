@@ -6,7 +6,7 @@ OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o T
 KB=KB.out
 KB_OBJ=keyboard.o debug.o
 CRT=CRT.out
-CRT_OBJ=crt.o
+CRT_OBJ=crt.o debug.o
 
 ##Command List
 all: compileMsg preclean $(KB) $(CRT) $(TITLE) clean noRunMsg
@@ -61,7 +61,7 @@ Context.o: lib/Context.cpp lib/Context.h
 debug.o: debug.cpp debug.h
 	@$(CMP) $(CMPFLGS) debug.cpp
 
-initialize.o: initialize.cpp debug.h RTX.h CCI.h lib/PcbInfo.h
+initialize.o: initialize.cpp debug.h RTX.h CCI.h lib/PcbInfo.h Shmem.h
 	@$(CMP) $(CMPFLGS) initialize.cpp
 	
 iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h Shmem.h
