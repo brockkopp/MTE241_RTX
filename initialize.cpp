@@ -274,17 +274,17 @@ void d()
 }
 void e()
 {
-	cout << "E\n";
+	cout << "userA\n";
 	gRTX->K_release_processor();
 }
 void f()
 {
-	cout << "F\n";
+	cout << "userB\n";
 	gRTX->K_release_processor();
 }
 void g()
 {
-	cout << "G\n";
+	cout << "userC\n";
 	gRTX->K_release_processor();
 }
 
