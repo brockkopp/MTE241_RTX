@@ -19,20 +19,16 @@ int main(int arg1, char* arg[])
 	sscanf(arg[1], "%d", &parentPid );
 	sscanf(arg[2], "%d", &fileId ); 
 
-	//now perform actual mapping of the shared memory file via the inputbuffer *
-	
+	//now perform actual mapping of the shared memory file via the inputBuffer*	
 	rx_mmap_ptr = (char*)mmap((caddr_t) 0,  //memory Location, 0 lets OS choose
 														BUFSIZE,								//the number of bytes to map
 														PROT_READ | PROT_WRITE, //read/write permissions
 														MAP_SHARED,    					//indicate it's accesible by another process
 														fileId,           			//fileId of the file associated with the memory mapping
 														(off_t) 0);    					//offset in page frame
-  if (rx_mmap_ptr == MAP_FAILED) //ensure mapping was successful; if not, this is a fatal error
-  {
-    printf("Memory Mapping in Keyboard Child Has Failed. Keyboard is ABORTING!\n");
-		die(0);
-  }
-	
+  	//ensure mapping was successful; if not, this is a fatal error
+	assure(rx_mmap_ptr != MAP_FAILED,"Memory Mapping in Keyboard Child Has Failed",__FILE__,__LINE__,__func__,true);
+
 	inputBuffer* rx_mem_buf = (inputBuffer*) rx_mmap_ptr;  //rx_mem_buf is now a pointer to mapped shared memory! :)
 
 	//polling to read input from the keyboard

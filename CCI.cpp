@@ -37,22 +37,15 @@ int CCI::processCCI()
 		{
 			if(IO) cout << ">RTX$ ";
 //			messageEnvIO->setMsgData(">RTX$ ");
-//			messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//			do
-//			{ 
-//				result = gRTX->K_send_console_chars(messageEnvIO);
-//				messageEnvIO = gRTX->K_receive_message(); 
-//			} while (result == EXIT_ERROR);
+//			while(gRTX->K_send_console_chars(messageEnvIO) == EXIT_ERROR);
+//			messageEnvIO = gRTX->K_receive_message():
 			
 			
 			if(IO) getline(cin,command);
+			
 //			messageEnvIO->setMsgData("");
-//			messageEnvIO->setMsgType(messageEnvIO->GET_CONSOLE_CHARS);
-//			do
-//			{ 
-//				result = gRTX->K_get_console_chars(messageEnvIO); 
-//				messageEnvIO = gRTX->K_receive_message(); 
-//			} while (result == EXIT_ERROR);
+//			while(gRTX->K_get_console_chars(messageEnvIO) == EXIT_ERROR);
+//			messageEnvIO = gRTX->K_receive_message();
 //			command = messageEnvIO->getMsgData();
 						
 		}
@@ -85,12 +78,6 @@ int CCI::processCCI()
 					gRTX->K_request_process_status(myEnv);
 					
 					if(IO) cout << "processStatus\n";
-//					messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//					do
-//					{ 
-//						result = gRTX->K_send_console_chars(messageEnvIO);
-//						messageEnvIO = gRTX->K_receive_message(); 
-//					} while (result == EXIT_ERROR);
 				}
 			}
 			else if(input[0] == "c")
@@ -126,19 +113,7 @@ int CCI::processCCI()
 					if(gRTX->K_get_trace_buffers(myEnv) != EXIT_SUCCESS)
 						errMsg = "Failed to retrieve message buffers";
 					else
-						gRTX->K_send_console_chars(myEnv);
-						
-//					if(gRTX->K_get_trace_buffers(messageEnvIO) != EXIT_SUCCESS)
-//						errMsg = "Failed to retrieve message buffers";
-//					else 
-//					{
-////						messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-////						do
-////						{ 
-////							result = gRTX->K_send_console_chars(messageEnvIO);
-////							messageEnvIO = gRTX->K_receive_message(); 
-////						} while (result == EXIT_ERROR);
-//					}
+						gRTX->K_send_console_chars(myEnv);						
 				}
 			}
 			else if(input[0] == "t")
@@ -159,6 +134,10 @@ int CCI::processCCI()
 				else if(pcb->set_priority(priority) != EXIT_SUCCESS)
 					errMsg = "Invalid priority";
 			}
+			else if(input[0] == "scc")
+			{
+				gRTX->K_send_console_chars(NULL);
+			}
 			else if(input[0] == "help")	//remove for demo
 			{
 				if(params > 1)
@@ -176,79 +155,9 @@ int CCI::processCCI()
 						cout << "\tDisplay Message Trace   b\n";
 						cout << "\tTerminate               t\n";
 						cout << "\tChange Priority         n pri pid\n\n";
+						cout << "\tSend Console Chars	   scc\n\n"	;
 					}
 					
-//					messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//					messageEnvIO->setMsgData("\nRTX Commands:\n");
-//					do
-//					{ 
-//						result = gRTX->K_send_console_chars(messageEnvIO);
-//						messageEnvIO = gRTX->K_receive_message(); 
-//					} while (result == EXIT_ERROR);
-
-//					messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//					messageEnvIO->setMsgData("\tSend Message            s\n");
-//					do
-//					{ 
-//						result = gRTX->K_send_console_chars(messageEnvIO);
-//						messageEnvIO = gRTX->K_receive_message(); 
-//					} while (result == EXIT_ERROR);
-
-//					messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//					messageEnvIO->setMsgData("\tProcess Status          ps\n");
-//					do
-//					{ 
-//						result = gRTX->K_send_console_chars(messageEnvIO);
-//						messageEnvIO = gRTX->K_receive_message(); 
-//					} while (result == EXIT_ERROR);
-
-//					messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//					messageEnvIO->setMsgData("\tSet Wall Clock          c hh:mm:ss\n");
-//					do
-//					{ 
-//						result = gRTX->K_send_console_chars(messageEnvIO);
-//						messageEnvIO = gRTX->K_receive_message(); 
-//					} while (result == EXIT_ERROR);
-
-//					messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//					messageEnvIO->setMsgData("\tDisplay Wall Clock      cd\n");
-//					do
-//					{ 
-//						result = gRTX->K_send_console_chars(messageEnvIO);
-//						messageEnvIO = gRTX->K_receive_message(); 
-//					} while (result == EXIT_ERROR);
-
-//					messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//					messageEnvIO->setMsgData("\tHide Wall Clock         ct\n");
-//					do
-//					{ 
-//						result = gRTX->K_send_console_chars(messageEnvIO);
-//						messageEnvIO = gRTX->K_receive_message(); 
-//					} while (result == EXIT_ERROR);
-
-//					messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//					messageEnvIO->setMsgData("\tDisplay Message Trace   b\n");
-//					do
-//					{ 
-//						result = gRTX->K_send_console_chars(messageEnvIO);
-//						messageEnvIO = gRTX->K_receive_message(); 
-//					} while (result == EXIT_ERROR);
-
-//					messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//					messageEnvIO->setMsgData("\tTerminate               t\n");
-//					do
-//					{ 
-//						result = gRTX->K_send_console_chars(messageEnvIO);
-//						messageEnvIO = gRTX->K_receive_message(); 
-//					} while (result == EXIT_ERROR);
-
-//					messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//					messageEnvIO->setMsgData("\tChange Priority         n pri pid\n\n");
-//					do
-//					{ 
-//						result = gRTX->K_send_console_chars(messageEnvIO);
-//						messageEnvIO = gRTX->K_receive_message(); 
-//					} while (result == EXIT_ERROR);
 				}
 			}			
 			else
@@ -260,13 +169,6 @@ int CCI::processCCI()
 		if(errMsg.length() > 0)
 		{
 			if(IO) cout << ("\t" + errMsg + "\n");
-//			messageEnvIO->setMsgType(messageEnvIO->SEND_CONSOLE_CHARS);
-//			messageEnvIO->setMsgData("\t" + errMsg + "\n");
-//			do
-//			{ 
-//				result = gRTX->K_send_console_chars(messageEnvIO);
-//				messageEnvIO = gRTX->K_receive_message(); 
-//			} while (result == EXIT_ERROR);
 		}
 	}	
 
