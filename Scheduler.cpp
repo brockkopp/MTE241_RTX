@@ -22,10 +22,6 @@ Scheduler::Scheduler(Queue* readyProcs)
 		PCB* temp = readyProcs->dequeue_PCB();
 		_readyProcs->pq_enqueue( temp, temp->get_priority() );
 	}
-
-	/*
-	Somehow start the first proc.... Must set currentProc
-	*/
 }
 
 Scheduler::~Scheduler() {
@@ -69,7 +65,7 @@ void Scheduler::release_processor( ) {
 	_currentProcess = _readyProcs->pq_dequeue();
 	
 	//Restore this proc's context
-	_currentProcess->save_context();
+	_currentProcess->restore_context();
 } 
 
 /* Will change the priority of the target proc.

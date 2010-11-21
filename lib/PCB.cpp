@@ -8,7 +8,7 @@ void nothing3(){cout << "HHH\n\n";}
 PCB::PCB(PcbInfo* info)
 { 
 	_atomicCount = 0;
-	_fPtr = (void(*))info->address;
+	//_fPtr = (void(*))info->address;
 	_id = info->processId;
 	_name = info->name;
 	_priority = info->priority;
@@ -19,15 +19,15 @@ PCB::PCB(PcbInfo* info)
 	_state = STATE;
 	
 	_mailbox = new Queue(Queue::MSG_ENV);
+	int i;
+	//_fPtr = &(nothing3);
+	_fPtr = info->address;
+	
 
-	//_context = new Context(_stack, info->stackSize, _fPtr);		//process will suspend here until enqueued by scheduler I think
-	void (*tmp_fxn) ();
-	tmp_fxn = &(nothing3);
-//	tmp_fxn ();
-	_context = new Context(_stack, info->stackSize, tmp_fxn);	
-	//Execution returns here after process is enqueued (in Context constructor).
-	//Begin execution	
-	//_fPtr();	
+//	_context = new Context(_stack, info->stackSize, tmp_fxn);	
+//	_context->init(_stack, info->stackSize, tmp_fxn);
+	_context = new Context(_stack, info->stackSize, _fPtr);	
+	_context->init(_stack, info->stackSize, _fPtr);
 }
 
 
@@ -62,8 +62,8 @@ int PCB::getAtomicCount()
 	return _atomicCount;
 }
 		
-void* PCB::get_fPtr() { return _fPtr; }
-void PCB::set_fPtr( void* fPtr ) {	_fPtr = &fPtr; }
+//void* PCB::get_fPtr() { return _fPtr; }
+//void PCB::set_fPtr( void* fPtr ) {	_fPtr = &fPtr; }
 		
 int PCB::get_id() { return _id; }
 void PCB::set_id( int id ) {	_id = id; }

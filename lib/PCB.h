@@ -74,7 +74,8 @@ class PCB
 		/*~*~*~*~*~* Members *~*~*~*~*~*/
 		Context* _context;     //Includes jmp_buf
 		int _atomicCount; 
-		void* _fPtr;  
+		//void* _fPtr;  
+		void (*_fPtr)();
 		int _id; //Process id
 		string _name;
 		int _priority;   
