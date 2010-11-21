@@ -23,7 +23,6 @@ PCB::PCB(PcbInfo* info)
 	//_context = new Context(_stack, info->stackSize, _fPtr);		//process will suspend here until enqueued by scheduler I think
 	void (*tmp_fxn) ();
 	tmp_fxn = &(nothing3);
-	cout << "\n\n\nP: " << &tmp_fxn << "\n\n\n";
 //	tmp_fxn ();
 	_context = new Context(_stack, info->stackSize, tmp_fxn);	
 	//Execution returns here after process is enqueued (in Context constructor).
