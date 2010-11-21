@@ -123,8 +123,9 @@ int RTX::K_release_processor()
 {
 	//We need a scheduler object names scheduler to be declared (in initialization???)
 	
-	//return scheduler.release_processor();
-	return -2;
+	_scheduler->release_processor();
+	return 1;
+
 }
 
 int RTX::K_request_process_status(MsgEnv* memory_block) //why does this requre a msg envelope? shouldn't it just require the PCB and return the status? -Eric
@@ -249,6 +250,17 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
 	//return _msgTrace->getTraces(); // waiting on approval of _msgTrace in RTX.h private members - Eric
 	return -2;
+}
+
+/*
+	NULL PROCESS_COUNT
+	
+	I do nothing!
+*/
+void RTX::null_proc() {
+//	while (true) {
+//		K_release_processor();
+//	}
 }
 
 //Starts the first process executing on the CPU

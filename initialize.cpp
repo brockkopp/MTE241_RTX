@@ -7,6 +7,10 @@
 #include "SignalHandler.h"
 #include "tests.h"
 
+/* Not sure it'salright to include .cpp's need to review this --Karl */
+//#include "iprocesses.cpp"
+#include "userProcesses.h"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -245,6 +249,8 @@ int cleanupShmem()
 	return ret;
 }
 
+void nothing () { /*Just to stand in until  null proc starts working*/ }
+
 int createInitTable(PcbInfo* initTable[])
 {	
 	int ret = EXIT_SUCCESS;
@@ -265,38 +271,39 @@ int createInitTable(PcbInfo* initTable[])
 		initTable[0]->name =		"i_timing";	
 		initTable[0]->priority =    0;
 		initTable[0]->processType = PROCESS_I;
-		initTable[0]->address = 	NULL;
+		initTable[0]->address = 	(void*) &(i_timing_process);
 
 		initTable[1]->name =		"i_kb";	
 		initTable[1]->priority =    0;
 		initTable[1]->processType = PROCESS_I;
-		initTable[1]->address = 	NULL;
+		initTable[1]->address = 	(void*) &(i_keyboard_handler);
 
 		initTable[2]->name =		"i_crt";	
 		initTable[2]->priority =    0;
 		initTable[2]->processType = PROCESS_I;
-		initTable[2]->address = 	NULL;
+		initTable[2]->address = 	(void*) &(i_crt_handler);
 
 		initTable[3]->name =		"null_proc";	
 		initTable[3]->priority =    3;
 		initTable[3]->processType = PROCESS_K;
-		initTable[3]->address = 	NULL;
+		//initTable[3]->address = 	(void*)(gRTX->null_proc);
+		initTable[3]->address = 	(void*) &(nothing);
 
 	//User Processes
-		initTable[4]->name =		"user1";	
+		initTable[4]->name =		"userA";	
 		initTable[4]->priority =    2;
 		initTable[4]->processType = PROCESS_U;
-		initTable[4]->address = 	NULL;
+		initTable[4]->address = 	(void*) &(userProcessA);
 
-		initTable[5]->name =		"user2";	
+		initTable[5]->name =		"userB";	
 		initTable[5]->priority =    2;
 		initTable[5]->processType = PROCESS_U;
-		initTable[5]->address = 	NULL;
+		initTable[5]->address = 	(void*) &(userProcessB);
 
-		initTable[6]->name =		"user3";	
+		initTable[6]->name =		"userC";	
 		initTable[6]->priority =    2;
 		initTable[6]->processType = PROCESS_U;
-		initTable[6]->address = 	NULL;
+		initTable[6]->address = 	(void*) &(userProcessC);
 	}
 	catch(int e)
 	{
@@ -306,3 +313,4 @@ int createInitTable(PcbInfo* initTable[])
 	
 	return ret;
 }
+

@@ -50,6 +50,8 @@ class RTX
 		int K_get_console_chars(MsgEnv* msg_envelope);
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
 		
+		static void null_proc();
+		
 		void start_execution();//Starts execution of processes on the CPU
 #if TESTS_MODE == 1
 		Scheduler* getScheduler(); //Used only for scheduler's test cases.

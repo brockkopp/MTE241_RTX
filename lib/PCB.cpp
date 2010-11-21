@@ -3,6 +3,8 @@
 #define STATE -2 //define all possible states and declare during constructors
 
 /*~*~*~*~*~*~* Constructors *~*~*~*~*~*~*~*/
+void nothing3(){cout << "HHH\n\n";}
+
 PCB::PCB(PcbInfo* info)
 { 
 	_atomicCount = 0;
@@ -18,12 +20,18 @@ PCB::PCB(PcbInfo* info)
 	
 	_mailbox = new Queue(Queue::MSG_ENV);
 
-	_context = new Context(_stack, info->stackSize);		//process will suspend here until enqueued by scheduler I think
-	
+	//_context = new Context(_stack, info->stackSize, _fPtr);		//process will suspend here until enqueued by scheduler I think
+	void (*tmp_fxn) ();
+	tmp_fxn = &(nothing3);
+	cout << "\n\n\nP: " << &tmp_fxn << "\n\n\n";
+//	tmp_fxn ();
+	_context = new Context(_stack, info->stackSize, tmp_fxn);	
 	//Execution returns here after process is enqueued (in Context constructor).
 	//Begin execution	
 	//_fPtr();	
 }
+
+
 
 /*~*~*~*~*~*~* Destructors *~*~*~*~*~*~*~*/
 PCB::~PCB()
@@ -56,7 +64,7 @@ int PCB::getAtomicCount()
 }
 		
 void* PCB::get_fPtr() { return _fPtr; }
-void PCB::set_fPtr( void* fPtr ) {	_fPtr = fPtr; }
+void PCB::set_fPtr( void* fPtr ) {	_fPtr = &fPtr; }
 		
 int PCB::get_id() { return _id; }
 void PCB::set_id( int id ) {	_id = id; }
