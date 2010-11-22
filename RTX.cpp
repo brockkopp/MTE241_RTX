@@ -24,9 +24,13 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;
 	
+	_scheduler->_currentProcess = _pcbList[0];	//TESTING ONLY!!!
+	
 	_mailMan = new MsgServ(_scheduler);
 	
 	_signalHandler->setSigMasked(false);
+
+	_started = false;
 
 	debugMsg("RTX Init Done",0,1);
 }
@@ -54,18 +58,18 @@ int RTX::getPcb(int pid, PCB** pcb)
 	return ret;
 }
 
-int RTX::setCurrentProcess(int pid)
-{
-	PCB* tempPcb;
-	int ret = EXIT_SUCCESS;
-	
-	if( getPcb(pid,&tempPcb) == EXIT_SUCCESS)
-		_scheduler->setCurrentProcess(tempPcb);
-	else
-		ret = EXIT_ERROR;
-	
-	return ret;
-}
+//int RTX::setCurrentProcess(int pid)
+//{
+//	PCB* tempPcb;
+//	int ret = EXIT_SUCCESS;
+//	
+//	if( getPcb(pid,&tempPcb) == EXIT_SUCCESS)
+//		_scheduler->setCurrentProcess(tempPcb);
+//	else
+//		ret = EXIT_ERROR;
+//	
+//	return ret;
+//}
 
 //assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getCurrentPcb(PCB** pcb)
@@ -88,15 +92,15 @@ int RTX::getCurrentPid()
 	return pid;
 }
 
-int RTX::setProcessState(int pid, int state)
-{
-	int ret = EXIT_ERROR;
-	PCB* tmpPcb;
-	if(getPcb(pid, &tmpPcb) == EXIT_SUCCESS)
-		if(tmpPcb->setState(state) == EXIT_SUCCESS)
-			ret = EXIT_SUCCESS;
-	return ret;
-}
+//int RTX::setProcessState(int pid, int state)
+//{
+//	int ret = EXIT_ERROR;
+//	PCB* tmpPcb;
+//	if(getPcb(pid, &tmpPcb) == EXIT_SUCCESS)
+//		if(tmpPcb->setState(state) == EXIT_SUCCESS)
+//			ret = EXIT_SUCCESS;
+//	return ret;
+//}
 
 int RTX::atomic(bool on)
 {
@@ -314,16 +318,26 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 	
 	I do nothing!
 */
-void RTX::null_proc() {
-//	while (true) {
+//void RTX::null_proc() {
+//	while(true)
 //		K_release_processor();
-//	}
-}
+//}
 
 //Starts the first process executing on the CPU
-void RTX::start_execution() { _scheduler->start(); }
+void RTX::start_execution() 
+{ 
+	if(assure(!_started,"Attempting to start RTX multiple times",__FILE__,__LINE__,__func__,false))
+	{
+		_started = true;
+		_scheduler->start(); 
+	}
+}
 
+Scheduler* RTX::getScheduler() 
+{ 
 #if TESTS_MODE == 1
-Scheduler* RTX::getScheduler() { return _scheduler; }
+	return _scheduler; 
 #endif
+}
+
 

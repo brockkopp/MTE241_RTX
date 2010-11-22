@@ -69,7 +69,6 @@ int main(void)
 
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
-	gRTX->setCurrentProcess(0);			//TESTING ONLY
 
 	//Create keyborad thread
 	if ((pidKB = fork()) == 0)
@@ -104,14 +103,7 @@ int main(void)
 #endif
 
 	//Start scheduler. Put the first process onto the CPU
-	//gRTX->start_execution();
-	
-	
-	
-
-
-
-
+//	gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);

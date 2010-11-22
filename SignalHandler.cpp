@@ -65,8 +65,8 @@ void SignalHandler::handler( int sigNum )
 	
 	//-1 Fatal since no process's stack to run on
 	assure(prevProc >= 0, "No Process on CPU during i_process call. Sig(" + intToStr(sigNum) + ")",__FILE__,__LINE__,__func__,true);
-	
-	gRTX->setProcessState(prevProc,READY);
+
+	gRTX->_scheduler->setProcessState(prevProc,READY);
 	
 	switch(sigNum)
 	{
@@ -75,30 +75,30 @@ void SignalHandler::handler( int sigNum )
 			break;
 
 		case SIGALRM:
-			gRTX->setProcessState(PROC_TIMING,EXECUTING);
-			gRTX->setCurrentProcess(PROC_TIMING);
+			gRTX->_scheduler->setProcessState(PROC_TIMING,EXECUTING);
+			gRTX->_scheduler->setCurrentProcess(PROC_TIMING);
 			i_timing_process();
-			gRTX->setProcessState(PROC_TIMING,EXECUTING);
+			gRTX->_scheduler->setProcessState(PROC_TIMING,READY);
 			break;
 
 		case SIGUSR1:	//Keyboard
-			gRTX->setProcessState(PROC_KB,EXECUTING);
-			gRTX->setCurrentProcess(PROC_KB);
+			gRTX->_scheduler->setProcessState(PROC_KB,EXECUTING);
+			gRTX->_scheduler->setCurrentProcess(PROC_KB);
 			i_keyboard_handler();
-			gRTX->setProcessState(PROC_KB,EXECUTING);
+			gRTX->_scheduler->setProcessState(PROC_KB,READY);
 			break;
 
 		case SIGUSR2:	//Crt
-			gRTX->setProcessState(PROC_CRT,EXECUTING);
-			gRTX->setCurrentProcess(PROC_CRT);
+			gRTX->_scheduler->setProcessState(PROC_CRT,EXECUTING);
+			gRTX->_scheduler->setCurrentProcess(PROC_CRT);
 			i_crt_handler();
-			gRTX->setProcessState(PROC_CRT,EXECUTING);
+			gRTX->_scheduler->setProcessState(PROC_CRT,READY);
 			break;
 
 		default:
 			assure(false,"Unknown Signal Received",__FILE__,__LINE__,__func__,false);
 			break;			
 	}
-	gRTX->setProcessState(prevProc,EXECUTING);
-	gRTX->setCurrentProcess(prevProc);
+	gRTX->_scheduler->setProcessState(prevProc,EXECUTING);
+	gRTX->_scheduler->setCurrentProcess(prevProc);
 }

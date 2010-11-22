@@ -42,8 +42,8 @@ class RTX
 		int getCurrentPcb(PCB** pcb);
 		int getCurrentPid();
 		int atomic(bool on);
-		int setCurrentProcess(int pid);
-		int setProcessState(int pid, int state);
+		//int setCurrentProcess(int pid);
+		//int setProcessState(int pid, int state);
 		
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
 		MsgEnv* K_receive_message();
@@ -66,10 +66,13 @@ class RTX
 #endif
 	
 	private:
-		PCB*						_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
-		Scheduler* 			_scheduler;
+		PCB*			_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
+		Scheduler* 		_scheduler;
 		SignalHandler* 	_signalHandler;
-		MsgServ* 				_mailMan;
+		MsgServ* 		_mailMan;
+		bool			_started;
+		
+		friend class SignalHandler;
 };
 
 #endif

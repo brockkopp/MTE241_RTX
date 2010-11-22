@@ -24,6 +24,7 @@ Scheduler::Scheduler(Queue* readyProcs)
 		temp = readyProcs->dequeue_PCB();
 		_readyProcs->pq_enqueue( temp, temp->getPriority() );
 	}
+	_started = false;
 
 //	for(int i=0; i < numProcs; i++) {
 //		PCB* temp = readyProcs->dequeue_PCB();
@@ -40,16 +41,15 @@ Scheduler::~Scheduler() {
 //This is called to kick off CPU execution. It puts the first process to execute
 //onto the cpu
 
-void Scheduler::start() {
+void Scheduler::start() 
+{
 	//set current process to highest priority process 
 	_currentProcess = _readyProcs->pq_dequeue();
-
 	_currentProcess->setState( EXECUTING );
-	
+
 	//Restore context 
 	debugMsg(_readyProcs->toString(),1,1);
 	_currentProcess->restoreContext();	
-
 }
 
 ///*
@@ -287,6 +287,17 @@ Return values: //Will return the state constant value depending on which type of
 	2: If proc is blocked on message recieve
 
 */
+
+int Scheduler::setProcessState(int pid, int state)
+{
+	PCB* tmpPcb;
+	gRTX->getPcb(pid,&tmpPcb);
+	if(tmpPcb == NULL)
+		return EXIT_ERROR;
+	else
+		return tmpPcb->setState(state);
+}
+
 int Scheduler::is_blocked( PCB * target ) 
 {
 	return target->getState();
@@ -301,11 +312,20 @@ PCB* Scheduler::get_current_process() {
 	return _currentProcess;
 }
 
+int Scheduler::setCurrentProcess(int pid)
+{
+	PCB* newProcess;
+	gRTX->getPcb(pid,&newProcess);
+	if(newProcess == NULL)
+		return EXIT_ERROR;
+	else
+		return setCurrentProcess(newProcess);
+}
 int Scheduler::setCurrentProcess(PCB* newProcess)
 {
-	if(newProcess != NULL)
-		_currentProcess = newProcess;
-	else
+	if(newProcess == NULL)
 		return EXIT_ERROR;
+		
+	_currentProcess = newProcess;
 	return EXIT_SUCCESS;
 }
