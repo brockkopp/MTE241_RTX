@@ -97,7 +97,7 @@ int main(void)
 	gCCI = new CCI();
 	
 	//Start scheduler. Put the first process onto the CPU
-gRTX->start_execution();
+	//gRTX->start_execution();
 	
 #if TESTS_MODE == 1
 	doTests();
