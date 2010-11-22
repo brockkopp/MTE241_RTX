@@ -47,7 +47,7 @@ RTX::~RTX()
 
 int RTX::displayText(MsgEnv* ioLetter)
 {
-	int ret = EXIT_ERROR;
+//	int ret = EXIT_ERROR;
 	if(ioLetter == NULL)
 		return NULL;
 	string content = ioLetter->getMsgData();
