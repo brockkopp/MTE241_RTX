@@ -259,7 +259,7 @@ int testScheduler( Scheduler* S )
 
 	debugMsg("\nI think the invalid memory reference is caused by the get_current_process call as tehre is not yet a current process.\n");
 	//TEST process_switch()
-if (VERBAL) debugMsg("current_process:"+ S->get_current_process()->get_name() + "\n");
+if (VERBAL) debugMsg("current_process:"+ S->get_current_process()->getName() + "\n");
 //	S->process_switch();
 	
 	return ret;

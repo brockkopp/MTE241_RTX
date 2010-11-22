@@ -45,14 +45,14 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		msg->setDestPid(destPid);
 		_msgTrace->addTrace(msg, SEND);  
 
-		msg->setOriginPid(tempPCB->get_id()); 
+		msg->setOriginPid(tempPCB->getId()); 
 		
 		//retrieve destination process PCB
 		PCB* tempDestPCB;
 		gRTX->getPcb(destPid, &tempDestPCB);
 		
 		bool temp;
-		int tempStatus = tempDestPCB->get_state();
+		int tempStatus = tempDestPCB->getState();
 		if(tempStatus == BLOCKED_MSG_RECIEVE)
 			temp = _scheduler->unblock_process(tempDestPCB);
 		else if(tempStatus == SLEEPING)
@@ -61,7 +61,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		if(!temp)
 			return EXIT_ERROR;
 			
-		tempDestPCB->add_mail(msg);
+		tempDestPCB->addMail(msg);
 		return EXIT_SUCCESS;
 	}
 	return EXIT_ERROR;
@@ -74,16 +74,16 @@ MsgEnv* MsgServ::recieveMsg()
 	PCB* tempPCB;
 	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
-	if (tempPCB->check_mail() == 0)
+	if (tempPCB->checkMail() == 0)
 	{
 		//i_process cannot be blocked
-		if (tempPCB->get_processType() == PROCESS_I)
+		if (tempPCB->getProcessType() == PROCESS_I)
     	return NULL;
   		
 		_scheduler->block_process(tempPCB, BLOCKED_MSG_RECIEVE); 		
 		gRTX->K_release_processor();
 	}
-	MsgEnv* tempMsg = tempPCB->retrieve_mail();
+	MsgEnv* tempMsg = tempPCB->retrieveMail();
 	_msgTrace->addTrace(tempMsg, RECEIVE);
 	
 	return tempMsg;
@@ -115,7 +115,7 @@ MsgEnv* MsgServ::requestEnv()
 	if( _freeEnvQ->isEmpty() ) 
 	{
 		//i_process cannot be blocked
-		if (tempPCB->get_processType() == PROCESS_I)
+		if (tempPCB->getProcessType() == PROCESS_I)
     	return NULL;
 
  		_scheduler->block_process(tempPCB, BLOCKED_ENV); 			

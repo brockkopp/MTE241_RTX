@@ -17,11 +17,18 @@ Scheduler::Scheduler(Queue* readyProcs)
 	_blockedMsgRecieve = new Queue( Queue::PROCCONBLOCK  );
 	
 	//Add all readyProcs to the ready queue.
-	int numProcs =	readyProcs->get_length();
-	for(int i=0; i < numProcs; i++) {
-		PCB* temp = readyProcs->dequeue_PCB();
-		_readyProcs->pq_enqueue( temp, temp->get_priority() );
+	//int numProcs =	readyProcs->get_length();
+	PCB* temp;
+	while (!readyProcs->isEmpty())
+	{
+		temp = readyProcs->dequeue_PCB();
+		_readyProcs->pq_enqueue( temp, temp->getPriority() );
 	}
+
+//	for(int i=0; i < numProcs; i++) {
+//		PCB* temp = readyProcs->dequeue_PCB();
+//		_readyProcs->pq_enqueue( temp, temp->getPriority() );
+//	}
 }
 
 Scheduler::~Scheduler() {
@@ -36,13 +43,12 @@ Scheduler::~Scheduler() {
 void Scheduler::start() {
 	//set current process to highest priority process 
 	_currentProcess = _readyProcs->pq_dequeue();
-	
-	//set status to exec
-//	_currentProcess->set_state( PCB::EXECUTING );
-	_currentProcess->set_state( EXECUTING );
+
+	_currentProcess->setState( EXECUTING );
 	
 	//Restore context 
-	_currentProcess->restore_context();	
+	debugMsg(_readyProcs->toString(),1,1);
+	_currentProcess->restoreContext();	
 
 }
 
@@ -53,23 +59,26 @@ void Scheduler::release_processor( ) {
 
 	//Save the context of the currently executing proc.
 	//Does some crazy context save shinanigans need to be done here???
-	if (_currentProcess->save_context() == 0 ) {
-
+	if (_currentProcess->saveContext() == 0 ) {
+			
 		//Put currentProcess on the ready queue.
-		_readyProcs->pq_enqueue( _currentProcess, _currentProcess->get_priority() );
-		_currentProcess->set_state( READY );
-		
+		_currentProcess->setState( READY );
+				
+		_readyProcs->pq_enqueue( _currentProcess, _currentProcess->getPriority() );
+						
 		//Allow next process to start executing.
 		//Note that if there is nothing waiting,
 		//Then the single existing proc will be
 		//put back on the CPU. Therefore, this
 		//edgecase is covered.
-		_currentProcess = _readyProcs->pq_dequeue();
 		
-		_currentProcess->set_state( EXECUTING );
+		_currentProcess = _readyProcs->pq_dequeue();
+
+		_currentProcess->setState( EXECUTING );
 	
-		//Restore this proc's context
-		_currentProcess->restore_context();
+		//Restore this proc's context		
+		cout << "\tto: " << _currentProcess->getName() << "\n";
+		_currentProcess->restoreContext();
 	}
 } 
 
@@ -91,10 +100,10 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 	if ( _readyProcs->pq_pluck( target ) ) { 
 		
 		//Change priority
-		target->set_priority( newPriority );
+		target->setPriority( newPriority );
 		
 		//Re-enqueue the PCB
-		_readyProcs->pq_enqueue( target, target->get_priority() );
+		_readyProcs->pq_enqueue( target, target->getPriority() );
 		
 		return 1;
 	}
@@ -105,7 +114,7 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 		 _blockedEnv->pluck( target );
 		
 		//Change priority
-		target->set_priority( newPriority );
+		target->setPriority( newPriority );
 		
 		//Re-enqueue the PCB
 		 _blockedEnv->enqueue( target );
@@ -119,7 +128,7 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 		 _blockedMsgRecieve->pluck( target );
 		
 		//Change priority
-		target->set_priority( newPriority );
+		target->setPriority( newPriority );
 		
 		//Re-enqueue the PCB
 		 _blockedMsgRecieve->enqueue( target );
@@ -129,7 +138,7 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 	//Case 3: PCB is executing
 	else if ( _currentProcess == target ){
 		//Save context
-		_currentProcess->save_context();
+		_currentProcess->saveContext();
 		
 		//Remove from executing, put on ready queue
 		add_ready_process( target );
@@ -169,18 +178,18 @@ int Scheduler::context_switch( PCB * nextProc )
 	//Switch out _currentProcessfor nextProc.
 	PCB* oldProc = _currentProcess;
 	_currentProcess = nextProc;
-	_currentProcess->set_state( EXECUTING );
-	oldProc->set_state( READY );
+	_currentProcess->setState( EXECUTING );
+	oldProc->setState( READY );
 	
 	//Perform context_save shinanigans. See page in Sample Kernel Design
 	//doc to see the suggested code that this is based on.
-	int save_return = oldProc->save_context();
+	int save_return = oldProc->saveContext();
 	
 	//Restore context of next_proc iff setjmp is not returning from
 	//a long_jmp
 	if (save_return == 0) {
-		_readyProcs->pq_enqueue( oldProc, oldProc->get_priority() );
-		_currentProcess->restore_context();
+		_readyProcs->pq_enqueue( oldProc, oldProc->getPriority() );
+		_currentProcess->restoreContext();
 	}
 	
 	return 1;
@@ -222,12 +231,12 @@ int Scheduler::block_process (PCB * target, int reason )
 	//and set its status
 	if (reason == BLOCKED_ENV)
 	{
-		target->set_state( BLOCKED_ENV );
+		target->setState( BLOCKED_ENV );
 		return_value = _blockedEnv->enqueue( target );
 			
 	}	
 	else if (reason == BLOCKED_MSG_RECIEVE){
-		target->set_state( BLOCKED_MSG_RECIEVE );
+		target->setState( BLOCKED_MSG_RECIEVE );
 		return_value = _blockedMsgRecieve->enqueue( target );
 	}
 
@@ -252,19 +261,19 @@ return values:
 int Scheduler::unblock_process( PCB * target )
 {
 	//If process is blocked on msg recieve
-	if (target->get_state() == BLOCKED_MSG_RECIEVE){
+	if (target->getState() == BLOCKED_MSG_RECIEVE){
 		_blockedMsgRecieve->pluck(target);	
-		target->set_state( READY );
+		target->setState( READY );
 
 		//Re-enqueue on ready queue
-		return _readyProcs->pq_enqueue( target , target->get_priority());
+		return _readyProcs->pq_enqueue( target , target->getPriority());
 	}
 	//If process is blocked on envelope
-	else if (target->get_state() == BLOCKED_ENV) {
+	else if (target->getState() == BLOCKED_ENV) {
 		_blockedEnv->pluck(target);
-		target->set_state( READY );
+		target->setState( READY );
 
-		return _readyProcs->pq_enqueue( target , target->get_priority());
+		return _readyProcs->pq_enqueue( target , target->getPriority());
 	}
 	else //Process was not blocked in the first place...
 		return 1;
@@ -280,7 +289,7 @@ Return values: //Will return the state constant value depending on which type of
 */
 int Scheduler::is_blocked( PCB * target ) 
 {
-	return target->get_state();
+	return target->getState();
 }
 
 PCB* Scheduler::get_blocked_on_env()

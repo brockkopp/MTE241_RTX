@@ -18,7 +18,7 @@ class Scheduler;
 
 //RTX Global Constants
 #define PROCESS_COUNT 	7		//Total number of processes existing in the RTX
-#define STACK_SIZE 		20000	//Stack size in bytes
+#define STACK_SIZE 		16372	//Stack size in bytes
 
 //Constants used to denote process types
 #define PROCESS_I		1	

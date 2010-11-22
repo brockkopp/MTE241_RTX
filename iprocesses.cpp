@@ -17,7 +17,7 @@ void i_timing_process()
 	PCB* tempPCB;
 	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
-	MsgEnv* tempMsg = tempPCB->retrieve_mail();
+	MsgEnv* tempMsg = tempPCB->retrieveMail();
 	if (tempMsg != NULL)
 	{
 		int expire = gRunTime + tempMsg->getTimeStamp();
@@ -81,7 +81,7 @@ void i_crt_handler()
 	int invoker;
 	
 	PCB* currPcb = NULL;
-	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).check_mail() > 0) //current PCB is valid && Someone is trying to send chars to the console
+	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 			retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
 			string msgToConsole = retMsg->getMsgData();

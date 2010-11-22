@@ -8,26 +8,19 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
 
-	//Initialize each PCB from init table
-	for(int i=0; i < PROCESS_COUNT; i++)
-		_pcbList[i] = new PCB(initTable[i]);
-
-	/* Transfer the _pcbList into a queue for use with the scheduler... 
-	*/
-	
 	Queue* pcbTmpList = new Queue(Queue::PROCCONBLOCK); //Init queue of PCBs
-	
-	//Loop through _pcbList, enqueue each item into pcbTmpList.
-	for(int i=0; i < PROCESS_COUNT; i++) {
-			
-		//Put all processes from the intialize table into the queue to be passed
-		//to the scheduler to put on the ready queue. Do not allow i_processes onto
-		//this list.	
-		if ( !(_pcbList[i]->get_processType() == PROCESS_I) )
+
+	//Put all processes from the intialize table into the queue to be passed
+	//to the scheduler to put on the ready queue. Do not allow i_processes onto
+	//this list.	
+	for(int i=0; i < PROCESS_COUNT; i++)
+	{
+		_pcbList[i] = new PCB(initTable[i]);
+		if ( _pcbList[i]->getProcessType() != PROCESS_I )
 			pcbTmpList->enqueue(_pcbList[i]);
 	}
-	
-	_scheduler = new Scheduler (pcbTmpList);
+
+	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;
 	
 	_mailMan = new MsgServ(_scheduler);
@@ -146,7 +139,7 @@ int RTX::K_request_process_status(MsgEnv* msg)
 		PCB* curr;
 		for(int i=0; i < PROCESS_COUNT && getPcb(i,&curr) == EXIT_SUCCESS; i++)
 		{
-			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->get_state()) + "\t" + intToStr(curr->get_priority()) + "\n";
+			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->getState()) + "\t" + intToStr(curr->getPriority()) + "\n";
 	//		data[i][0] = intToStr(i);
 	//		data[i][1] = intToStr(curr->getState());
 	//		data[i][2] = intToStr(curr->get_priority());
@@ -219,14 +212,14 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 		//make a copy of the current mailbox, then empty it so can receive message from iprocesses without hassle
 		PCB* curr = NULL;
 		getCurrentPcb(&curr);
-		Queue* temp = curr->copy_mailbox();
-		curr->empty_mailbox();
+		Queue* temp = curr->copyMailbox();
+		curr->emptyMailbox();
 		
 		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
 	  	//this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the i_crt_handler sends a message before exiting	  
 	  	msg_envelope = K_receive_message(); 
 	  
-	 	curr->set_mailbox(temp); //restore mailbox
+	 	curr->setMailbox(temp); //restore mailbox
 	  
 		bool transmission_failed = (msg_envelope == NULL);
 		if(!transmission_failed)

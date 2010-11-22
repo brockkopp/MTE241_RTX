@@ -428,7 +428,7 @@ string Queue::toString()
 				output += "<-[" + intToStr(position) + ": " + intToStr(Temp->priority) + "]";
 				break;
 			case PROCCONBLOCK:
-				output += "<-[" + intToStr(position) + ": " + ((PCB*)(Temp->item))->get_name() + "]";
+				output += "<-[" + intToStr(position) + ": " + ((PCB*)(Temp->item))->getName() + "]";
 				break;
 		}
 		Temp = Temp->link;

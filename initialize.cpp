@@ -97,11 +97,16 @@ int main(void)
 	gCCI = new CCI();
 	
 	//Start scheduler. Put the first process onto the CPU
-gRTX->start_execution();
 	
 #if TESTS_MODE == 1
-	doTests();
+//	doTests();
 #endif
+	
+	//gRTX->start_execution();
+	
+	
+	
+
 
 
 
@@ -254,37 +259,37 @@ int cleanupShmem()
 
 void a()
 {
-	cout << "A\n";
+	cout << "\nA\n\n";
 	gRTX->K_release_processor();
 }
 void b()
 {
-	cout << "B\n";
+	cout << "\nB\n\n";
 	gRTX->K_release_processor();
 }
 void c()
 {
-	cout << "C\n";
+	cout << "\nC\n\n";
 	gRTX->K_release_processor();
 }
 void d()
 {
-	cout << "D\n";
+	cout << "\nD\n\n";
 	gRTX->K_release_processor();
 }
 void e()
 {
-	cout << "userA\n";
+	cout << "\nuserA\n\n";
 	gRTX->K_release_processor();
 }
 void f()
 {
-	cout << "userB\n";
+	cout << "\nuserB\n\n";
 	gRTX->K_release_processor();
 }
 void g()
 {
-	cout << "userC\n";
+	cout << "\nuserC\n\n";
 	gRTX->K_release_processor();
 }
 
@@ -327,17 +332,17 @@ int createInitTable(PcbInfo* initTable[])
 
 	//User Processes
 		initTable[4]->name =		"userA";	
-		initTable[4]->priority =    2;
+		initTable[4]->priority =    1;
 		initTable[4]->processType = PROCESS_U;
 		initTable[4]->address = 	&(e);
 
 		initTable[5]->name =		"userB";	
-		initTable[5]->priority =    2;
+		initTable[5]->priority =    1;
 		initTable[5]->processType = PROCESS_U;
 		initTable[5]->address = 	&(f);
 
 		initTable[6]->name =		"userC";	
-		initTable[6]->priority =    2;
+		initTable[6]->priority =    1;
 		initTable[6]->processType = PROCESS_U;
 		initTable[6]->address = 	&(g);
 	}

@@ -1,9 +1,6 @@
 #include "PCB.h"
 
-#define STATE -2 //define all possible states and declare during constructors
-
 /*~*~*~*~*~*~* Constructors *~*~*~*~*~*~*~*/
-void nothing3(){cout << "HHH\n\n";}
 
 PCB::PCB(PcbInfo* info)
 { 
@@ -13,21 +10,13 @@ PCB::PCB(PcbInfo* info)
 	_name = info->name;
 	_priority = info->priority;
 	_processType = info->processType;	
+	_fPtr = info->address;
 	_stack = (char *)(malloc(info->stackSize));
 	assure(_stack != NULL, "Stack initialization failed", __FILE__, __LINE__, __func__, true);
-
-	_state = STATE;
+	_state = READY;
 	
 	_mailbox = new Queue(Queue::MSG_ENV);
-	int i;
-	//_fPtr = &(nothing3);
-	_fPtr = info->address;
-	
-
-//	_context = new Context(_stack, info->stackSize, tmp_fxn);	
-//	_context->init(_stack, info->stackSize, tmp_fxn);
 	_context = new Context(_stack, info->stackSize, _fPtr);	
-	_context->init(_stack, info->stackSize, _fPtr);
 }
 
 
@@ -39,7 +28,7 @@ PCB::~PCB()
 	//free(_fPtr); //void*, can't use delete because it'll try to dereference
 	free(_stack);
 	delete _mailbox;
-	delete[] _context;
+	delete _context;
 }
 
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -65,14 +54,30 @@ int PCB::getAtomicCount()
 //void* PCB::get_fPtr() { return _fPtr; }
 //void PCB::set_fPtr( void* fPtr ) {	_fPtr = &fPtr; }
 		
-int PCB::get_id() { return _id; }
-void PCB::set_id( int id ) {	_id = id; }
+int PCB::getId() 
+{ 
+	return _id; 
+}
+void PCB::setId( int id ) 
+{	
+	_id = id; 
+}
 		
-string PCB::get_name() { return _name; }
-void PCB::set_name( string name ) {	_name = name; }
+string PCB::getName() 
+{ 
+	return _name; 
+}
+void PCB::setName( string name ) 
+{	
+	_name = name; 
+}
 
-int PCB::get_priority() { return _priority; }
-int PCB::set_priority( int pri )//SHOULD THIS RE-ENQUEUE PCB IF IN RPQ????
+int PCB::getPriority() 
+{ 
+	return _priority; 
+}
+
+int PCB::setPriority( int pri )		//Should only be called by scheduler (my re-enqueue in RPQ)
 {
 	//Check if priority level exists
 	if (pri < 0 || pri > 3) 
@@ -85,14 +90,17 @@ int PCB::set_priority( int pri )//SHOULD THIS RE-ENQUEUE PCB IF IN RPQ????
 	}
 }
 		
-int PCB::get_processType() { return _processType; }
-void PCB::set_processType( int processType ) {	_processType = processType; }
+int PCB::getProcessType() 
+{ 
+	return _processType; 
+}
+//void PCB::setProcessType( int processType ) {	_processType = processType; }
 		
-char* PCB::get_stack() { return _stack; }
-void PCB::set_stack( char* stack ) {	_stack = stack; } 
+//char* PCB::getStack() { return _stack; }
+//void PCB::setStack( char* stack ) {	_stack = stack; } 
 		
-int PCB::get_state() { return _state; }
-void PCB::set_state( int state ) {	_state = state; } 
+int PCB::getState() { return _state; }
+void PCB::setState( int state ) {	_state = state; } 
 string PCB::getStateName()
 {
 	string state = "Unknown State";
@@ -106,47 +114,49 @@ string PCB::getStateName()
 	return state;
 }
 
-Context* PCB::get_context() { return _context; }
-int PCB::save_context() { return _context->save(); }
+//Context* PCB::getContext() { return _context; }
+int PCB::saveContext() 
+{ 
+	return _context->save(); 
+}
+void PCB::restoreContext() 
+{ 
+	_context->restore(); 
+}
 
-void PCB::restore_context() { _context->restore(); }
-				
 /*~*~*~*~*~*~* Mailbox Modifiers *~*~*~*~*~*~*~*/
 //Dequeues oldest message in the mailbox (FIFO)
-MsgEnv* PCB::retrieve_mail( )
+MsgEnv* PCB::retrieveMail( )
 {
 	return _mailbox->dequeue_MsgEnv();
 }
 
 //Enqueue message onto mailbox queue
-bool PCB::add_mail( MsgEnv* message )
+bool PCB::addMail( MsgEnv* message )
 {
 	return (_mailbox->enqueue(message));
 }
 
 //Returns the number of messages in the mailbox
-int PCB::check_mail( ) 
+int PCB::checkMail( ) 
 { 
 	return (_mailbox->get_length());
 
 }
 
-Queue* PCB::copy_mailbox()
+Queue* PCB::copyMailbox()
 {
 	return _mailbox;
 }
 
-void PCB::empty_mailbox()
+void PCB::emptyMailbox()
 {
 	delete (_mailbox);
 	return;
 }
 
-void PCB::set_mailbox(Queue* q)
+void PCB::setMailbox(Queue* q)
 {
 	_mailbox = q;
 	return;
 }
-		
-
-

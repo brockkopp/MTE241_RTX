@@ -148,7 +148,7 @@ int CCI::processCCI()
 					errMsg = "invalid parameters";
 				else if(gRTX->getPcb(pid,&pcb) != EXIT_SUCCESS)
 					errMsg = "Invalid process id";
-				else if(pcb->set_priority(priority) != EXIT_SUCCESS)
+				else if(pcb->setPriority(priority) != EXIT_SUCCESS)
 					errMsg = "Invalid priority";
 			}
 			else if(input[0] == "help")	//remove for demo
