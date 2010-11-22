@@ -12,7 +12,7 @@
 #define READY 0
 #define BLOCKED_ENV 1
 #define BLOCKED_MSG_RECIEVE 2
-#define SLEEPING 3									//added process state - Eric/////////////////////
+#define SLEEPING 3								
 
 class Queue;
 

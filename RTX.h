@@ -55,6 +55,7 @@ class RTX
 		Scheduler* 			_scheduler;
 		SignalHandler* 	_signalHandler;
 		MsgServ* 				_mailMan;
+		MsgTrace*				_msgTrace;
 };
 
 #endif

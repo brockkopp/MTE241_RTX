@@ -24,7 +24,11 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_scheduler = new Scheduler (pcbTmpList);
 	delete pcbTmpList;
 	
+	_msgTrace = new MsgTrace();
+	
 	_signalHandler->setSigMasked(false);
+	
+	_mailMan = new MsgServ(_scheduler, _msgTrace);
 
 	debugMsg("RTX Init Done",0,1);
 }
@@ -57,12 +61,7 @@ int RTX::getCurrentPcb(PCB** pcb)
 {
 	int ret = EXIT_SUCCESS;
 	
-	if(_scheduler == NULL)			//TESTING ONLY!!!!!!!!!!!!!!!
-	{
-		*pcb = _pcbList[0];
-		debugMsg("Default pcb used in getCurrentPcb",0,1);
-	}
-	else if(_scheduler == NULL || (*pcb = _scheduler->get_current_process()) == NULL)
+	if(_scheduler == NULL || (*pcb = _scheduler->get_current_process()) == NULL)
 		ret = EXIT_ERROR;
 
 	return ret;
@@ -164,7 +163,7 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 	{
 		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay); 
-		msg_envelope->setMsgType(msg_envelope->WAKE_UP);
+		msg_envelope->setMsgType(intToStr(wakeup_code));
 		//call Kernal send message to send to timing iProcess
 		return K_send_message(0, msg_envelope); //i_timing_process PID is 0
 	}
@@ -259,6 +258,8 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
-	//return _msgTrace->getTraces(); 
-	return -2;
+	//call MsgTrace function to format trace buffers into table
+	_msgTrace->getTraces(msg_envelope);
+	//send table formated string to user display 
+	return K_send_console_chars(msg_envelope);
 }

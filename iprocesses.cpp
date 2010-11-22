@@ -17,21 +17,26 @@ void i_timing_process()
 	PCB* tempPCB;
 	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
+	//get new message envelopes from mailbox
 	MsgEnv* tempMsg = tempPCB->retrieve_mail();
 	if (tempMsg != NULL)
 	{
+		//set expire time, total RTX run time plus the requested delay time
 		int expire = gRunTime + tempMsg->getTimeStamp();
 		waitingProcesses->sortedEnqueue(tempMsg, expire);
-		tempMsg = NULL;
+		tempMsg = NULL;//so that the pointer can be used again later
 	}
+	
+	//check if first envelope in waiting Q has expired, send wake up msg if true
 	if (waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
 	{
 		tempMsg = waitingProcesses->dequeue_MsgEnv();
-		tempMsg->setMsgType(MsgEnv::WAKE_UP);
+		tempMsg->setMsgType("20");																									//wake_up
 		int returnAddress = tempMsg->getOriginPid();
 		gRTX->K_send_message(returnAddress, tempMsg);
 	}
 			
+	//increment user display wall clock
 	gCCI->wallClock->increment();
 
 	string time;
