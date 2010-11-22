@@ -28,7 +28,7 @@ typedef struct QueueNodeTag
  ~*~*~*~*~*~*~*~*~*~*~*~*~*~*/
 class Queue 
 {
-	private:
+	protected:
 		QueueNode* _front;
 		QueueNode* _rear;
 		int _length;
@@ -37,6 +37,8 @@ class Queue
 	  itemType 		dequeue_gen();  
 	  itemType 		pluck_gen(itemType value);
 	  itemType 		select_gen(itemType value);
+	  
+	  friend class Mailbox;
 		
 	public:
 		//Constants

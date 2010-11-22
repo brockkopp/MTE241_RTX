@@ -1,5 +1,9 @@
 #include "SignalHandler.h"
 
+#define ANGTEST 0
+
+extern RTX* gRTX;
+
 SignalHandler::SignalHandler()
 {
 	debugMsg("Signal Handler Initializing...",0,0);
@@ -25,7 +29,7 @@ SignalHandler::SignalHandler()
 
 	//Set blocked signal set to current set as well as store default signal set to _sigSetHandled
 	sigprocmask(SIG_BLOCK, &_sigSetBlocked, &_sigSetHandled);	
-	
+
 	debugMsg("Done",0,1);
 	debugMsg("Signals Masked(init)",0,1);
 }
@@ -37,12 +41,12 @@ int SignalHandler::setSigMasked(bool masked)
 	{
 		if(masked)
 		{
-			debugMsg("Atomic(on)",0,1);
+			if(ANGTEST) debugMsg("Atomic(on)",0,1);
 			sigprocmask(SIG_BLOCK, &_sigSetBlocked, NULL);
 		}
 		else
 		{
-			debugMsg("Atomic(off)",0,1);
+			if(ANGTEST) debugMsg("Atomic(off)",0,1);
 			sigprocmask(SIG_SETMASK, &_sigSetHandled, NULL);
 		}
 	}
@@ -56,6 +60,14 @@ int SignalHandler::setSigMasked(bool masked)
 
 void SignalHandler::handler( int sigNum )
 {
+
+	int prevProc = gRTX->getCurrentPid();
+	
+	//-1 Fatal since no process's stack to run on
+	assure(prevProc >= 0, "No Process on CPU during i_process call. Sig(" + intToStr(sigNum) + ")",__FILE__,__LINE__,__func__,true);
+
+	gRTX->_scheduler->setProcessState(prevProc,READY);
+	
 	switch(sigNum)
 	{
 		case SIGINT:
@@ -63,20 +75,30 @@ void SignalHandler::handler( int sigNum )
 			break;
 
 		case SIGALRM:
+			gRTX->_scheduler->setProcessState(PROC_TIMING,EXECUTING);
+			gRTX->_scheduler->setCurrentProcess(PROC_TIMING);
 			i_timing_process();
+			gRTX->_scheduler->setProcessState(PROC_TIMING,READY);
 			break;
 
 		case SIGUSR1:	//Keyboard
+			gRTX->_scheduler->setProcessState(PROC_KB,EXECUTING);
+			gRTX->_scheduler->setCurrentProcess(PROC_KB);
 			i_keyboard_handler();
+			gRTX->_scheduler->setProcessState(PROC_KB,READY);
 			break;
 
 		case SIGUSR2:	//Crt
+			gRTX->_scheduler->setProcessState(PROC_CRT,EXECUTING);
+			gRTX->_scheduler->setCurrentProcess(PROC_CRT);
 			i_crt_handler();
+			gRTX->_scheduler->setProcessState(PROC_CRT,READY);
 			break;
 
 		default:
 			assure(false,"Unknown Signal Received",__FILE__,__LINE__,__func__,false);
 			break;			
 	}
+	gRTX->_scheduler->setProcessState(prevProc,EXECUTING);
+	gRTX->_scheduler->setCurrentProcess(prevProc);
 }
-

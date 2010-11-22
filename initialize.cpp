@@ -4,7 +4,13 @@
 #include "SignalHandler.h"
 #include "tests.h"
 #include "Shmem.h"
+#include "lib/Mailbox.h"
 
+/* Not sure it'salright to include .cpp's need to review this --Karl */
+//#include "iprocesses.cpp"
+#include "userProcesses.h"
+
+#include <sys/types.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -51,6 +57,7 @@ int main(void)
 	//Signals are masked by default
 	SignalHandler* sigHandler = new SignalHandler();
 	sigHandler->setSigMasked(false);
+	
 	//Create shared memory and assure that initialization is successful
 	assure(initializeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, true);
 
@@ -63,19 +70,19 @@ int main(void)
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
 
-	//Create keyboad thread
+	//Create keyborad thread
 	if ((pidKB = fork()) == 0)
 	{
-		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
+		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)intToStr(shmem.rxId).c_str(), (char *)NULL);
 
 		//if the execution reaches here, the keyboard thread failed to initialize
 		assure(false, "Keyboard helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
+	//Create CRT thread
 	if ((pidCRT = fork()) == 0)
 	{
-		execl("./CRT.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
-
+		execl("./CRT.out", (char *)intToStr(pidRTX).c_str(), (char *)intToStr(shmem.txId).c_str(), (char *)NULL);
 		//if the execution reaches here, the crt thread failed to initialize
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
@@ -127,8 +134,11 @@ int main(void)
 	gCCI = new CCI();
 
 #if TESTS_MODE == 1
-	//doTests();
+//	doTests();
 #endif
+
+	//Start scheduler. Put the first process onto the CPU
+//	gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
@@ -148,9 +158,15 @@ void doTests()
 	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tMessaging Test:\t"); 
 	   debugMsg("Not Implemented\n");
+//	debugMsg("\tScheduler Test:\t");   
+//	   debugMsg((testScheduler( gRTX->getScheduler() ) == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tPQ Test:\t");   
+	   debugMsg((testPQ() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+ 	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+ 	debugMsg("\tAnother Test:\t");   
 	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 }
 
@@ -272,6 +288,42 @@ int cleanupShmem()
 	return ret;
 }
 
+void a()
+{
+	cout << "\nA\n\n";
+	gRTX->K_release_processor();
+}
+void b()
+{
+	cout << "\nB\n\n";
+	gRTX->K_release_processor();
+}
+void c()
+{
+	cout << "\nC\n\n";
+	gRTX->K_release_processor();
+}
+void d()
+{
+	cout << "\nD\n\n";
+	gRTX->K_release_processor();
+}
+void e()
+{
+	cout << "\nuserA\n\n";
+	gRTX->K_release_processor();
+}
+void f()
+{
+	cout << "\nuserB\n\n";
+	gRTX->K_release_processor();
+}
+void g()
+{
+	cout << "\nuserC\n\n";
+	gRTX->K_release_processor();
+}
+
 int createInitTable(PcbInfo* initTable[])
 {	
 	int ret = EXIT_SUCCESS;
@@ -292,38 +344,38 @@ int createInitTable(PcbInfo* initTable[])
 		initTable[0]->name =		"i_timing";	
 		initTable[0]->priority =    0;
 		initTable[0]->processType = PROCESS_I;
-		initTable[0]->address = 	NULL;
+		initTable[0]->address = 	&(a);
 
 		initTable[1]->name =		"i_kb";	
 		initTable[1]->priority =    0;
 		initTable[1]->processType = PROCESS_I;
-		initTable[1]->address = 	NULL;
+		initTable[1]->address = 	&(b);
 
 		initTable[2]->name =		"i_crt";	
 		initTable[2]->priority =    0;
 		initTable[2]->processType = PROCESS_I;
-		initTable[2]->address = 	NULL;
+		initTable[2]->address = 	&(c);
 
-		initTable[3]->name =		"null";	
+		initTable[3]->name =		"null_proc";	
 		initTable[3]->priority =    3;
 		initTable[3]->processType = PROCESS_K;
-		initTable[3]->address = 	NULL;
+		initTable[3]->address = 	&(d);
 
 	//User Processes
-		initTable[4]->name =		"user1";	
-		initTable[4]->priority =    2;
-		initTable[4]->processType = PROCESS_I;
-		initTable[4]->address = 	NULL;
+		initTable[4]->name =		"userA";	
+		initTable[4]->priority =    1;
+		initTable[4]->processType = PROCESS_U;
+		initTable[4]->address = 	&(e);
 
-		initTable[5]->name =		"user2";	
-		initTable[5]->priority =    2;
-		initTable[5]->processType = PROCESS_I;
-		initTable[5]->address = 	NULL;
+		initTable[5]->name =		"userB";	
+		initTable[5]->priority =    1;
+		initTable[5]->processType = PROCESS_U;
+		initTable[5]->address = 	&(f);
 
-		initTable[6]->name =		"user3";	
-		initTable[6]->priority =    2;
-		initTable[6]->processType = PROCESS_I;
-		initTable[6]->address = 	NULL;
+		initTable[6]->name =		"userC";	
+		initTable[6]->priority =    1;
+		initTable[6]->processType = PROCESS_U;
+		initTable[6]->address = 	&(g);
 	}
 	catch(int e)
 	{
@@ -333,3 +385,6 @@ int createInitTable(PcbInfo* initTable[])
 	
 	return ret;
 }
+
+
+

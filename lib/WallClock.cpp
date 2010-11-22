@@ -72,7 +72,7 @@ string WallClock::toString()
 {
 	string ret;
 
-	if(_isNewTime)
+	if(_isDisplayed && _isNewTime)
 	{
 		_isNewTime = false;
 		ret = intToStr(_hours,2) + ":" + intToStr(_minutes,2) + ":" + intToStr(_seconds,2);

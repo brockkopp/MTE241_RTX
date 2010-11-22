@@ -1,5 +1,6 @@
 #include "RTX.h"
 extern CCI* gCCI;
+extern inputBuffer* gRxMemBuf;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
@@ -8,27 +9,32 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
 
-	//Initialize each PCB from init table
-	for(int i=0; i < PROCESS_COUNT; i++)
-		_pcbList[i] = new PCB(initTable[i]);
-
-	/* Transfer the _pcbList into a queue for use with the scheduler... 
-	*/
-	
 	Queue* pcbTmpList = new Queue(Queue::PROCCONBLOCK); //Init queue of PCBs
-	
-	//Loop through _pcbList, enqueue each item into pcbTmpList.
+
+	//Put all processes from the intialize table into the queue to be passed
+	//to the scheduler to put on the ready queue. Do not allow i_processes onto
+	//this list.	
 	for(int i=0; i < PROCESS_COUNT; i++)
-		pcbTmpList->enqueue(_pcbList[i]);
-	
-	_scheduler = new Scheduler (pcbTmpList);
+	{
+		_pcbList[i] = new PCB(initTable[i]);
+		if ( _pcbList[i]->getProcessType() != PROCESS_I )
+			pcbTmpList->enqueue(_pcbList[i]);
+	}
+
+	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;
+	
+	_scheduler->_currentProcess = _pcbList[0];	//TESTING ONLY!!!
+	
+	_mailMan = new MsgServ(_scheduler);
 	
 	_msgTrace = new MsgTrace();
 	
 	_signalHandler->setSigMasked(false);
 	
 	_mailMan = new MsgServ(_scheduler, _msgTrace);
+
+	_started = false;
 
 	debugMsg("RTX Init Done",0,1);
 }
@@ -41,6 +47,37 @@ RTX::~RTX()
 	//delete _mailMan;
 	//delete _scheduler;
 	//delete _signalHandler;
+}
+
+int RTX::displayText(MsgEnv* ioLetter)
+{
+//	int ret = EXIT_ERROR;
+	if(ioLetter == NULL)
+		return NULL;
+	string content = ioLetter->getMsgData();
+	
+	int lineCount = countChars(content,'\n');
+	
+	if(lineCount == 0)
+	{
+		K_send_console_chars(ioLetter);
+		ioLetter = _scheduler->get_current_process()->retrieveAck();
+	}
+	else
+	{	
+		string lines[lineCount];
+		parseString(content,lines,'\n',lineCount);
+	
+		for(int i=0; i < lineCount; i++)
+		{
+			cout << lines[i] + '\n';
+			//ioLetter->setMsgData(lines[i]);
+			//K_send_console_chars(ioLetter);
+		}
+		cout.flush();
+	}
+		
+	return -2;
 }
 
 //assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve PCB",__FILE__,__LINE__,__func__,false);
@@ -56,6 +93,19 @@ int RTX::getPcb(int pid, PCB** pcb)
 	return ret;
 }
 
+//int RTX::setCurrentProcess(int pid)
+//{
+//	PCB* tempPcb;
+//	int ret = EXIT_SUCCESS;
+//	
+//	if( getPcb(pid,&tempPcb) == EXIT_SUCCESS)
+//		_scheduler->setCurrentProcess(tempPcb);
+//	else
+//		ret = EXIT_ERROR;
+//	
+//	return ret;
+//}
+
 //assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getCurrentPcb(PCB** pcb)
 {
@@ -67,17 +117,32 @@ int RTX::getCurrentPcb(PCB** pcb)
 	return ret;
 }
 
+int RTX::getCurrentPid()
+{
+	int pid = -1;
+	PCB* tempPcb;
+	if(getCurrentPcb(&tempPcb) == EXIT_SUCCESS)
+		pid = tempPcb->getId();
+		
+	return pid;
+}
+
+//int RTX::setProcessState(int pid, int state)
+//{
+//	int ret = EXIT_ERROR;
+//	PCB* tmpPcb;
+//	if(getPcb(pid, &tmpPcb) == EXIT_SUCCESS)
+//		if(tmpPcb->setState(state) == EXIT_SUCCESS)
+//			ret = EXIT_SUCCESS;
+//	return ret;
+//}
+
 int RTX::atomic(bool on)
 {
 	int ret = EXIT_SUCCESS;
 	PCB* currPcb = NULL;
-	
-	if(_scheduler == NULL)			//TESTING ONLY!!!!!!!!!!!!!!!
-	{
-		debugMsg("no scheduler... forcing atomic",0,1);
-		_signalHandler->setSigMasked(on);
-	}
-	else if(assure(getCurrentPcb(&currPcb) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false))
+
+	if(assure(getCurrentPcb(&currPcb) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false))
 	{	
 		int cnt = (on) ? currPcb->incAtomicCount() : currPcb->decAtomicCount();
 		
@@ -88,7 +153,7 @@ int RTX::atomic(bool on)
 	}
 	else
 		ret = EXIT_ERROR;
-			
+	
 	return ret;
 }
 
@@ -120,31 +185,40 @@ int RTX::K_release_processor()
 {
 	//We need a scheduler object names scheduler to be declared (in initialization???)
 	
-	//return scheduler.release_processor();
-	return -2;
+	_scheduler->release_processor();
+	return 1;
+
 }
 
-int RTX::K_request_process_status(MsgEnv* memory_block) 
+int RTX::K_request_process_status(MsgEnv* msg) 
 {
-//	array returnArray
-//	for each PCB
-//	{
-//		status = PCB.get_status
-//		priority = PCB.get_priority
-//		Add status and priority to returnArray
-//	}
-//	Put returnArray into message contents
-//	send_message( invoking_process, msg_env_ptr )
-//	;
-return -2;
+	if(msg != NULL)
+	{
+		string output = "\tPID\tSTATUS\tPRIORITY\n\t---\t------\t--------\n";
+		//string data[PROCESS_COUNT,3];
+		PCB* curr;
+		for(int i=0; i < PROCESS_COUNT && getPcb(i,&curr) == EXIT_SUCCESS; i++)
+		{
+			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->getState()) + "\t" + intToStr(curr->getPriority()) + "\n";
+	//		data[i][0] = intToStr(i);
+	//		data[i][1] = intToStr(curr->getState());
+	//		data[i][2] = intToStr(curr->get_priority());
+		}
+		
+		debugMsg(output);
 	
+	//	msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
+	//	msg->setMsgData(output);
+		return EXIT_SUCCESS;
+	}
+	return EXIT_ERROR;
 }
 
 int RTX::K_terminate()
 {
 	//Execute final cleanup and program termination, 0 denotes normal exit
 	die(0);
-	return 1;
+	return EXIT_ERROR;		//Should never reach this point
 }
 
 int RTX::K_change_priority(int new_priority, int target_process_id)
@@ -179,52 +253,54 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
-	if(msg_envelope == NULL) //error check
-		return EXIT_ERROR;
-		
-	string toSend = msg_envelope->getMsgData();
-	if(toSend[toSend.length()-1] != '\0') //ensure message is terminated by null character	
-		return EXIT_ERROR;
-	
-	//validated that message is in correct format
-	int iCRTProcId = getpid(); //send a signal to the RTX
-	int invoker = msg_envelope->getOriginPid();
-	//send message to i_crt_handler to deal with transmission of the message to the console
-	msg_envelope->setMsgType(msg_envelope->TRANSMIT_TO_CRT_REQUEST);
-	int res = K_send_message(iCRTProcId, msg_envelope);
-	
-	if(res != EXIT_ERROR)
-	{
-		//make a copy of the current mailbox, then empty it so can receive message from iprocesses without hassle
-		PCB* curr = NULL;
-		getCurrentPcb(&curr);
-		Queue* temp = curr->copy_mailbox();
-		curr->empty_mailbox();
-		
-		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
-	  	//this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the i_crt_handler sends a message before exiting	  
-	  	msg_envelope = K_receive_message(); 
-	  
-	 	curr->set_mailbox(temp); //restore mailbox
-	  
-		bool transmission_failed = (msg_envelope == NULL);
-		if(!transmission_failed)
-		{
-			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
-			{
-				res = EXIT_ERROR;
-				K_send_message(invoker, msg_envelope);
-			}
-			else //display_ack
-				res = K_send_message(invoker, msg_envelope); //the message type was set to DISPLAY_ACK by the iprocess
-		}
-		else
-		{
-			res = EXIT_ERROR;
-			K_send_message(invoker, msg_envelope);
-		}
-	}
-	return res;
+	kill(getpid(), SIGUSR2);
+	return EXIT_SUCCESS;
+//	if(msg_envelope == NULL) //error check
+//		return EXIT_ERROR;
+//		
+//	string toSend = msg_envelope->getMsgData();
+//	if(toSend[toSend.length()-1] != '\0') //ensure message is terminated by null character	
+//		return EXIT_ERROR;
+//	
+//	//validated that message is in correct format
+//	int iCRTProcId = getpid(); //send a signal to the RTX
+//	int invoker = msg_envelope->getOriginPid();
+//	//send message to i_crt_handler to deal with transmission of the message to the console
+//	msg_envelope->setMsgType(msg_envelope->TRANSMIT_TO_CRT_REQUEST);
+//	int res = K_send_message(iCRTProcId, msg_envelope);
+//	
+//	if(res != EXIT_ERROR)
+//	{
+//		//make a copy of the current mailbox, then empty it so can receive message from iprocesses without hassle
+//		PCB* curr = NULL;
+//		getCurrentPcb(&curr);
+//		Queue* temp = curr->copy_mailbox();
+//		curr->empty_mailbox();
+//		
+//		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
+//	  	//this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the i_crt_handler sends a message before exiting	  
+//	  	msg_envelope = K_receive_message(); 
+//	  
+//	 	curr->set_mailbox(temp); //restore mailbox
+//	  
+//		bool transmission_failed = (msg_envelope == NULL);
+//		if(!transmission_failed)
+//		{
+//			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+//			{
+//				res = EXIT_ERROR;
+//				K_send_message(invoker, msg_envelope);
+//			}
+//			else //display_ack
+//				res = K_send_message(invoker, msg_envelope); //the message type was set to DISPLAY_ACK by the iprocess
+//		}
+//		else
+//		{
+//			res = EXIT_ERROR;
+//			K_send_message(invoker, msg_envelope);
+//		}
+//	}
+//	return res;
 }
 
 /* Invoking process provides a message envelope (previously allocated)
@@ -235,23 +311,33 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
 	int res;
-	if(atomic(true))
+	if(atomic(true) == EXIT_SUCCESS)
 	{	
-		int invoker = msg_envelope->getOriginPid();
+		//int invoker = msg_envelope->getOriginPid();
 		if(gCCI->userInputs->get_length() == 0) //no user input is available
 		{
 		  	msg_envelope->setMsgData("");
 		  	msg_envelope->setMsgType(msg_envelope->NO_INPUT);
-		  	K_send_message(invoker, msg_envelope);
+		  	//K_send_message(invoker, msg_envelope);
 		  	res = EXIT_ERROR;
 		}
 		else
 		{
-			msg_envelope->setMsgData(*(gCCI->userInputs->dequeue_string()));
-			msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);			
-			res = K_send_message(invoker, msg_envelope);
+			//CCI current dequeueing because not using messages!
+////			msg_envelope->setMsgData(*(gCCI->userInputs->dequeue_string()));
+//			string* temp = gCCI->userInputs->dequeue_string();
+////			if(temp==NULL)
+////				cout<<"null string! \n";
+////			else
+//				cout<<"Dequeued item : "<<*temp<<"\n";
+//			
+//			cout<<"\tAfter dequeuing: "<<gCCI->userInputs->toString()<<"\n";
+//			
+			//msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);		
+			//res = K_send_message(invoker, msg_envelope);
+			res = EXIT_SUCCESS;
 		}
-	}
+	}	
 	atomic(false);
 	return res;
 }
@@ -263,3 +349,36 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 	//send table formated string to user display 
 	return K_send_console_chars(msg_envelope);
 }
+
+/*
+	NULL PROCESS_COUNT
+	
+	I do nothing!
+*/
+extern RTX* gRTX;
+void RTX::null_proc() {
+	while(true)
+	{	
+		assure(gRTX != NULL, "gRTX pointer NULL",__FILE__,__LINE__,__func__,true);
+		gRTX->K_release_processor();
+	}
+}
+
+//Starts the first process executing on the CPU
+void RTX::start_execution() 
+{ 
+	if(assure(!_started,"Attempting to start RTX multiple times",__FILE__,__LINE__,__func__,false))
+	{
+		_started = true;
+		_scheduler->start(); 
+	}
+}
+
+Scheduler* RTX::getScheduler() 
+{ 
+#if TESTS_MODE == 1
+	return _scheduler; 
+#endif
+}
+
+

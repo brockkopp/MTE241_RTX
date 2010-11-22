@@ -6,6 +6,8 @@ extern int gRunTime;
 extern inputBuffer* gRxMemBuf;
 extern inputBuffer* gTxMemBuf;
 
+#define ANGTEST 1
+
 void i_timing_process()
 {	
 	static Queue* waitingProcesses = new Queue(Queue::MSG_ENV); //internal Q
@@ -17,8 +19,12 @@ void i_timing_process()
 	PCB* tempPCB;
 	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
+<<<<<<< HEAD
 	//get new message envelopes from mailbox
 	MsgEnv* tempMsg = tempPCB->retrieve_mail();
+=======
+	MsgEnv* tempMsg = tempPCB->retrieveMail();
+>>>>>>> 60e4aad7c013fe7f3afd320e5241136bd6783adc
 	if (tempMsg != NULL)
 	{
 		//set expire time, total RTX run time plus the requested delay time
@@ -26,25 +32,31 @@ void i_timing_process()
 		waitingProcesses->sortedEnqueue(tempMsg, expire);
 		tempMsg = NULL;//so that the pointer can be used again later
 	}
+<<<<<<< HEAD
 	
 	//check if first envelope in waiting Q has expired, send wake up msg if true
 	if (waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
+=======
+	if (waitingProcesses->get_front() != NULL && waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
+>>>>>>> 60e4aad7c013fe7f3afd320e5241136bd6783adc
 	{
 		tempMsg = waitingProcesses->dequeue_MsgEnv();
 		tempMsg->setMsgType("20");																									//wake_up
 		int returnAddress = tempMsg->getOriginPid();
 		gRTX->K_send_message(returnAddress, tempMsg);
 	}
+<<<<<<< HEAD
 			
 	//increment user display wall clock
+=======
+
+>>>>>>> 60e4aad7c013fe7f3afd320e5241136bd6783adc
 	gCCI->wallClock->increment();
 
 	string time;
 	if((time = gCCI->wallClock->toString()) != "")
 		cout << time << endl;
 
-	ualarm(0,0);
-	
 	return;
 }
 
@@ -53,21 +65,17 @@ void i_timing_process()
  * K_get_console_chars extracts user inputs from the global queue as necessary */
 void i_keyboard_handler()
 {
-	debugMsg("Signal Received: SIGUSR1: KB",0,1);
-	
+	if (!ANGTEST) debugMsg("\nSignal Received: SIGUSR1: KB",0,1);
 	PCB* currPcb = NULL;
-	char* userMsg;
 	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS) //current PCB is valid
 	{
 		//extract information from shared memory
 		if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
 		{
-			userMsg = gRxMemBuf->data;
-			string s_UserMsg = userMsg;
-			debugMsg("Keyboard input was: ");
-			debugMsg(s_UserMsg);
+			string* userMsg = new string();
+			*userMsg = gRxMemBuf->data;
+			gCCI->userInputs->enqueue(userMsg); 
 			gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
-			gCCI->userInputs->enqueue(&s_UserMsg); 
 		}
 	}
 	return;
@@ -81,24 +89,41 @@ void i_keyboard_handler()
  * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
-	debugMsg("Signal Received: SIGUSR2: CRT",0,1);
-	MsgEnv* retMsg;
-	int invoker;
-	
-	PCB* currPcb = NULL;
-	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).check_mail() > 0) //current PCB is valid && Someone is trying to send chars to the console
+	if (!ANGTEST) debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
+	string msgToConsole =  ">RTX$ ";		
+	if(ANGTEST) 
 	{
+		if(gTxMemBuf->busyFlag == 0) //synchronized with crt_i_process; set to 1 once iprocess started inputting values
+		{
+			gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
+			int indexInBuf = 0; //start writing from beginning of the shmem
+			for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
+			{
+				gTxMemBuf->data[indexInBuf] = msgToConsole[i];
+				indexInBuf++;
+			}
+		}
+	}
+	
+	if(!ANGTEST)
+	{
+		MsgEnv* retMsg;
+		int invoker;
+	
+		PCB* currPcb = NULL;
+		if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
+		{
 			retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
 			string msgToConsole = retMsg->getMsgData();
 			if(retMsg == NULL || msgToConsole == "") //make the check anyways
 			{				
 				retMsg = NULL;
-		   	gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error
+		   		gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error
 				return;
 			}
-			
+		
 			invoker = retMsg->getOriginPid();				
-			
+		
 			//if busy, return fail 
 			if(gTxMemBuf->busyFlag == 1) //CRT is busy (currently transmitting something to , cannot output to screen
 			{
@@ -120,18 +145,19 @@ void i_crt_handler()
 						gTxMemBuf->data[indexInBuf] = msgToConsole[i];
 						indexInBuf++;
 					}
-					
+				
 					//CRT process will set busyFlag back to 0 once it has taken everything out of the buffer
-				    //So can assume that once things are in the buffer, they have been "successfully transmitted"
+					//So can assume that once things are in the buffer, they have been "successfully transmitted"
 					retMsg->setMsgType(retMsg->DISPLAY_ACK); 
 				}
 			}
+		}
+		else //an error occurred, send a NULL envelope
+		{
+			retMsg = NULL;
+			invoker = getpid();
+		}
+		gRTX->K_send_message(invoker, retMsg);	
+		return;
 	}
-	else //an error occurred, send a NULL envelope
-	{
-		retMsg = NULL;
-		invoker = getpid();
-	}
-	gRTX->K_send_message(invoker, retMsg);	
-	return;
 }

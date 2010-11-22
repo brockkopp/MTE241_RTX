@@ -7,3 +7,4 @@ string intToStr(int num, unsigned int length);
 int strToInt(string input, int* output);
 int parseString( string input, string output[], char token, int maxCount);
 string getSigDesc(int sigNum);
+int countChars(string haystack, char needle);

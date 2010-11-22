@@ -5,14 +5,18 @@
 #include <stdlib.h>
 #include "Context.h"
 #include "PcbInfo.h"
-#include "Queue.h"
+#include "Mailbox.h"
 #include "MsgEnv.h"
 
+class Mailbox;
+
 //Process state constant declarations.
-#define READY 0
-#define BLOCKED_ENV 1
+#define READY 				0
+#define BLOCKED_ENV 		1
 #define BLOCKED_MSG_RECIEVE 2
-#define SLEEPING 3								
+#define SLEEPING 			3
+#define EXECUTING 			4
+
 
 class Queue;
 
@@ -33,53 +37,59 @@ class PCB
 		int decAtomicCount();
 		int getAtomicCount();
 		
-		void* get_fPtr( );
-		void set_fPtr( void* fPtr );
+//		void* get_fPtr( );
+//		void set_fPtr( void* fPtr );
 		
-		int get_id( );
-		void set_id( int id );
+		int getId( );
+		void setId( int id );
 		
-		string get_name( );
-		void set_name( string name );
+		string getName( );
+		void setName( string name );
 
-		int get_priority( );
-		int set_priority( int pri );
+		int getPriority( );
+		int setPriority( int pri );
 		
-		Context* get_context();
-		int save_context();
-		void restore_context();
+//		Context* getContext();
+		int saveContext();
+		void restoreContext();
 		
-		int get_processType( );
-		void set_processType( int processType );
+		int getProcessType( );
+//		void setProcessType( int processType );
 		
-		char* get_stack( );
-		void set_stack( char* stack ); //DO WE NEED THESE for the stack!??!
+//		char* getStack( );
+//		void setStack( char* stack ); //DO WE NEED THESE for the stack!??!
 		
-		int get_state( );
-		void set_state( int state );
+		int getState( );
+		int setState( int state );
+		string getStateName();
 				
 		//Mailbox modifiers
-		MsgEnv* retrieve_mail( );
-		bool add_mail( MsgEnv* message );
-		int check_mail( ); //returns number of messages in mailbox
+		MsgEnv* retrieveMail( );
+		MsgEnv* retrieveMail( int msgType );
+		MsgEnv* retrieveMail( string msgType );
+		MsgEnv* retrieveAck ( );
+		bool addMail( MsgEnv* message );
+		int checkMail( ); //returns number of messages in mailbox
 		
 		//ONLY USED BY SEND_CONSOLE_CHARS!!!
-		Queue* copy_mailbox();
-		void empty_mailbox();
-    void set_mailbox(Queue* q);			
-
-	private:
+//		Queue* copyMailbox();
+//		void emptyMailbox();
+//    	void setMailbox(Queue* q);		
+    		
+	
+	//private:
 		/*~*~*~*~*~* Members *~*~*~*~*~*/
 		Context* _context;     //Includes jmp_buf
 		int _atomicCount; 
-		void* _fPtr;  
+		void (*_fPtr)(); 
+		
 		int _id; //Process id
 		string _name;
 		int _priority;   
 		int _processType;
 		char* _stack;
 		int _state;
-		Queue* _mailbox; //Message mailbox
+		Mailbox* _mailbox; //Message mailbox
 		//Context is a public member - WHY?
 };
 #endif

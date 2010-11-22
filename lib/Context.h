@@ -11,11 +11,12 @@ It is used to keep track of a PCB/Proc's context.
 class Context
 {
     public:
-	Context(char* stackPtr, int stackSize);
-	int save(); 		//Save context
-    	void restore(); 	//Restore context
+		Context (char* stackPtr, int stackSize, void (*fp)());
+		int save(); 		//Save context
+		void restore(); 	//Restore context
    
    private:
     	jmp_buf _localJmpBuf; 	//Actual context, in the for of a jmp buffer
+    	void (*_fPtr)();
 };
 #endif

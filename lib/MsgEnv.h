@@ -18,19 +18,20 @@ class MsgEnv
 		}msgFields;
 		
 	public:
+
 		//message types
-		static string SEND_CONSOLE_CHARS;
-		static string TRANSMIT_TO_CRT_REQUEST;
+		static string TO_CRT;
+
 		static string BUFFER_OVERFLOW;
 		static string DISPLAY_ACK;
 		static string DISPLAY_FAIL;
 
 		static string DELAY_REQUEST;
-		
-		static string GET_CONSOLE_CHARS;
-		static string NO_INPUT;	
-		static string CONSOLE_INPUT;		
 
+		static string NO_INPUT;	
+		static string CONSOLE_INPUT;
+		
+		static string COUNT_REPORT;
 
 		int getDestPid();
 		int setDestPid(int newDestPid);

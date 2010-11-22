@@ -2,7 +2,7 @@ CMP=g++
 CMPFLGS= -g -c -Wall	#compile only, show all warnings
 LNKFLGS= -o
 TITLE=RTX.out
-OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o MsgEnv.o MsgServ.o MsgTrace.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
+OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o Mailbox.o MsgEnv.o MsgServ.o MsgTrace.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
 KB=KB.out
 KB_OBJ=keyboard.o debug.o
 CRT=CRT.out
@@ -64,9 +64,12 @@ debug.o: debug.cpp debug.h
 initialize.o: initialize.cpp debug.h RTX.h CCI.h lib/PcbInfo.h Shmem.h
 	@$(CMP) $(CMPFLGS) initialize.cpp
 	
-iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h Shmem.h
+iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h Shmem.h lib/Queue.h
 	@$(CMP) $(CMPFLGS) iprocesses.cpp
 
+Mailbox.o: lib/Mailbox.cpp lib/Mailbox.h lib/Queue.h
+	@$(CMP) $(CMPFLGS) lib/Mailbox.cpp
+	
 MsgEnv.o: lib/MsgEnv.cpp lib/MsgEnv.h
 	@$(CMP) $(CMPFLGS) lib/MsgEnv.cpp
 	
