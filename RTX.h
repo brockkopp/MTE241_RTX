@@ -25,9 +25,13 @@ class Scheduler;
 #define PROCESS_U		2
 #define PROCESS_K		3
 
-#define USER_PROC_A		4
-#define USER_PROC_B		5
-#define USER_PROC_C		6
+#define PROC_TIMING 	0
+#define PROC_KB 		1
+#define PROC_CRT 		2
+#define PROC_NULL	 	3
+#define PROC_USER_A 	4
+#define PROC_USER_B 	5
+#define PROC_USER_C 	6
 
 class RTX
 {
@@ -36,9 +40,10 @@ class RTX
 		~RTX();
 		int getPcb(int pid, PCB** pcb);
 		int getCurrentPcb(PCB** pcb);
+		int getCurrentPid();
 		int atomic(bool on);
-		
 		int setCurrentProcess(int pid);
+		int setProcessState(int pid, int state);
 		
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
 		MsgEnv* K_receive_message();

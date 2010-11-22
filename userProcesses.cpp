@@ -15,7 +15,7 @@ void userProcessA()
 		myMsg->setMsgType(MsgEnv::COUNT_REPORT);
 		strToInt(data,&num);
 		myMsg->setMsgData(data);
-		gRTX->K_send_message(USER_PROC_B,myMsg);
+		gRTX->K_send_message(PROC_USER_B,myMsg);
 		num++;
 		gRTX->K_release_processor();
 	}
@@ -27,7 +27,7 @@ void userProcessB()
 	while(true)
 	{
 		myMsg = gRTX->K_receive_message();
-		gRTX->K_send_message(USER_PROC_C, myMsg);
+		gRTX->K_send_message(PROC_USER_C, myMsg);
 		gRTX->K_release_processor();
 	}
 }

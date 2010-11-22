@@ -78,6 +78,26 @@ int RTX::getCurrentPcb(PCB** pcb)
 	return ret;
 }
 
+int RTX::getCurrentPid()
+{
+	int pid = -1;
+	PCB* tempPcb;
+	if(getCurrentPcb(&tempPcb) == EXIT_SUCCESS)
+		pid = tempPcb->getId();
+		
+	return pid;
+}
+
+int RTX::setProcessState(int pid, int state)
+{
+	int ret = EXIT_ERROR;
+	PCB* tmpPcb;
+	if(getPcb(pid, &tmpPcb) == EXIT_SUCCESS)
+		if(tmpPcb->setState(state) == EXIT_SUCCESS)
+			ret = EXIT_SUCCESS;
+	return ret;
+}
+
 int RTX::atomic(bool on)
 {
 	int ret = EXIT_SUCCESS;

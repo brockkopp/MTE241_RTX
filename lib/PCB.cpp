@@ -96,8 +96,20 @@ int PCB::getProcessType()
 //char* PCB::getStack() { return _stack; }
 //void PCB::setStack( char* stack ) {	_stack = stack; } 
 		
-int PCB::getState() { return _state; }
-void PCB::setState( int state ) {	_state = state; } 
+int PCB::getState() 
+{ 
+	return _state; 
+}
+int PCB::setState( int state ) 
+{	
+	int ret = EXIT_SUCCESS;
+	if(0 >= state && state <= 4)
+		_state = state; 
+	else
+		ret = EXIT_ERROR;
+		
+	return ret;
+} 
 string PCB::getStateName()
 {
 	string state = "Unknown State";

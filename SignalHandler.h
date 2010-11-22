@@ -10,8 +10,8 @@ class iprocesses;
 class SignalHandler
 {
 	private:
-		sigset_t _sigSetBlocked;
-		sigset_t _sigSetHandled;
+		sigset_t 	_sigSetBlocked;
+		sigset_t 	_sigSetHandled;
 	
 	public:
 		SignalHandler();
