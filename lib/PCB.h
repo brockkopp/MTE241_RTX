@@ -64,6 +64,8 @@ class PCB
 				
 		//Mailbox modifiers
 		MsgEnv* retrieveMail( );
+		MsgEnv* retrieveMail( int msgType );
+		MsgEnv* retrieveMail( string msgType );
 		bool addMail( MsgEnv* message );
 		int checkMail( ); //returns number of messages in mailbox
 		

@@ -140,6 +140,16 @@ MsgEnv* PCB::retrieveMail( )
 	return _mailbox->getMail();
 }
 
+MsgEnv* PCB::retrieveMail( int msgType )
+{
+	return _mailbox->getMail( msgType );
+}
+
+MsgEnv* PCB::retrieveMail( string msgType )
+{
+	return _mailbox->getMail( msgType );
+}
+
 //Enqueue message onto mailbox queue
 bool PCB::addMail( MsgEnv* message )
 {
