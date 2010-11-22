@@ -62,8 +62,12 @@ void SignalHandler::handler( int sigNum )
 {
 
 	int prevProc = gRTX->getCurrentPid();
+	
+	//-1 Fatal since no process's stack to run on
 	assure(prevProc >= 0, "No Process on CPU during i_process call. Sig(" + intToStr(sigNum) + ")",__FILE__,__LINE__,__func__,true);
+	
 	gRTX->setProcessState(prevProc,READY);
+	
 	switch(sigNum)
 	{
 		case SIGINT:

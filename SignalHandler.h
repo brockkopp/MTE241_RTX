@@ -5,8 +5,6 @@
 #include "signal.h"
 #include "iprocesses.h"
 
-class iprocesses;
-
 class SignalHandler
 {
 	private:
