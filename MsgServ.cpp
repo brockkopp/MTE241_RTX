@@ -87,7 +87,7 @@ MsgEnv* MsgServ::recieveMsg()
 
 	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
 	//assure(gRTX->getPcb(6,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
-	if (tempPCB->check_mail() == 0)
+	if (tempPCB->checkMail() == 0)
 
 	{
 		//i_process cannot be blocked

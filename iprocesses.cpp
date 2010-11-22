@@ -19,12 +19,10 @@ void i_timing_process()
 	PCB* tempPCB;
 	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
-<<<<<<< HEAD
+
 	//get new message envelopes from mailbox
-	MsgEnv* tempMsg = tempPCB->retrieve_mail();
-=======
 	MsgEnv* tempMsg = tempPCB->retrieveMail();
->>>>>>> 60e4aad7c013fe7f3afd320e5241136bd6783adc
+
 	if (tempMsg != NULL)
 	{
 		//set expire time, total RTX run time plus the requested delay time
@@ -32,25 +30,19 @@ void i_timing_process()
 		waitingProcesses->sortedEnqueue(tempMsg, expire);
 		tempMsg = NULL;//so that the pointer can be used again later
 	}
-<<<<<<< HEAD
-	
+
 	//check if first envelope in waiting Q has expired, send wake up msg if true
-	if (waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
-=======
-	if (waitingProcesses->get_front() != NULL && waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
->>>>>>> 60e4aad7c013fe7f3afd320e5241136bd6783adc
+ 	if (waitingProcesses->get_front() != NULL && waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
+
 	{
 		tempMsg = waitingProcesses->dequeue_MsgEnv();
 		tempMsg->setMsgType("20");																									//wake_up
 		int returnAddress = tempMsg->getOriginPid();
 		gRTX->K_send_message(returnAddress, tempMsg);
 	}
-<<<<<<< HEAD
+
 			
 	//increment user display wall clock
-=======
-
->>>>>>> 60e4aad7c013fe7f3afd320e5241136bd6783adc
 	gCCI->wallClock->increment();
 
 	string time;

@@ -26,10 +26,10 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	
 	_scheduler->_currentProcess = _pcbList[0];	//TESTING ONLY!!!
 	
-	_mailMan = new MsgServ(_scheduler);
-	
 	_msgTrace = new MsgTrace();
 	
+	_mailMan = new MsgServ(_scheduler, _msgTrace);
+		
 	_signalHandler->setSigMasked(false);
 	
 	_mailMan = new MsgServ(_scheduler, _msgTrace);
