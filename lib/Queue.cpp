@@ -167,7 +167,7 @@ bool Queue::enqueue( itemType value )
 		_rear	= Temp;
 	}
 	else 
-	{
+	{	
 		Temp->link = _rear; 
 		_rear = Temp;
 	}
@@ -412,6 +412,7 @@ string Queue::toString()
 {
 	QueueNode* Temp = _rear;
 	int position = _length - 1;
+	
 	string output = "{ ";
 	
 	while(Temp != NULL)
@@ -434,8 +435,6 @@ string Queue::toString()
 		Temp = Temp->link;
 		position--;
 	}
-
-
 	return output + " }";
 }
 

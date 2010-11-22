@@ -73,16 +73,16 @@ int main(void)
 	//Create keyborad thread
 	if ((pidKB = fork()) == 0)
 	{
-		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
+		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)intToStr(shmem.rxId).c_str(), (char *)NULL);
 
 		//if the execution reaches here, the keyboard thread failed to initialize
 		assure(false, "Keyboard helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
 	}
+	//Create CRT thread
 	if ((pidCRT = fork()) == 0)
 	{
-		execl("./CRT.out", (char *)intToStr(pidRTX).c_str(), (char *)NULL);
-
+		execl("./CRT.out", (char *)intToStr(pidRTX).c_str(), (char *)intToStr(shmem.txId).c_str(), (char *)NULL);
 		//if the execution reaches here, the crt thread failed to initialize
 		assure(false, "CRT helper process failed to initialize", __FILE__, __LINE__, __func__, true);
 		exit(1);
@@ -95,13 +95,12 @@ int main(void)
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gCCI = new CCI();
-	
-	//Start scheduler. Put the first process onto the CPU
-	
+
 #if TESTS_MODE == 1
 //	doTests();
 #endif
-	
+
+	//Start scheduler. Put the first process onto the CPU
 	//gRTX->start_execution();
 	
 	
