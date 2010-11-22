@@ -19,6 +19,7 @@ class Scheduler;
 //RTX Global Constants
 #define PROCESS_COUNT 	7		//Total number of processes existing in the RTX
 #define STACK_SIZE 		16372	//Stack size in bytes
+#define TICK_TIME		100000
 
 //Constants used to denote process types
 #define PROCESS_I		1	
@@ -42,6 +43,7 @@ class RTX
 		int getCurrentPcb(PCB** pcb);
 		int getCurrentPid();
 		int atomic(bool on);
+		int displayText(MsgEnv* ioLetter);
 		//int setCurrentProcess(int pid);
 		//int setProcessState(int pid, int state);
 		

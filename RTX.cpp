@@ -45,6 +45,37 @@ RTX::~RTX()
 	//delete _signalHandler;
 }
 
+int RTX::displayText(MsgEnv* ioLetter)
+{
+	int ret = EXIT_ERROR;
+	if(ioLetter == NULL)
+		return NULL;
+	string content = ioLetter->getMsgData();
+	
+	int lineCount = countChars(content,'\n');
+	
+	if(lineCount == 0)
+	{
+		K_send_console_chars(ioLetter);
+		ioLetter = _scheduler->get_current_process()->retrieveAck();
+	}
+	else
+	{	
+		string lines[lineCount];
+		parseString(content,lines,'\n',lineCount);
+	
+		for(int i=0; i < lineCount; i++)
+		{
+			cout << lines[i] + '\n';
+			//ioLetter->setMsgData(lines[i]);
+			//K_send_console_chars(ioLetter);
+		}
+		cout.flush();
+	}
+		
+	return -2;
+}
+
 //assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getPcb(int pid, PCB** pcb)
 {
@@ -318,10 +349,14 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 	
 	I do nothing!
 */
-//void RTX::null_proc() {
-//	while(true)
-//		K_release_processor();
-//}
+extern RTX* gRTX;
+void RTX::null_proc() {
+	while(true)
+	{	
+		assure(gRTX != NULL, "gRTX pointer NULL",__FILE__,__LINE__,__func__,true);
+		gRTX->K_release_processor();
+	}
+}
 
 //Starts the first process executing on the CPU
 void RTX::start_execution() 

@@ -95,8 +95,6 @@ int main(void)
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gCCI = new CCI();
-	
-	ualarm(100000,100000);
 
 #if TESTS_MODE == 1
 //	doTests();

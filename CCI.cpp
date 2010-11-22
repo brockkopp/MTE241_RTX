@@ -11,9 +11,10 @@ CCI::CCI()
 {
 	wallClock = new WallClock(100000);
 	userInputs = new Queue(Queue::STRING);
-	//ualarm(100000,100000);
 	
 	ioLetter = gRTX->K_request_msg_env();
+	
+	ualarm(TICK_TIME,TICK_TIME);
 }
 
 CCI::~CCI()
@@ -38,7 +39,11 @@ int CCI::processCCI()
 
 		do
 		{
-			while(gRTX->K_send_console_chars(NULL) == EXIT_ERROR);
+			//while(gRTX->K_send_console_chars(NULL) == EXIT_ERROR);
+			MsgEnv* testMsg = new MsgEnv();
+			testMsg->setMsgType(MsgEnv::TO_CRT);
+			testMsg->setMsgData(">RTX$1\n>RTX$2\n>RTX$3\n>RTX$4\n");
+			while(gRTX->displayText(testMsg) == EXIT_ERROR);
 			
 //			if(IO) cout << ">RTX$ ";
 //			messageEnvIO->setMsgData(">RTX$ ");

@@ -33,6 +33,15 @@ int strToInt(string input, int* output)
 	return ret;
 }
 
+int countChars(string haystack, char needle)
+{
+	int count = 0;
+	for(unsigned int pos=0; pos < haystack.length(); pos++)
+		if(haystack[pos] == needle)
+			count++;
+	return count;
+}
+
 int parseString( string input, string output[], char token, int maxCount)
 {
 	unsigned int strPos = 0;
