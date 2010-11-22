@@ -14,7 +14,7 @@ PCB::PCB(PcbInfo* info)
 	assure(_stack != NULL, "Stack initialization failed", __FILE__, __LINE__, __func__, true);
 	_state = READY;
 	
-	_mailbox = new Queue(Queue::MSG_ENV);
+	_mailbox = new Mailbox();
 	_context = new Context(_stack, info->stackSize, _fPtr);	
 }
 
@@ -137,35 +137,33 @@ void PCB::restoreContext()
 //Dequeues oldest message in the mailbox (FIFO)
 MsgEnv* PCB::retrieveMail( )
 {
-	return _mailbox->dequeue_MsgEnv();
+	return _mailbox->getMail();
 }
 
 //Enqueue message onto mailbox queue
 bool PCB::addMail( MsgEnv* message )
 {
-	return (_mailbox->enqueue(message));
+	return (_mailbox->deliverMail(message));
 }
 
 //Returns the number of messages in the mailbox
 int PCB::checkMail( ) 
 { 
-	return (_mailbox->get_length());
-
+	return (_mailbox->getSize());
 }
 
-Queue* PCB::copyMailbox()
-{
-	return _mailbox;
-}
+//Queue* PCB::copyMailbox()
+//{
+//	return _mailbox;
+//}
 
-void PCB::emptyMailbox()
-{
-	delete (_mailbox);
-	return;
-}
-
-void PCB::setMailbox(Queue* q)
-{
-	_mailbox = q;
-	return;
-}
+//void PCB::emptyMailbox()
+//{
+//	delete (_mailbox);
+//	return;
+//}
+//void PCB::setMailbox(Queue* q)
+//{
+//	_mailbox = q;
+//	return;
+//}

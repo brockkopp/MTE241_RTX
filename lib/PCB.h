@@ -5,8 +5,10 @@
 #include <stdlib.h>
 #include "Context.h"
 #include "PcbInfo.h"
-#include "Queue.h"
+#include "Mailbox.h"
 #include "MsgEnv.h"
+
+class Mailbox;
 
 //Process state constant declarations.
 #define READY 				0
@@ -66,9 +68,9 @@ class PCB
 		int checkMail( ); //returns number of messages in mailbox
 		
 		//ONLY USED BY SEND_CONSOLE_CHARS!!!
-		Queue* copyMailbox();
-		void emptyMailbox();
-    	void setMailbox(Queue* q);		
+//		Queue* copyMailbox();
+//		void emptyMailbox();
+//    	void setMailbox(Queue* q);		
     		
 	
 	//private:
@@ -83,7 +85,7 @@ class PCB
 		int _processType;
 		char* _stack;
 		int _state;
-		Queue* _mailbox; //Message mailbox
+		Mailbox* _mailbox; //Message mailbox
 		//Context is a public member - WHY?
 };
 #endif
