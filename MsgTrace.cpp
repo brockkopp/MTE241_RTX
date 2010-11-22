@@ -65,7 +65,7 @@ int MsgTrace::addTrace(MsgEnv* msg, int callingFunction)
 	return EXIT_ERROR;
 }
 
-MsgEnv* MsgTrace::getTraces(MsgEnv* msg)
+int MsgTrace::getTraces(MsgEnv* msg)
 {
 	if (msg != NULL)
 	{
@@ -83,7 +83,7 @@ MsgEnv* MsgTrace::getTraces(MsgEnv* msg)
 		}
 		//place table in msg data field
 		msg->setMsgData(tempTraceTable);
-		return msg;
+		return EXIT_SUCCESS;
 	}	
-	return NULL;
+	return EXIT_ERROR;
 }

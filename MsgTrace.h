@@ -14,7 +14,7 @@ class MsgTrace
 		MsgTrace();
 		~MsgTrace();
 		int addTrace(MsgEnv* msg, int callingFunction);
-		MsgEnv* getTraces(MsgEnv* msg);
+		int getTraces(MsgEnv* msg);
 		
 	private:
 		struct TraceElement
