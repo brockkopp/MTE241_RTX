@@ -89,6 +89,7 @@ int RTX::atomic(bool on)
 {
 	int ret = EXIT_SUCCESS;
 	PCB* currPcb = NULL;
+
 	if(assure(getCurrentPcb(&currPcb) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false))
 	{	
 		int cnt = (on) ? currPcb->incAtomicCount() : currPcb->decAtomicCount();

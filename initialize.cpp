@@ -56,6 +56,7 @@ int main(void)
 	//Signals are masked by default
 	SignalHandler* sigHandler = new SignalHandler();
 	sigHandler->setSigMasked(false);
+	
 	//Create shared memory and assure that initialization is successful
 	assure(initializeShmem() == EXIT_SUCCESS, "Shared memory failed to initialize", __FILE__, __LINE__, __func__, true);
 
@@ -96,7 +97,7 @@ int main(void)
 	gCCI = new CCI();
 	
 	//Start scheduler. Put the first process onto the CPU
-//gRTX->start_execution();
+gRTX->start_execution();
 	
 #if TESTS_MODE == 1
 	doTests();
@@ -251,7 +252,41 @@ int cleanupShmem()
 	return ret;
 }
 
-void nothing () { /*Just to stand in until  null proc starts working*/ }
+void a()
+{
+	cout << "A\n";
+	gRTX->K_release_processor();
+}
+void b()
+{
+	cout << "B\n";
+	gRTX->K_release_processor();
+}
+void c()
+{
+	cout << "C\n";
+	gRTX->K_release_processor();
+}
+void d()
+{
+	cout << "D\n";
+	gRTX->K_release_processor();
+}
+void e()
+{
+	cout << "userA\n";
+	gRTX->K_release_processor();
+}
+void f()
+{
+	cout << "userB\n";
+	gRTX->K_release_processor();
+}
+void g()
+{
+	cout << "userC\n";
+	gRTX->K_release_processor();
+}
 
 int createInitTable(PcbInfo* initTable[])
 {	
@@ -273,39 +308,38 @@ int createInitTable(PcbInfo* initTable[])
 		initTable[0]->name =		"i_timing";	
 		initTable[0]->priority =    0;
 		initTable[0]->processType = PROCESS_I;
-		initTable[0]->address = 	(void*) &(i_timing_process);
+		initTable[0]->address = 	&(a);
 
 		initTable[1]->name =		"i_kb";	
 		initTable[1]->priority =    0;
 		initTable[1]->processType = PROCESS_I;
-		initTable[1]->address = 	(void*) &(i_keyboard_handler);
+		initTable[1]->address = 	&(b);
 
 		initTable[2]->name =		"i_crt";	
 		initTable[2]->priority =    0;
 		initTable[2]->processType = PROCESS_I;
-		initTable[2]->address = 	(void*) &(i_crt_handler);
+		initTable[2]->address = 	&(c);
 
 		initTable[3]->name =		"null_proc";	
 		initTable[3]->priority =    3;
 		initTable[3]->processType = PROCESS_K;
-		//initTable[3]->address = 	(void*)(gRTX->null_proc);
-		initTable[3]->address = 	(void*) &(nothing);
+		initTable[3]->address = 	&(d);
 
 	//User Processes
 		initTable[4]->name =		"userA";	
 		initTable[4]->priority =    2;
 		initTable[4]->processType = PROCESS_U;
-		initTable[4]->address = 	(void*) &(userProcessA);
+		initTable[4]->address = 	&(e);
 
 		initTable[5]->name =		"userB";	
 		initTable[5]->priority =    2;
 		initTable[5]->processType = PROCESS_U;
-		initTable[5]->address = 	(void*) &(userProcessB);
+		initTable[5]->address = 	&(f);
 
 		initTable[6]->name =		"userC";	
 		initTable[6]->priority =    2;
 		initTable[6]->processType = PROCESS_U;
-		initTable[6]->address = 	(void*) &(userProcessC);
+		initTable[6]->address = 	&(g);
 	}
 	catch(int e)
 	{
@@ -315,4 +349,6 @@ int createInitTable(PcbInfo* initTable[])
 	
 	return ret;
 }
+
+
 

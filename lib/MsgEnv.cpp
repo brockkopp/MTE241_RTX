@@ -1,6 +1,5 @@
 #include "MsgEnv.h"
 
-string MsgEnv::SEND_CONSOLE_CHARS = "send_console_chars";
 string MsgEnv::TRANSMIT_TO_CRT_REQUEST = "transmit_to_crt_request";
 string MsgEnv::BUFFER_OVERFLOW = "buffer_overflow";
 string MsgEnv::DISPLAY_ACK = "display_ack";
@@ -9,9 +8,10 @@ string MsgEnv::DISPLAY_FAIL = "display_fail";
 string MsgEnv::WAKE_UP = "wake_up";
 string MsgEnv::DELAY_REQUEST = "delay_request";
 
-string MsgEnv::GET_CONSOLE_CHARS = "get_console_chars";
 string MsgEnv::NO_INPUT = "";
 string MsgEnv::CONSOLE_INPUT = "console_input";
+
+string MsgEnv::COUNT_REPORT = "count_report";
 
 int MsgEnv::getDestPid()
 {
