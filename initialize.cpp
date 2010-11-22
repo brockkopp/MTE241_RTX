@@ -68,7 +68,7 @@ int main(void)
 
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
-	gRTX->setCurrentProcess(0);
+	gRTX->setCurrentProcess(0);			//TESTING ONLY
 
 	//Create keyborad thread
 	if ((pidKB = fork()) == 0)
@@ -95,6 +95,8 @@ int main(void)
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gCCI = new CCI();
+	
+	ualarm(100000,100000);
 
 #if TESTS_MODE == 1
 //	doTests();

@@ -26,22 +26,20 @@ void i_timing_process()
 		waitingProcesses->sortedEnqueue(tempMsg, expire);
 		tempMsg = NULL;
 	}
-	if (waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
+	if (waitingProcesses->get_front() != NULL && waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
 	{
 		tempMsg = waitingProcesses->dequeue_MsgEnv();
 		tempMsg->setMsgType(MsgEnv::WAKE_UP);
 		int returnAddress = tempMsg->getOriginPid();
 		gRTX->K_send_message(returnAddress, tempMsg);
 	}
-			
+
 	gCCI->wallClock->increment();
 
 	string time;
 	if((time = gCCI->wallClock->toString()) != "")
 		cout << time << endl;
 
-	ualarm(0,0);
-	
 	return;
 }
 

@@ -5,7 +5,6 @@
 PCB::PCB(PcbInfo* info)
 { 
 	_atomicCount = 0;
-	//_fPtr = (void(*))info->address;
 	_id = info->processId;
 	_name = info->name;
 	_priority = info->priority;
@@ -18,8 +17,6 @@ PCB::PCB(PcbInfo* info)
 	_mailbox = new Queue(Queue::MSG_ENV);
 	_context = new Context(_stack, info->stackSize, _fPtr);	
 }
-
-
 
 /*~*~*~*~*~*~* Destructors *~*~*~*~*~*~*~*/
 PCB::~PCB()

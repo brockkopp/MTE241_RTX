@@ -16,7 +16,7 @@ Context::Context (char* stackPtr, int stackSize, void (*fp)())
 
 	//Init the function pointer.
 	_fPtr = fp;
-	cout << "ini: " << this->_localJmpBuf << endl;
+	//cout << "ini: " << this->_localJmpBuf << endl;
 
 	if( setjmp(tempBuf) == 0 )
 	{
