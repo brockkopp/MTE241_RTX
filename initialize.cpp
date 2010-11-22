@@ -5,6 +5,11 @@
 #include "tests.h"
 #include "Shmem.h"
 
+/* Not sure it'salright to include .cpp's need to review this --Karl */
+//#include "iprocesses.cpp"
+#include "userProcesses.h"
+
+#include <sys/types.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
@@ -62,8 +67,9 @@ int main(void)
 
 	gRTX = new RTX(initTable, sigHandler);
 	debugMsg("\n");
+	gRTX->setCurrentProcess(0);
 
-	//Create keyboad thread
+	//Create keyborad thread
 	if ((pidKB = fork()) == 0)
 	{
 		execl("./KB.out", (char *)intToStr(pidRTX).c_str(), (char *)intToStr(shmem.rxId).c_str(), (char *)NULL);
@@ -88,10 +94,16 @@ int main(void)
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gCCI = new CCI();
-
+	
+	//Start scheduler. Put the first process onto the CPU
+//gRTX->start_execution();
+	
 #if TESTS_MODE == 1
-	//doTests();
+	doTests();
 #endif
+
+
+
 
 //	Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
@@ -109,9 +121,15 @@ void doTests()
 	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tMessaging Test:\t"); 
 	   debugMsg("Not Implemented\n");
+//	debugMsg("\tScheduler Test:\t");   
+//	   debugMsg((testScheduler( gRTX->getScheduler() ) == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tPQ Test:\t");   
+	   debugMsg((testPQ() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n");//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+ 	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+ 	debugMsg("\tAnother Test:\t");   
 	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 }
 
@@ -233,6 +251,8 @@ int cleanupShmem()
 	return ret;
 }
 
+void nothing () { /*Just to stand in until  null proc starts working*/ }
+
 int createInitTable(PcbInfo* initTable[])
 {	
 	int ret = EXIT_SUCCESS;
@@ -253,38 +273,39 @@ int createInitTable(PcbInfo* initTable[])
 		initTable[0]->name =		"i_timing";	
 		initTable[0]->priority =    0;
 		initTable[0]->processType = PROCESS_I;
-		initTable[0]->address = 	NULL;
+		initTable[0]->address = 	(void*) &(i_timing_process);
 
 		initTable[1]->name =		"i_kb";	
 		initTable[1]->priority =    0;
 		initTable[1]->processType = PROCESS_I;
-		initTable[1]->address = 	NULL;
+		initTable[1]->address = 	(void*) &(i_keyboard_handler);
 
 		initTable[2]->name =		"i_crt";	
 		initTable[2]->priority =    0;
 		initTable[2]->processType = PROCESS_I;
-		initTable[2]->address = 	NULL;
+		initTable[2]->address = 	(void*) &(i_crt_handler);
 
-		initTable[3]->name =		"null";	
+		initTable[3]->name =		"null_proc";	
 		initTable[3]->priority =    3;
 		initTable[3]->processType = PROCESS_K;
-		initTable[3]->address = 	NULL;
+		//initTable[3]->address = 	(void*)(gRTX->null_proc);
+		initTable[3]->address = 	(void*) &(nothing);
 
 	//User Processes
-		initTable[4]->name =		"user1";	
+		initTable[4]->name =		"userA";	
 		initTable[4]->priority =    2;
-		initTable[4]->processType = PROCESS_I;
-		initTable[4]->address = 	NULL;
+		initTable[4]->processType = PROCESS_U;
+		initTable[4]->address = 	(void*) &(userProcessA);
 
-		initTable[5]->name =		"user2";	
+		initTable[5]->name =		"userB";	
 		initTable[5]->priority =    2;
-		initTable[5]->processType = PROCESS_I;
-		initTable[5]->address = 	NULL;
+		initTable[5]->processType = PROCESS_U;
+		initTable[5]->address = 	(void*) &(userProcessB);
 
-		initTable[6]->name =		"user3";	
+		initTable[6]->name =		"userC";	
 		initTable[6]->priority =    2;
-		initTable[6]->processType = PROCESS_I;
-		initTable[6]->address = 	NULL;
+		initTable[6]->processType = PROCESS_U;
+		initTable[6]->address = 	(void*) &(userProcessC);
 	}
 	catch(int e)
 	{
@@ -294,3 +315,4 @@ int createInitTable(PcbInfo* initTable[])
 	
 	return ret;
 }
+

@@ -1,6 +1,8 @@
 #include "Shmem.h"
 #include "debug.h"
 
+#include <string.h>
+
 void die(int signal)
 {
 	exit(0); //don't have to do anything since the RTX cleans up the shared memory
@@ -31,6 +33,7 @@ int main(int arg1, char* arg[])
 	assure(tx_mmap_ptr != MAP_FAILED,"Memory Mapping in CRT Child Has Failed",__FILE__,__LINE__,__func__,true);
 	
 	inputBuffer* tx_mem_buf = (inputBuffer*) tx_mmap_ptr;  //x_mem_buf is now a pointer to mapped shared memory! :)
+	tx_mem_buf->busyFlag = 0;
 
 	//polling shared memory to see what has to be printed to the screen
 	do
@@ -41,16 +44,17 @@ int main(int arg1, char* arg[])
 			char c = tx_mem_buf->data[indexInBuf];
 			while (c != '\0') //will also stop if '\n' is used
 			{
-				cout<<c;
-				indexInBuf++;
-				c = tx_mem_buf->data[indexInBuf];
+				cout << c;
+
+				c = tx_mem_buf->data[++indexInBuf];
 				if(indexInBuf == MAXDATA) //should  never happen
 					break;
 			}
+			cout << flush;
+			//cout << endl;
 			tx_mem_buf->busyFlag = 0; //indicate that the entire message has been transmitted and the crt process is no longer busy
 		}
 		else
-			//usleep(100000);
 			usleep(100000);
 	}
 	while(1); //infinite loop

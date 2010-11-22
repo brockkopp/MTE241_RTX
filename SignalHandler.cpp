@@ -1,5 +1,7 @@
 #include "SignalHandler.h"
 
+#define ANGTEST 0
+
 SignalHandler::SignalHandler()
 {
 	debugMsg("Signal Handler Initializing...",0,0);
@@ -37,12 +39,12 @@ int SignalHandler::setSigMasked(bool masked)
 	{
 		if(masked)
 		{
-			debugMsg("Atomic(on)",0,1);
+			if(ANGTEST) debugMsg("Atomic(on)",0,1);
 			sigprocmask(SIG_BLOCK, &_sigSetBlocked, NULL);
 		}
 		else
 		{
-			debugMsg("Atomic(off)",0,1);
+			if(ANGTEST) debugMsg("Atomic(off)",0,1);
 			sigprocmask(SIG_SETMASK, &_sigSetHandled, NULL);
 		}
 	}

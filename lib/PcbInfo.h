@@ -8,6 +8,6 @@ struct PcbInfo
 	unsigned int    priority;
 	unsigned int    stackSize;
 	unsigned int    processType;
-	void*         	address;
+	void*       	address;
 };
 #endif

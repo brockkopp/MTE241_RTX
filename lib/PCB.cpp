@@ -3,6 +3,8 @@
 #define STATE -2 //define all possible states and declare during constructors
 
 /*~*~*~*~*~*~* Constructors *~*~*~*~*~*~*~*/
+void nothing3(){cout << "HHH\n\n";}
+
 PCB::PCB(PcbInfo* info)
 { 
 	_atomicCount = 0;
@@ -18,12 +20,17 @@ PCB::PCB(PcbInfo* info)
 	
 	_mailbox = new Queue(Queue::MSG_ENV);
 
-	_context = new Context(_stack, info->stackSize);		//process will suspend here until enqueued by scheduler I think
-	
+	//_context = new Context(_stack, info->stackSize, _fPtr);		//process will suspend here until enqueued by scheduler I think
+	void (*tmp_fxn) ();
+	tmp_fxn = &(nothing3);
+//	tmp_fxn ();
+	_context = new Context(_stack, info->stackSize, tmp_fxn);	
 	//Execution returns here after process is enqueued (in Context constructor).
 	//Begin execution	
 	//_fPtr();	
 }
+
+
 
 /*~*~*~*~*~*~* Destructors *~*~*~*~*~*~*~*/
 PCB::~PCB()
@@ -56,7 +63,7 @@ int PCB::getAtomicCount()
 }
 		
 void* PCB::get_fPtr() { return _fPtr; }
-void PCB::set_fPtr( void* fPtr ) {	_fPtr = fPtr; }
+void PCB::set_fPtr( void* fPtr ) {	_fPtr = &fPtr; }
 		
 int PCB::get_id() { return _id; }
 void PCB::set_id( int id ) {	_id = id; }
@@ -86,6 +93,18 @@ void PCB::set_stack( char* stack ) {	_stack = stack; }
 		
 int PCB::get_state() { return _state; }
 void PCB::set_state( int state ) {	_state = state; } 
+string PCB::getStateName()
+{
+	string state = "Unknown State";
+	switch(_state)
+	{
+		case READY: 				state = "Ready"; break;
+		case BLOCKED_ENV: 			state = "Blocked-Env"; break;
+		case BLOCKED_MSG_RECIEVE: 	state = "Blocked-Rx"; break;
+		case SLEEPING: 				state = "Asleep"; break;
+	}
+	return state;
+}
 
 Context* PCB::get_context() { return _context; }
 int PCB::save_context() { return _context->save(); }

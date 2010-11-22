@@ -6,6 +6,8 @@
 #include "Queue.h"
 #include "../debug.h"
 
+#define PRIORITY_LEVELS 4
+
 typedef PCB* pItemType;
 
 class PQ {
@@ -19,8 +21,7 @@ class PQ {
   	int length();
   
   private:
-  
-  static const int PRIORITY_LEVELS = 4;
+ 
 	//Queue* _master[];
 	Queue* _master[ PRIORITY_LEVELS ]; //<-- I still believe this should not be hardcoded (!) --Karl
 };

@@ -1,5 +1,6 @@
 #include "RTX.h"
 extern CCI* gCCI;
+extern inputBuffer* gRxMemBuf;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
@@ -18,11 +19,19 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	Queue* pcbTmpList = new Queue(Queue::PROCCONBLOCK); //Init queue of PCBs
 	
 	//Loop through _pcbList, enqueue each item into pcbTmpList.
-	for(int i=0; i < PROCESS_COUNT; i++)
-		pcbTmpList->enqueue(_pcbList[i]);
+	for(int i=0; i < PROCESS_COUNT; i++) {
+			
+		//Put all processes from the intialize table into the queue to be passed
+		//to the scheduler to put on the ready queue. Do not allow i_processes onto
+		//this list.	
+		if ( !(_pcbList[i]->get_processType() == PROCESS_I) )
+			pcbTmpList->enqueue(_pcbList[i]);
+	}
 	
 	_scheduler = new Scheduler (pcbTmpList);
 	delete pcbTmpList;
+	
+	_mailMan = new MsgServ(_scheduler);
 	
 	_signalHandler->setSigMasked(false);
 
@@ -52,6 +61,19 @@ int RTX::getPcb(int pid, PCB** pcb)
 	return ret;
 }
 
+int RTX::setCurrentProcess(int pid)
+{
+	PCB* tempPcb;
+	int ret = EXIT_SUCCESS;
+	
+	if( getPcb(pid,&tempPcb) == EXIT_SUCCESS)
+		_scheduler->setCurrentProcess(tempPcb);
+	else
+		ret = EXIT_ERROR;
+	
+	return ret;
+}
+
 //assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getCurrentPcb(PCB** pcb)
 {
@@ -67,13 +89,7 @@ int RTX::atomic(bool on)
 {
 	int ret = EXIT_SUCCESS;
 	PCB* currPcb = NULL;
-	
-	if(_scheduler == NULL)			//TESTING ONLY!!!!!!!!!!!!!!!
-	{
-		debugMsg("no scheduler... forcing atomic",0,1);
-		_signalHandler->setSigMasked(on);
-	}
-	else if(assure(getCurrentPcb(&currPcb) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false))
+	if(assure(getCurrentPcb(&currPcb) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false))
 	{	
 		int cnt = (on) ? currPcb->incAtomicCount() : currPcb->decAtomicCount();
 		
@@ -84,7 +100,7 @@ int RTX::atomic(bool on)
 	}
 	else
 		ret = EXIT_ERROR;
-			
+	
 	return ret;
 }
 
@@ -116,31 +132,40 @@ int RTX::K_release_processor()
 {
 	//We need a scheduler object names scheduler to be declared (in initialization???)
 	
-	//return scheduler.release_processor();
-	return -2;
+	_scheduler->release_processor();
+	return 1;
+
 }
 
-int RTX::K_request_process_status(MsgEnv* memory_block) 
+int RTX::K_request_process_status(MsgEnv* msg) 
 {
-//	array returnArray
-//	for each PCB
-//	{
-//		status = PCB.get_status
-//		priority = PCB.get_priority
-//		Add status and priority to returnArray
-//	}
-//	Put returnArray into message contents
-//	send_message( invoking_process, msg_env_ptr )
-//	;
-return -2;
+	if(msg != NULL)
+	{
+		string output = "\tPID\tSTATUS\tPRIORITY\n\t---\t------\t--------\n";
+		//string data[PROCESS_COUNT,3];
+		PCB* curr;
+		for(int i=0; i < PROCESS_COUNT && getPcb(i,&curr) == EXIT_SUCCESS; i++)
+		{
+			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->get_state()) + "\t" + intToStr(curr->get_priority()) + "\n";
+	//		data[i][0] = intToStr(i);
+	//		data[i][1] = intToStr(curr->getState());
+	//		data[i][2] = intToStr(curr->get_priority());
+		}
+		
+		debugMsg(output);
 	
+	//	msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
+	//	msg->setMsgData(output);
+		return EXIT_SUCCESS;
+	}
+	return EXIT_ERROR;
 }
 
 int RTX::K_terminate()
 {
 	//Execute final cleanup and program termination, 0 denotes normal exit
 	die(0);
-	return 1;
+	return EXIT_ERROR;		//Should never reach this point
 }
 
 int RTX::K_change_priority(int new_priority, int target_process_id)
@@ -176,6 +201,7 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
 	kill(getpid(), SIGUSR2);
+	return EXIT_SUCCESS;
 //	if(msg_envelope == NULL) //error check
 //		return EXIT_ERROR;
 //		
@@ -222,7 +248,6 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 //		}
 //	}
 //	return res;
-	return -2;
 }
 
 /* Invoking process provides a message envelope (previously allocated)
@@ -233,23 +258,33 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
 	int res;
-	if(atomic(true))
+	if(atomic(true) == EXIT_SUCCESS)
 	{	
-		int invoker = msg_envelope->getOriginPid();
+		//int invoker = msg_envelope->getOriginPid();
 		if(gCCI->userInputs->get_length() == 0) //no user input is available
 		{
 		  	msg_envelope->setMsgData("");
 		  	msg_envelope->setMsgType(msg_envelope->NO_INPUT);
-		  	K_send_message(invoker, msg_envelope);
+		  	//K_send_message(invoker, msg_envelope);
 		  	res = EXIT_ERROR;
 		}
 		else
 		{
-			msg_envelope->setMsgData(*(gCCI->userInputs->dequeue_string()));
-			msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);			
-			res = K_send_message(invoker, msg_envelope);
+			//CCI current dequeueing because not using messages!
+////			msg_envelope->setMsgData(*(gCCI->userInputs->dequeue_string()));
+//			string* temp = gCCI->userInputs->dequeue_string();
+////			if(temp==NULL)
+////				cout<<"null string! \n";
+////			else
+//				cout<<"Dequeued item : "<<*temp<<"\n";
+//			
+//			cout<<"\tAfter dequeuing: "<<gCCI->userInputs->toString()<<"\n";
+//			
+			//msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);		
+			//res = K_send_message(invoker, msg_envelope);
+			res = EXIT_SUCCESS;
 		}
-	}
+	}	
 	atomic(false);
 	return res;
 }
@@ -259,3 +294,22 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 	//return _msgTrace->getTraces(); 
 	return -2;
 }
+
+/*
+	NULL PROCESS_COUNT
+	
+	I do nothing!
+*/
+void RTX::null_proc() {
+//	while (true) {
+//		K_release_processor();
+//	}
+}
+
+//Starts the first process executing on the CPU
+void RTX::start_execution() { _scheduler->start(); }
+
+#if TESTS_MODE == 1
+Scheduler* RTX::getScheduler() { return _scheduler; }
+#endif
+

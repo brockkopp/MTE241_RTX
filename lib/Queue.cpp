@@ -14,7 +14,8 @@ Please explain what values the qtype can be.
 itemType Queue::dequeue_gen()
 {
 	//Special case: length = 0
-	if (isEmpty()) {//return null 
+	if (isEmpty()) //return null 
+	{
 		return NULL;
 	}
 	
@@ -169,7 +170,7 @@ bool Queue::enqueue( itemType value )
 	}
 	
 	else 
-	{
+	{	
 		Temp->link = _rear; 
 		_rear = Temp;
 	}
@@ -414,6 +415,7 @@ string Queue::toString()
 {
 	QueueNode* Temp = _rear;
 	int position = _length - 1;
+	
 	string output = "{ ";
 	
 	while(Temp != NULL)
@@ -436,8 +438,6 @@ string Queue::toString()
 		Temp = Temp->link;
 		position--;
 	}
-
-
 	return output + " }";
 }
 

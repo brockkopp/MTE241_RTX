@@ -6,7 +6,7 @@ extern int gRunTime;
 extern inputBuffer* gRxMemBuf;
 extern inputBuffer* gTxMemBuf;
 
-#define TESTING 1
+#define ANGTEST 1
 
 void i_timing_process()
 {	
@@ -50,21 +50,17 @@ void i_timing_process()
  * K_get_console_chars extracts user inputs from the global queue as necessary */
 void i_keyboard_handler()
 {
-	debugMsg("Signal Received: SIGUSR1: KB",0,1);
-	
+	if (!ANGTEST) debugMsg("\nSignal Received: SIGUSR1: KB",0,1);
 	PCB* currPcb = NULL;
-	char* userMsg;
 	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS) //current PCB is valid
 	{
 		//extract information from shared memory
 		if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
 		{
-			userMsg = gRxMemBuf->data;
-			string s_UserMsg = userMsg;
-			debugMsg("Keyboard input was: ");
-			debugMsg(s_UserMsg);
+			string* userMsg = new string();
+			*userMsg = gRxMemBuf->data;
+			gCCI->userInputs->enqueue(userMsg); 
 			gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
-			gCCI->userInputs->enqueue(&s_UserMsg); 
 		}
 	}
 	return;
@@ -78,21 +74,23 @@ void i_keyboard_handler()
  * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
-	debugMsg("Signal Received: SIGUSR2: CRT",0,1);
-	
-	if(TESTING) 
+	if (!ANGTEST) debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
+	string msgToConsole =  ">RTX$ ";		
+	if(ANGTEST) 
 	{
-		gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
-		int indexInBuf = 0; //start writing from beginning of the shmem
-		string msgToConsole = "Hello!\n";
-		for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
+		if(gTxMemBuf->busyFlag == 0) //synchronized with crt_i_process; set to 1 once iprocess started inputting values
 		{
-			gTxMemBuf->data[indexInBuf] = msgToConsole[i];
-			indexInBuf++;
+			gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
+			int indexInBuf = 0; //start writing from beginning of the shmem
+			for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
+			{
+				gTxMemBuf->data[indexInBuf] = msgToConsole[i];
+				indexInBuf++;
+			}
 		}
 	}
 	
-	if(!TESTING)
+	if(!ANGTEST)
 	{
 		MsgEnv* retMsg;
 		int invoker;

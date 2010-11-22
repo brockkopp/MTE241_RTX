@@ -8,15 +8,18 @@ arguments:
 	
 */
 
+extern RTX* gRTX;
+
 Scheduler::Scheduler(Queue* readyProcs)
 {
-	_readyProcs = new PQ(4);;
+	_readyProcs = new PQ( 4 );
 	_blockedEnv = new Queue( Queue::PROCCONBLOCK  );
 	_blockedMsgRecieve = new Queue( Queue::PROCCONBLOCK  );
 	
 	//Add all readyProcs to the ready queue.
-	for(int i=0; i < readyProcs->get_length(); i++) {
-		PCB* temp = static_cast<PCB*>(readyProcs->dequeue_PCB());
+	int numProcs =	readyProcs->get_length();
+	for(int i=0; i < numProcs; i++) {
+		PCB* temp = readyProcs->dequeue_PCB();
 		_readyProcs->pq_enqueue( temp, temp->get_priority() );
 	}
 
@@ -29,6 +32,22 @@ Scheduler::~Scheduler() {
 	delete _readyProcs;
 	delete _blockedEnv;
 	delete _blockedMsgRecieve;
+}
+
+//This is called to kick off CPU execution. It puts the first process to execute
+//onto the cpu
+
+void Scheduler::start() {
+	//set current process to highest priority process 
+	_currentProcess = _readyProcs->pq_dequeue();
+	
+	//set status to exec
+//	_currentProcess->set_state( PCB::EXECUTING );
+	_currentProcess->set_state( EXECUTING );
+	
+	//Restore context 
+	_currentProcess->restore_context();	
+
 }
 
 ///*
@@ -267,4 +286,13 @@ PCB* Scheduler::get_blocked_on_env()
 
 PCB* Scheduler::get_current_process() {
 	return _currentProcess;
+}
+
+int Scheduler::setCurrentProcess(PCB* newProcess)
+{
+	if(newProcess != NULL)
+		_currentProcess = newProcess;
+	else
+		return EXIT_ERROR;
+	return EXIT_SUCCESS;
 }
