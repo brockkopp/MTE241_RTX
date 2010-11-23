@@ -232,6 +232,7 @@ int RTX::K_change_priority(int new_priority, int target_process_id)
 	return -2;
 }
 
+//sends a msg to the i_timing_process with a sleep time
 int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
 	

@@ -130,7 +130,7 @@ int main(void)
 	debugMsg("msg allocated\n");
 	debugMsg("printing trace buffers...\n");
 	gRTX->K_get_trace_buffers(msg);
-	
+	gRTX->K_send_console_chars(msg);
 	
 	
 	debugMsg("ERIC TEST END\n-------------\n");	
