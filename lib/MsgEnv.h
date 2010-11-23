@@ -18,19 +18,13 @@ class MsgEnv
 		}msgFields;
 		
 	public:
-
-		//message types
 		static string TO_CRT;
-
 		static string BUFFER_OVERFLOW;
 		static string DISPLAY_ACK;
 		static string DISPLAY_FAIL;
-
 		static string DELAY_REQUEST;
-
 		static string NO_INPUT;	
 		static string CONSOLE_INPUT;
-		
 		static string COUNT_REPORT;
 
 		int getDestPid();

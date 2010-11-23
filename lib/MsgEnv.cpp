@@ -1,9 +1,7 @@
 #include "MsgEnv.h"
 
-
 //Message Types
 string MsgEnv::TO_CRT = "transmit_to_crt_request";
-
 string MsgEnv::BUFFER_OVERFLOW = "buffer_overflow";
 string MsgEnv::DISPLAY_ACK = "display_ack";
 string MsgEnv::DISPLAY_FAIL = "display_fail";
