@@ -14,7 +14,7 @@ CCI::CCI()
 	
 	ioLetter = gRTX->K_request_msg_env();
 	
-	//ualarm(TICK_TIME,TICK_TIME);
+	ualarm(TICK_TIME,TICK_TIME);
 }
 
 CCI::~CCI()

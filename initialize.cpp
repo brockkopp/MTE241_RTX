@@ -178,9 +178,9 @@ void die(int sigNum)
 {
 	debugMsg("Terminate command initiated ",2,0);
 	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + getSigDesc(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
-
+	
+	ualarm(0,0);	//Disable alarm while exiting
 	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed (init)", __FILE__, __LINE__, __func__, false);
-	ualarm(0,0);	//Disable alarm
 
 	//Cleanup rtx, including signal handler
 	try

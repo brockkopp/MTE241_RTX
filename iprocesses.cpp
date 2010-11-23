@@ -32,11 +32,9 @@ void i_timing_process()
 	}
 
 	//check if first envelope in waiting Q has expired, send wake up msg if true
- 	if (waitingProcesses->get_front() != NULL && waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
-
+ 	while(waitingProcesses->get_front() != NULL && waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
 	{
 		tempMsg = waitingProcesses->dequeue_MsgEnv();
-		tempMsg->setMsgType("20");																									//wake_up
 		int returnAddress = tempMsg->getOriginPid();
 		gRTX->K_send_message(returnAddress, tempMsg);
 	}
