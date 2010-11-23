@@ -150,18 +150,19 @@ MsgEnv* PCB::retrieveMail( string msgType )
 	return _mailbox->getMail( msgType );
 }
 
-MsgEnv* PCB::retrieveAck()
-{
-	MsgEnv* ret;
-	//Attempt to retrieve a display acknowledgement
-	ret = _mailbox->getMail( MsgEnv::DISPLAY_ACK );
-	//If no acknowledgements, search for display failure
-	if(ret == NULL)
-		ret = _mailbox->getMail( MsgEnv::DISPLAY_FAIL );
-	
-	//return message (or NULL)
-	return ret;
-}
+//MsgEnv* PCB::retrieveAck()
+//{
+//	MsgEnv* ret;
+//	//Attempt to retrieve a display acknowledgement
+//	ret = _mailbox->getMail( MsgEnv::DISPLAY_ACK );
+//	//If no acknowledgements, search for display failure
+//	if(ret == NULL)
+//		ret = _mailbox->getMail( MsgEnv::DISPLAY_FAIL );
+//	if(ret == NULL)
+//		ret = _mailbox->getMail( MsgEnv::BUFFER_OVERFLOW );
+//	//return message (or NULL)
+//	return ret;
+//}
 
 //Enqueue message onto mailbox queue
 bool PCB::addMail( MsgEnv* message )

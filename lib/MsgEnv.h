@@ -18,7 +18,8 @@ class MsgEnv
 		}msgFields;
 		
 	public:
-		static string TO_CRT;
+		static string TO_CRT_F_CCI;
+		static string TO_CRT_F_RTX;
 		static string BUFFER_OVERFLOW;
 		static string DISPLAY_ACK;
 		static string DISPLAY_FAIL;

@@ -1,6 +1,7 @@
 #include "MsgEnv.h"
 
-string MsgEnv::TO_CRT = "transmit_to_crt_request";
+string MsgEnv::TO_CRT_F_CCI = "transmit_to_crt_request_fromCCI";
+string MsgEnv::TO_CRT_F_RTX = "transmit_to_crt_request_fromRTX";
 string MsgEnv::BUFFER_OVERFLOW = "buffer_overflow";
 string MsgEnv::DISPLAY_ACK = "display_ack";
 string MsgEnv::DISPLAY_FAIL = "display_fail";

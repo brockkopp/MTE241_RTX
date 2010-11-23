@@ -78,7 +78,7 @@ MsgEnv* MsgServ::recieveMsg()
 	{
 		//i_process cannot be blocked
 		if (tempPCB->getProcessType() == PROCESS_I)
-    	return NULL;
+    		return NULL;
   		
 		_scheduler->block_process(tempPCB, BLOCKED_MSG_RECIEVE); 		
 		gRTX->K_release_processor();
@@ -87,6 +87,23 @@ MsgEnv* MsgServ::recieveMsg()
 	_msgTrace->addTrace(tempMsg, RECEIVE);
 	
 	return tempMsg;
+}
+
+MsgEnv* MsgServ::retrieveAck()
+{
+	PCB* tempPCB;
+	MsgEnv* ret;
+	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+	
+	//Attempt to retrieve a display acknowledgement
+	ret = tempPCB->retrieveMail( MsgEnv::DISPLAY_ACK );
+	//If no acknowledgements, search for display failure
+	if(ret == NULL)
+		ret = tempPCB->retrieveMail( MsgEnv::DISPLAY_FAIL );
+	if(ret == NULL)
+		ret = tempPCB->retrieveMail( MsgEnv::BUFFER_OVERFLOW );
+	//return message (or NULL)
+	return ret;
 }
 
 int MsgServ::releaseEnv(MsgEnv* msg)
