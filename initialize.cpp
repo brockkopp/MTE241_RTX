@@ -91,6 +91,43 @@ int main(void)
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
 	debugMsg("\n");
+//*******************************************************ERIC TEST****************************************************************	
+	/*
+	debugMsg("ERIC TEST\n---------\n");
+	
+	
+	MsgEnv* msg = gRTX->K_request_msg_env();
+	debugMsg("msg allocated\n");
+	msg->setMsgData("test 1");
+	debugMsg("msg data added\n");
+	msg->setMsgType("display_ack");
+	debugMsg("msg type added\n");
+	msg->setTimeStamp(10);
+	debugMsg("msg time stamp added\n");
+	gRTX->K_send_message(6,msg);
+	debugMsg("msg sent\n");
+	msg = NULL;
+
+	PCB* testPtr;
+	gRTX->getPcb(6,&testPtr);
+	debugMsg("receiver PCB retrieved\n");
+	msg = gRTX->K_receive_message();
+	debugMsg("mail retrieved\n");
+	debugMsg("dest PID: "+intToStr(msg->getDestPid())+"\n");
+	debugMsg("origin PID: "+intToStr(msg->getOriginPid())+"\n");
+	debugMsg("Msg Type: "+msg->getMsgType()+"\n");
+	debugMsg("Time Stamp: "+intToStr(msg->getTimeStamp())+"\n");
+	debugMsg("MsgData: "+msg->getMsgData()+"\n");
+	
+	debugMsg("releasing env..\n");
+	debugMsg("Successful?: "+intToStr(gRTX->K_release_msg_env(msg))+"\n");
+	
+	
+	
+	
+	debugMsg("ERIC TEST END\n-------------\n");	*/
+//********************************************************ERIC TEST END************************************************************	
+
 
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
@@ -105,6 +142,8 @@ int main(void)
 
 //	Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
+	
+	
 }
 
 void doTests()
