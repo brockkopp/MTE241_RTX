@@ -7,12 +7,15 @@
 #include "MsgTrace.h"
 #include "lib/PCB.h"
 
-class Scheduler;
+#define BLOCKED_MSG_RECIEVE 2
+#define SLEEPING 3							
+
+class Scheduler; // what's this for? - eric
 
 class MsgServ
 {
 	public:
-		MsgServ(Scheduler* scheduler);
+		MsgServ(Scheduler* scheduler, MsgTrace* msgTrace);
 		~MsgServ();
 		int sendMsg(int destPid, MsgEnv* msg);
 		MsgEnv* recieveMsg();

@@ -18,13 +18,13 @@ class MsgEnv
 		}msgFields;
 		
 	public:
+		//message types
 		static string TO_CRT_F_CCI;
 		static string TO_CRT_F_RTX;
 		static string BUFFER_OVERFLOW;
 		static string DISPLAY_ACK;
 		static string DISPLAY_FAIL;
 
-		static string WAKE_UP;
 		static string DELAY_REQUEST;
 
 		static string NO_INPUT;	

@@ -14,7 +14,7 @@ class MsgTrace
 		MsgTrace();
 		~MsgTrace();
 		int addTrace(MsgEnv* msg, int callingFunction);
-		MsgEnv* getTraces(MsgEnv* msg);
+		int getTraces(MsgEnv* msg);
 		
 	private:
 		struct TraceElement
@@ -23,11 +23,11 @@ class MsgTrace
 			int _originPid;
 			string _msgType;
 			int _timeStamp;
-		}traceElement;
+		};
 
-		TraceElement* _sendArray[16];
+		TraceElement* _sendArray;
 		int _sendArrayPosition;
-		TraceElement* _receiveArray[16];
+		TraceElement* _receiveArray;
 		int _receiveArrayPosition;
 };
 

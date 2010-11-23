@@ -1,12 +1,12 @@
 #include "MsgEnv.h"
 
+//Message Types
 string MsgEnv::TO_CRT_F_CCI = "transmit_to_crt_request_fromCCI";
 string MsgEnv::TO_CRT_F_RTX = "transmit_to_crt_request_fromRTX";
 string MsgEnv::BUFFER_OVERFLOW = "buffer_overflow";
 string MsgEnv::DISPLAY_ACK = "display_ack";
 string MsgEnv::DISPLAY_FAIL = "display_fail";
 
-string MsgEnv::WAKE_UP = "wake_up";
 string MsgEnv::DELAY_REQUEST = "delay_request";
 
 string MsgEnv::NO_INPUT = "";
@@ -23,7 +23,6 @@ int MsgEnv::setDestPid(int newDestPid)
 {
 	//check if a valid destPID was passed
 	if(newDestPid >=0 && newDestPid <=7)           //PROCESS_COUNT)
-
 	{
 		msgFields._destPid = newDestPid;
 		return EXIT_SUCCESS;
@@ -65,21 +64,16 @@ string MsgEnv::getMsgType()
 
 int MsgEnv::setMsgType(string newMsgType)
 {
-	int val;
-	if(strToInt(newMsgType,&val) == EXIT_SUCCESS && val >= 0 && val <= 3) //4 msg types
-
-	{
 		msgFields._msgType = newMsgType;
 		return EXIT_SUCCESS;
-	}
-	
-	return EXIT_ERROR;
-	
 }
 
 string MsgEnv::getMsgData()
 {
-	return msgFields._msgData;
+	debugMsg("\tgetting msg data...\n"); //ERic
+	string temp = msgFields._msgData;
+	debugMsg("\tgot it\n"); //ERic
+	return temp;
 }
 
 int MsgEnv::setMsgData(string msgInfo)
