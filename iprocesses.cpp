@@ -81,75 +81,58 @@ void i_keyboard_handler()
  * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
-	if (!ANGTEST) debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
-	string msgToConsole =  ">RTX$ ";		
-	if(ANGTEST) 
-	{
-		if(gTxMemBuf->busyFlag == 0) //synchronized with crt_i_process; set to 1 once iprocess started inputting values
-		{
-			gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
-			int indexInBuf = 0; //start writing from beginning of the shmem
-			for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
-			{
-				gTxMemBuf->data[indexInBuf] = msgToConsole[i];
-				indexInBuf++;
-			}
-		}
-	}
+	//debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
 	
-	if(!ANGTEST)
+	MsgEnv* retMsg;
+	int invoker;
+
+	PCB* currPcb = NULL;
+	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
-		MsgEnv* retMsg;
-		int invoker;
-	
-		PCB* currPcb = NULL;
-		if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
-		{
-			retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
-			string msgToConsole = retMsg->getMsgData();
-			if(retMsg == NULL || msgToConsole == "") //make the check anyways
-			{				
-				retMsg = NULL;
-		   		gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error
-				return;
-			}
-		
-			invoker = retMsg->getOriginPid();				
-		
-			//if busy, return fail 
-			if(gTxMemBuf->busyFlag == 1) //CRT is busy (currently transmitting something to , cannot output to screen
-			{
-				retMsg->setMsgType(retMsg->DISPLAY_FAIL);
-			}	
-			else //CRT is NOT busy - perform transmission
-			{
-				if(msgToConsole.size() > MAXDATA) //buffer would overflows
-				{
-					//don't bother copying message into buffer; partial messages are not acceptable. Invoking process must do it line by line
-					retMsg->setMsgType(retMsg->BUFFER_OVERFLOW);
-				}
-				else
-				{
-					gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
-					int indexInBuf = 0; //start writing from beginning of the shmem
-					for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
-					{
-						gTxMemBuf->data[indexInBuf] = msgToConsole[i];
-						indexInBuf++;
-					}
-				
-					//CRT process will set busyFlag back to 0 once it has taken everything out of the buffer
-					//So can assume that once things are in the buffer, they have been "successfully transmitted"
-					retMsg->setMsgType(retMsg->DISPLAY_ACK); 
-				}
-			}
-		}
-		else //an error occurred, send a NULL envelope
-		{
+		retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
+		string msgToConsole = retMsg->getMsgData();
+		if(retMsg == NULL || msgToConsole == "") //make the check anyways
+		{				
 			retMsg = NULL;
-			invoker = getpid();
+	   		gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error
+			return;
 		}
-		gRTX->K_send_message(invoker, retMsg);	
-		return;
+	
+		invoker = retMsg->getOriginPid();				
+	
+		//if busy, return fail 
+		if(gTxMemBuf->busyFlag == 1) //CRT is busy (currently transmitting something to , cannot output to screen
+		{
+			retMsg->setMsgType(retMsg->DISPLAY_FAIL);
+		}	
+		else //CRT is NOT busy - perform transmission
+		{
+			if(msgToConsole.size() > MAXDATA) //buffer would overflows
+			{
+				//don't bother copying message into buffer; partial messages are not acceptable. Invoking process must do it line by line
+				retMsg->setMsgType(retMsg->BUFFER_OVERFLOW);
+			}
+			else
+			{
+				gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
+				int indexInBuf = 0; //start writing from beginning of the shmem
+				for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
+				{
+					gTxMemBuf->data[indexInBuf] = msgToConsole[i];
+					indexInBuf++;
+				}
+				
+				//CRT process will set busyFlag back to 0 once it has taken everything out of the buffer
+				//So can assume that once things are in the buffer, they have been "successfully transmitted"
+				retMsg->setMsgType(retMsg->DISPLAY_ACK); 
+			}
+		}
 	}
+	else //an error occurred, send a NULL envelope
+	{
+		retMsg = NULL;
+		invoker = getpid();
+	}
+	gRTX->K_send_message(invoker, retMsg);	
+	return;	
 }

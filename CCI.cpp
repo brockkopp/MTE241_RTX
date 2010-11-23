@@ -3,8 +3,6 @@ extern RTX* gRTX;
 extern inputBuffer* gRxMemBuf;
 extern CCI* gCCI;
 
-//REMOVE AFTER I/O IS IMPLEMENTED
-#define IO 1
 #include <stdio.h>
 
 CCI::CCI()
@@ -39,23 +37,17 @@ int CCI::processCCI()
 
 		do
 		{
-			while(gRTX->K_send_console_chars(NULL) == EXIT_ERROR);
-			
-//			MsgEnv* testMsg = new MsgEnv();
-//			testMsg->setMsgType(MsgEnv::TO_CRT);
-//			testMsg->setMsgData(">RTX$1\n>RTX$2\n>RTX$3\n>RTX$4\n");
+			MsgEnv* testMsg = new MsgEnv();
+			testMsg->setMsgType(MsgEnv::TO_CRT_F_CCI);
+			testMsg->setMsgData(">RTX$ ");
 //			while(gRTX->displayText(testMsg) == EXIT_ERROR);
+			while(gRTX->K_send_console_chars(testMsg) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
+			testMsg = gRTX->retrieveAcknowledgement(); //will receive a message
 			
-//			if(IO) cout << ">RTX$ ";
-//			messageEnvIO->setMsgData(">RTX$ ");
-//			while(gRTX->K_send_console_chars(messageEnvIO) == EXIT_ERROR);
-//			messageEnvIO = gRTX->K_receive_message():
-			
-			
-			//if(IO) getline(cin,command);
-			
-			ioLetter->setMsgData("");
-			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
+			assure(testMsg != NULL,"CCI:49 Failed to received message after IO dealings!",__FILE__,__LINE__,__func__,true);
+						
+			testMsg->setMsgData("");
+			while(gRTX->K_get_console_chars(testMsg) == EXIT_ERROR)
 				usleep(1000000);
 				
 			command = *(gCCI->userInputs->dequeue_string());

@@ -70,9 +70,9 @@ int MsgEnv::setMsgType(string newMsgType)
 
 string MsgEnv::getMsgData()
 {
-	debugMsg("\tgetting msg data...\n"); //ERic
+	//debugMsg("\tgetting msg data...\n"); //ERic
 	string temp = msgFields._msgData;
-	debugMsg("\tgot it\n"); //ERic
+	//debugMsg("\tgot it\n"); //ERic
 	return temp;
 }
 
