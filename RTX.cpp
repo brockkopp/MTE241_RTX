@@ -14,12 +14,16 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	//Put all processes from the intialize table into the queue to be passed
 	//to the scheduler to put on the ready queue. Do not allow i_processes onto
 	//this list.	
+
 	for(int i=0; i < PROCESS_COUNT; i++)
 	{
 		_pcbList[i] = new PCB(initTable[i]);
 		if ( _pcbList[i]->getProcessType() != PROCESS_I )
 			pcbTmpList->enqueue(_pcbList[i]);
 	}
+
+//	Jmper* jmp = new Jmper();
+//	jmp->restore_context();
 
 	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;

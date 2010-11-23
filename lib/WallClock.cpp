@@ -27,11 +27,11 @@ void WallClock::increment()
 	{
 		_miliseconds -= 1000;
 		_seconds ++;
-		if (_seconds > 60)
+		if (_seconds >= 60)
 		{
 			_seconds = _seconds - 60;
 			_minutes++;
-			if(_minutes > 60)
+			if(_minutes >= 60)
 			{
 				_minutes = _minutes - 60;
 				_hours = (++_hours % 24);

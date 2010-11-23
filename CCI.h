@@ -9,6 +9,9 @@
 #include "lib/WallClock.h"
 #define SIGINT 2
 
+class Queue;
+class WallClock;
+
 class CCI
 {
 	public:

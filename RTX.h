@@ -10,6 +10,7 @@
 #include "lib/PCB.h"
 #include "lib/MsgEnv.h"
 #include "MsgTrace.h"
+#include "lib/jmper.h"
 
 class PcbInfo;
 class SignalHandler;
@@ -79,5 +80,4 @@ class RTX
 		friend class SignalHandler;
 
 };
-
 #endif

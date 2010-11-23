@@ -1,6 +1,7 @@
 #include "PCB.h"
 
 /*~*~*~*~*~*~* Constructors *~*~*~*~*~*~*~*/
+extern RTX* gRTX;
 
 PCB::PCB(PcbInfo* info)
 { 
@@ -13,19 +14,72 @@ PCB::PCB(PcbInfo* info)
 	_stack = (char *)(malloc(info->stackSize));
 	assure(_stack != NULL, "Stack initialization failed", __FILE__, __LINE__, __func__, true);
 	_state = READY;
-	
+
+	//_localJmpBuf = (jmp_buf*)malloc(sizeof(jmp_buf));
+
 	_mailbox = new Mailbox();
-	_context = new Context(_stack, info->stackSize, _fPtr);	
+	
+	initContext(info->stackSize);
+	//_context = new Context(_stack, info->stackSize, _fPtr);	
 }
 
 /*~*~*~*~*~*~* Destructors *~*~*~*~*~*~*~*/
 PCB::~PCB()
 {
-
-	//free(_fPtr); //void*, can't use delete because it'll try to dereference
 	free(_stack);
 	delete _mailbox;
-	delete _context;
+	//delete _context;
+}
+
+void PCB::initContext(int stackSize)
+{
+	//SEE rtxInitialization on UW-ACE
+
+	jmp_buf tempBuf;
+	//Init the function pointer.
+
+	if( setjmp(tempBuf) == 0 )
+	{
+		//_set_sp(stackPtr + stackSize);
+		if( setjmp( _localJmpBuf ) == 0 )
+		{
+//			cout << "savPtr: " << &_fPtr <<  endl;
+			
+			char* stkPtr = _stack + stackSize - 1280;	
+			__asm__("movl %0,%%esp" :"=m" (stkPtr));
+			
+			cout << "ini: " << _localJmpBuf << endl;
+			longjmp(tempBuf ,1 );
+		}
+		else //First time the PCB is put on CPU. Function runs here.
+		{
+			PCB* tmp;
+			gRTX->getCurrentPcb(&tmp);
+			cout << "run:\t" << _localJmpBuf << "   " << /*tmp->getName() <<*/ endl;
+			cout << "runPtr:\t" << endl;
+			cout << "runPcb:\t" << tmp->getName() << endl;
+			_fPtr();
+		}
+	}
+}
+
+int PCB::saveContext() 
+{
+//	PCB* tmp;
+//	gRTX->getCurrentPcb(&tmp);
+//	debugMsg("%Context: about to SAVE context: " + tmp->getName() + "%\n");
+	//return gSaveContext(_localJmpBuf);
+	return setjmp( _localJmpBuf );
+}
+
+void PCB::restoreContext() 
+{
+//	PCB* tmp;
+//	gRTX->getCurrentPcb(&tmp);
+//	debugMsg("%Context: about to RESTORE context: " + tmp->getName() + "%\n");
+//	cout << "res: " << _localJmpBuf << endl;
+	//gRestoreContext(_localJmpBuf);
+	longjmp( _localJmpBuf, 1);
 }
 
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
@@ -43,30 +97,15 @@ int PCB::decAtomicCount()
 	assure(_atomicCount > 0,"Atomic count out of bounds",__FILE__,__LINE__,__func__,true);
 	return --_atomicCount;
 }
-int PCB::getAtomicCount()
-{
-	return _atomicCount;
-}
-		
-//void* PCB::get_fPtr() { return _fPtr; }
-//void PCB::set_fPtr( void* fPtr ) {	_fPtr = &fPtr; }
-		
+	
 int PCB::getId() 
 { 
 	return _id; 
-}
-void PCB::setId( int id ) 
-{	
-	_id = id; 
 }
 		
 string PCB::getName() 
 { 
 	return _name; 
-}
-void PCB::setName( string name ) 
-{	
-	_name = name; 
 }
 
 int PCB::getPriority() 
@@ -91,11 +130,7 @@ int PCB::getProcessType()
 { 
 	return _processType; 
 }
-//void PCB::setProcessType( int processType ) {	_processType = processType; }
-		
-//char* PCB::getStack() { return _stack; }
-//void PCB::setStack( char* stack ) {	_stack = stack; } 
-		
+
 int PCB::getState() 
 { 
 	return _state; 
@@ -121,16 +156,6 @@ string PCB::getStateName()
 		case SLEEPING: 				state = "Asleep"; break;
 	}
 	return state;
-}
-
-//Context* PCB::getContext() { return _context; }
-int PCB::saveContext() 
-{ 
-	return _context->save(); 
-}
-void PCB::restoreContext() 
-{ 
-	_context->restore(); 
 }
 
 /*~*~*~*~*~*~* Mailbox Modifiers *~*~*~*~*~*~*~*/
@@ -174,19 +199,3 @@ int PCB::checkMail( )
 { 
 	return (_mailbox->getSize());
 }
-
-//Queue* PCB::copyMailbox()
-//{
-//	return _mailbox;
-//}
-
-//void PCB::emptyMailbox()
-//{
-//	delete (_mailbox);
-//	return;
-//}
-//void PCB::setMailbox(Queue* q)
-//{
-//	_mailbox = q;
-//	return;
-//}
