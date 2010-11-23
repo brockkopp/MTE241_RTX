@@ -10,6 +10,7 @@
 #include "lib/PCB.h"
 #include "lib/MsgEnv.h"
 #include "MsgTrace.h"
+#include "lib/jmper.h"
 
 class PcbInfo;
 class SignalHandler;
@@ -44,7 +45,7 @@ class RTX
 		int getCurrentPid();
 		MsgEnv* retrieveAcknowledgement();
 		int atomic(bool on);
-		//int displayText(MsgEnv* ioLetter);
+		int displayText(MsgEnv* ioLetter);
 		//int setCurrentProcess(int pid);
 		//int setProcessState(int pid, int state);
 		
@@ -68,8 +69,9 @@ class RTX
 		Scheduler* getScheduler(); //Used only for scheduler's test cases.
 #endif
 	
-	private:
+	//private:
 		PCB*			_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
+		Jmper*			_jmpList[PROCESS_COUNT];		//Should be private, prevent invalid pid
 		Scheduler* 		_scheduler;
 		SignalHandler* 	_signalHandler;
 

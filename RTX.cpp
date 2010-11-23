@@ -1,4 +1,7 @@
 #include "RTX.h"
+
+#include <stdio.h>
+
 extern CCI* gCCI;
 extern inputBuffer* gRxMemBuf;
 
@@ -14,6 +17,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	//Put all processes from the intialize table into the queue to be passed
 	//to the scheduler to put on the ready queue. Do not allow i_processes onto
 	//this list.	
+
 	for(int i=0; i < PROCESS_COUNT; i++)
 	{
 		_pcbList[i] = new PCB(initTable[i]);
@@ -21,22 +25,29 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 			pcbTmpList->enqueue(_pcbList[i]);
 	}
 
+//	for(int i=0; i < PROCESS_COUNT; i++)
+//	{
+//		_jmpList[i] = new Jmper(i,initTable[i]->address);
+//	}
+
+//	_jmpList[0]->restore_context();
+//	_jmpList[1]->restore_context();
+
 	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;
 	
-	_scheduler->_currentProcess = _pcbList[0];	//TESTING ONLY!!!
+	_scheduler->setCurrentProcess(_pcbList[0]);	//TESTING ONLY!!!
 	
 	_msgTrace = new MsgTrace();
 	
 	_mailMan = new MsgServ(_scheduler, _msgTrace);
 		
 	_signalHandler->setSigMasked(false);
-	
-	_mailMan = new MsgServ(_scheduler, _msgTrace);
 
 	_started = false;
 
 	debugMsg("RTX Init Done",0,1);
+//	_jmpList[1]->restore_context();
 }
 
 RTX::~RTX()
@@ -49,36 +60,36 @@ RTX::~RTX()
 	//delete _signalHandler;
 }
 
-//int RTX::displayText(MsgEnv* ioLetter)
-//{
-////	int ret = EXIT_ERROR;
-//	if(ioLetter == NULL)
-//		return NULL;
-//	string content = ioLetter->getMsgData();
-//	
-//	int lineCount = countChars(content,'\n');
-//	
-//	if(lineCount == 0)
-//	{
-//		K_send_console_chars(ioLetter);
-//		ioLetter = retrieveAcknowledgement();
-//	}
-//	else
-//	{	
-//		string lines[lineCount];
-//		parseString(content,lines,'\n',lineCount);
-//	
-//		for(int i=0; i < lineCount; i++)
-//		{
-//			cout << lines[i] + '\n';
-//			//ioLetter->setMsgData(lines[i]);
-//			//K_send_console_chars(ioLetter);
-//		}
-//		cout.flush();
-//	}
-//		
-//	return -2;
-//}
+int RTX::displayText(MsgEnv* ioLetter)
+{
+//	int ret = EXIT_ERROR;
+	if(ioLetter == NULL)
+		return NULL;
+	string content = ioLetter->getMsgData();
+	
+	int lineCount = countChars(content,'\n');
+	
+	if(lineCount == 0)
+	{
+		K_send_console_chars(ioLetter);
+		ioLetter = retrieveAcknowledgement();
+	}
+	else
+	{	
+		string lines[lineCount];
+		parseString(content,lines,'\n',lineCount);
+	
+		for(int i=0; i < lineCount; i++)
+		{
+			cout << lines[i] + '\n';
+			//ioLetter->setMsgData(lines[i]);
+			//K_send_console_chars(ioLetter);
+		}
+		cout.flush();
+	}
+		
+	return -2;
+}
 
 //assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getPcb(int pid, PCB** pcb)
@@ -200,21 +211,14 @@ int RTX::K_request_process_status(MsgEnv* msg)
 {
 	if(msg != NULL)
 	{
-		string output = "\tPID\tSTATUS\tPRIORITY\n\t---\t------\t--------\n";
-		//string data[PROCESS_COUNT,3];
+		string output = "\tPID\tPRIORITY  STATUS\n\t---\t------\t  --------\n";
+		
 		PCB* curr;
 		for(int i=0; i < PROCESS_COUNT && getPcb(i,&curr) == EXIT_SUCCESS; i++)
-		{
-			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->getState()) + "\t" + intToStr(curr->getPriority()) + "\n";
-	//		data[i][0] = intToStr(i);
-	//		data[i][1] = intToStr(curr->getState());
-	//		data[i][2] = intToStr(curr->get_priority());
-		}
-		
-		debugMsg(output);
-	
-	//	msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
-	//	msg->setMsgData(output);
+			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->getPriority()) + "\t  " + curr->getStateName() + "\n";
+
+		msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
+		msg->setMsgData(output);
 		return EXIT_SUCCESS;
 	}
 	return EXIT_ERROR;
@@ -243,7 +247,7 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 	{
 		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay); 
-		msg_envelope->setMsgType(intToStr(wakeup_code));
+		msg_envelope->setMsgType(wakeup_code);
 		//call Kernal send message to send to timing iProcess
 		return K_send_message(0, msg_envelope); //i_timing_process PID is 0
 	}
@@ -261,15 +265,10 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
 	if(msg_envelope == NULL) //error check
 		return EXIT_ERROR;
-		
-	string toSend = msg_envelope->getMsgData();
-	
-//	//Don't have to check this since MsgData is a string, and strings have automatic null characters appended to them
+			
+	//Don't have to check this since MsgData is a string, and strings have automatic null characters appended to them
 //	if(toSend[toSend.length()-1] != '\0') //ensure message is terminated by null character
-//	{
-//		return EXIT_ERROR;
-//	}
-		
+	
 	//validated that message is in correct format
 	int iCRTId = getpid(); //send a signal to the RTX
 	int iCRTPID = PROC_CRT;
@@ -348,6 +347,7 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
 	//call MsgTrace function to format trace buffers into table
 	_msgTrace->getTraces(msg_envelope);
+	cout << msg_envelope->getMsgData();
 	//send table formated string to user display 
 	return K_send_console_chars(msg_envelope);
 }
@@ -382,5 +382,3 @@ Scheduler* RTX::getScheduler()
 	return _scheduler; 
 #endif
 }
-
-

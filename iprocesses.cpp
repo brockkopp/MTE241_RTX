@@ -32,11 +32,9 @@ void i_timing_process()
 	}
 
 	//check if first envelope in waiting Q has expired, send wake up msg if true
- 	if (waitingProcesses->get_front() != NULL && waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
-
+ 	while(waitingProcesses->get_front() != NULL && waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
 	{
 		tempMsg = waitingProcesses->dequeue_MsgEnv();
-		tempMsg->setMsgType("20");																									//wake_up
 		int returnAddress = tempMsg->getOriginPid();
 		gRTX->K_send_message(returnAddress, tempMsg);
 	}
@@ -112,7 +110,7 @@ void i_crt_handler()
 				//don't bother copying message into buffer; partial messages are not acceptable. Invoking process must do it line by line
 				retMsg->setMsgType(retMsg->BUFFER_OVERFLOW);
 			}
-			else
+			else //CRT is NOT busy - perform transmission
 			{
 				gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
 				int indexInBuf = 0; //start writing from beginning of the shmem

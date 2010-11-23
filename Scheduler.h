@@ -7,10 +7,12 @@
 #include "lib/PCB.h"
 #include "lib/PQ.h"
 #include "lib/Queue.h"
-
-//Testing
 #include "RTX.h"
-class RTX;
+
+//class RTX;
+class PCB;
+class Queue;
+class PQ;
 
 class Scheduler {
     public:
@@ -37,7 +39,6 @@ class Scheduler {
 		int setProcessState(int pid, int state);
 		int setCurrentProcess(int pid);
 		int setCurrentProcess(PCB* newProcess);
-
 
     private:
     	int context_switch( PCB * next_proc );
