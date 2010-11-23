@@ -1,17 +1,14 @@
 #include "MsgEnv.h"
 
 //Message Types
-string MsgEnv::TO_CRT = "transmit_to_crt_request";
-string MsgEnv::BUFFER_OVERFLOW = "buffer_overflow";
-string MsgEnv::DISPLAY_ACK = "display_ack";
-string MsgEnv::DISPLAY_FAIL = "display_fail";
-
-string MsgEnv::DELAY_REQUEST = "delay_request";
-
-string MsgEnv::NO_INPUT = "";
-string MsgEnv::CONSOLE_INPUT = "console_input";
-
-string MsgEnv::COUNT_REPORT = "count_report";
+//int MsgEnv::TO_CRT = 			0;
+//int MsgEnv::BUFFER_OVERFLOW = 1;
+//int MsgEnv::DISPLAY_ACK = 		2;
+//int MsgEnv::DISPLAY_FAIL = 	3;
+//int MsgEnv::DELAY_REQUEST = 	4;
+//int MsgEnv::NO_INPUT = 			5;
+//int MsgEnv::CONSOLE_INPUT = 	6;
+//int MsgEnv::COUNT_REPORT = 	7;
 
 int MsgEnv::getDestPid()
 {
@@ -56,15 +53,32 @@ int MsgEnv::setTimeStamp(int newTimeStamp)
 	return EXIT_SUCCESS;
 }
 
-string MsgEnv::getMsgType()
+int MsgEnv::getMsgType()
 {
 	return msgFields._msgType;
 }
 
-int MsgEnv::setMsgType(string newMsgType)
+void MsgEnv::setMsgType(int newMsgType)
 {
 		msgFields._msgType = newMsgType;
-		return EXIT_SUCCESS;
+}
+
+string MsgEnv::getMsgTypeName()
+{
+   string ret;
+	switch(msgFields._msgType)
+	{
+		case TO_CRT : ret = "TO_CRT"; break;
+		case BUFFER_OVERFLOW : ret = "BUF_OVFLW"; break;
+		case DISPLAY_ACK : ret = "D_ACK"; break;
+		case DISPLAY_FAIL : ret = "D_FAIL"; break;
+		case DELAY_REQUEST : ret = "D_RQST"; break;
+		case NO_INPUT : ret = "NO_INPT"; break;
+		case CONSOLE_INPUT : ret = "FRM_KB"; break;
+		case COUNT_REPORT : ret = "CNT_RPT"; break;
+		default: ret = "UNKNOWN"; break;
+	}
+	return ret;
 }
 
 string MsgEnv::getMsgData()

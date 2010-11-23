@@ -4,7 +4,6 @@
 #include "../debug.h"
 #include "../tools.h"
 
-
 class MsgEnv
 {
 	private:
@@ -13,19 +12,19 @@ class MsgEnv
 			int _destPid;
 			int _originPid;
 			int _timeStamp;
-			string _msgType;
+			int _msgType;
 			string _msgData;
 		}msgFields;
 		
 	public:
-		static string TO_CRT;
-		static string BUFFER_OVERFLOW;
-		static string DISPLAY_ACK;
-		static string DISPLAY_FAIL;
-		static string DELAY_REQUEST;
-		static string NO_INPUT;	
-		static string CONSOLE_INPUT;
-		static string COUNT_REPORT;
+		static const int TO_CRT =				0;
+		static const int BUFFER_OVERFLOW = 	1;
+		static const int DISPLAY_ACK = 		2;
+		static const int DISPLAY_FAIL = 		3;
+		static const int DELAY_REQUEST = 	4;
+		static const int NO_INPUT = 			5;	
+		static const int CONSOLE_INPUT = 	6;
+		static const int COUNT_REPORT = 		7;
 
 		int getDestPid();
 		int setDestPid(int newDestPid);
@@ -33,8 +32,9 @@ class MsgEnv
 		int setOriginPid(int newOriginPid);
 		int getTimeStamp();
 		int setTimeStamp(int newTimeStamp);
-		string getMsgType();
-		int setMsgType(string newMsgType);
+		int getMsgType();
+		string getMsgTypeName();
+		void setMsgType(int newMsgType);
 		string getMsgData();
 		int setMsgData(string msgInfo);
 };

@@ -117,7 +117,7 @@ void i_crt_handler()
 			//if busy, return fail 
 			if(gTxMemBuf->busyFlag == 1) //CRT is busy (currently transmitting something to , cannot output to screen
 			{
-				retMsg->setMsgType(retMsg->DISPLAY_FAIL);
+				retMsg->setMsgType(MsgEnv::DISPLAY_FAIL);
 			}	
 			else //CRT is NOT busy - perform transmission
 			{

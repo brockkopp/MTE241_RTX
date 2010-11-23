@@ -64,7 +64,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		if(tempStatus == BLOCKED_MSG_RECIEVE)
 			temp = _scheduler->unblock_process(tempDestPCB);
 		else if(tempStatus == SLEEPING)
-			if(msg->getMsgType() == "20")																		//wake_up
+			if(msg->getMsgType() == 20)																		//wake_up
 				temp = _scheduler->unblock_process(tempDestPCB);	
 		
 		if(!temp)//if unblocking did not work

@@ -171,11 +171,6 @@ MsgEnv* PCB::retrieveMail( int msgType )
 	return _mailbox->getMail( msgType );
 }
 
-MsgEnv* PCB::retrieveMail( string msgType )
-{
-	return _mailbox->getMail( msgType );
-}
-
 MsgEnv* PCB::retrieveAck()
 {
 	MsgEnv* ret;

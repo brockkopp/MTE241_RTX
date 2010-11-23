@@ -1,4 +1,7 @@
 #include "RTX.h"
+
+#include <stdio.h>
+
 extern CCI* gCCI;
 extern inputBuffer* gRxMemBuf;
 
@@ -69,7 +72,8 @@ int RTX::displayText(MsgEnv* ioLetter)
 	if(lineCount == 0)
 	{
 		K_send_console_chars(ioLetter);
-		ioLetter = _scheduler->get_current_process()->retrieveAck();
+		while( K_send_console_chars(ioLetter) != EXIT_SUCCESS );
+		//ioLetter = gRTX->K_receive_message();
 	}
 	else
 	{	
@@ -78,14 +82,13 @@ int RTX::displayText(MsgEnv* ioLetter)
 	
 		for(int i=0; i < lineCount; i++)
 		{
-			cout << lines[i] + '\n';
-			//ioLetter->setMsgData(lines[i]);
-			//K_send_console_chars(ioLetter);
+			ioLetter->setMsgData(lines[i] + "\n");
+			while( K_send_console_chars(ioLetter) != EXIT_SUCCESS );
+			//ioLetter = gRTX->K_receive_message();
 		}
-		cout.flush();
 	}
 		
-	return -2;
+	return EXIT_SUCCESS;
 }
 
 //assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve PCB",__FILE__,__LINE__,__func__,false);
@@ -238,7 +241,7 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 	{
 		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay); 
-		msg_envelope->setMsgType(intToStr(wakeup_code));
+		msg_envelope->setMsgType(wakeup_code);
 		//call Kernal send message to send to timing iProcess
 		return K_send_message(0, msg_envelope); //i_timing_process PID is 0
 	}
@@ -254,6 +257,9 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
+	cout << msg_envelope->getMsgData() << flush;
+	return EXIT_SUCCESS;
+	
 	kill(getpid(), SIGUSR2);
 	return EXIT_SUCCESS;
 //	if(msg_envelope == NULL) //error check
@@ -347,6 +353,7 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
 	//call MsgTrace function to format trace buffers into table
 	_msgTrace->getTraces(msg_envelope);
+	cout << msg_envelope->getMsgData();
 	//send table formated string to user display 
 	return K_send_console_chars(msg_envelope);
 }
@@ -381,5 +388,3 @@ Scheduler* RTX::getScheduler()
 	return _scheduler; 
 #endif
 }
-
-

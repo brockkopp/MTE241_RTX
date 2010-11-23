@@ -15,7 +15,6 @@ class Mailbox
 		int getSize();
 		int deliverMail(MsgEnv* newMsg);
 		MsgEnv* getMail();
-		MsgEnv* getMail(string msgType);
 		MsgEnv* getMail(int msgType);
 		
 	private:
