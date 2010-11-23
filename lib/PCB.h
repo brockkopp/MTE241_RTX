@@ -3,10 +3,12 @@
 
 #include "../debug.h"
 #include <stdlib.h>
-#include "Context.h"
+//#include "Context.h"
 #include "PcbInfo.h"
 #include "Mailbox.h"
 #include "MsgEnv.h"
+#include <setjmp.h>
+#include "jmp.h"
 
 class Mailbox;
 
@@ -23,45 +25,25 @@ class PCB
 {
 	public:			
 		/*~*~* Member functions ~*~*~*~*/
-		//Constructors
-		PCB( PcbInfo* tableEntry ); 
-		
-		//Destructor
-		~PCB();
+		PCB( PcbInfo* tableEntry ); 	//Constructor
+		~PCB();							//Destructor
 		
 		//Private Member Getters/Setters
-
-		void setAtomicCount( int atomCount );
-		int incAtomicCount();
-		int decAtomicCount();
-		int getAtomicCount();
-		
-//		void* get_fPtr( );
-//		void set_fPtr( void* fPtr );
-		
 		int getId( );
-		void setId( int id );
-		
 		string getName( );
-		void setName( string name );
-
 		int getPriority( );
 		int setPriority( int pri );
-		
-//		Context* getContext();
-		int saveContext();
-		void restoreContext();
-		
 		int getProcessType( );
-//		void setProcessType( int processType );
-		
-//		char* getStack( );
-//		void setStack( char* stack ); //DO WE NEED THESE for the stack!??!
-		
 		int getState( );
 		int setState( int state );
 		string getStateName();
-				
+
+		int incAtomicCount();
+		int decAtomicCount();
+		
+		int saveContext();
+		void restoreContext();
+
 		//Mailbox modifiers
 		MsgEnv* retrieveMail( );
 		MsgEnv* retrieveMail( int msgType );
@@ -69,18 +51,14 @@ class PCB
 		MsgEnv* retrieveAck ( );
 		bool addMail( MsgEnv* message );
 		int checkMail( ); //returns number of messages in mailbox
-		
-		//ONLY USED BY SEND_CONSOLE_CHARS!!!
-//		Queue* copyMailbox();
-//		void emptyMailbox();
-//    	void setMailbox(Queue* q);		
-    		
-	
-	//private:
+
+	private:
 		/*~*~*~*~*~* Members *~*~*~*~*~*/
-		Context* _context;     //Includes jmp_buf
+		//Context* _context;     //Includes jmp_buf
 		int _atomicCount; 
 		void (*_fPtr)(); 
+		
+		void initContext(int stackSize);
 		
 		int _id; //Process id
 		string _name;
@@ -89,6 +67,7 @@ class PCB
 		char* _stack;
 		int _state;
 		Mailbox* _mailbox; //Message mailbox
+		jmp_buf _localJmpBuf;
 		//Context is a public member - WHY?
 };
 #endif
