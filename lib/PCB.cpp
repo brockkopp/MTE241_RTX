@@ -150,10 +150,11 @@ string PCB::getStateName()
 	string state = "Unknown State";
 	switch(_state)
 	{
-		case READY: 				state = "Ready"; break;
-		case BLOCKED_ENV: 			state = "Blocked-Env"; break;
-		case BLOCKED_MSG_RECIEVE: 	state = "Blocked-Rx"; break;
-		case SLEEPING: 				state = "Asleep"; break;
+		case EXECUTING: 			state = "EXECUTING"; break;	
+		case READY: 				state = "READY"; break;
+		case BLOCKED_ENV: 			state = "BLK-ENV"; break;
+		case BLOCKED_MSG_RECIEVE: 	state = "BLK-REC"; break;
+		case SLEEPING: 				state = "SLEEPING"; break;
 	}
 	return state;
 }

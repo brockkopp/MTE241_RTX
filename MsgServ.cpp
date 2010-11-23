@@ -7,7 +7,6 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 	_scheduler = scheduler;
 	_msgTrace = msgTrace;
 
-	
 	//allocate space for msg envelopes
 	int msgTotal = 0;
 	_freeEnvQ = new Queue(Queue::MSG_ENV);

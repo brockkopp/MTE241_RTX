@@ -33,7 +33,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;
 	
-	_scheduler->_currentProcess = _pcbList[0];	//TESTING ONLY!!!
+	_scheduler->setCurrentProcess(_pcbList[0]);	//TESTING ONLY!!!
 	
 	_msgTrace = new MsgTrace();
 	
@@ -202,21 +202,14 @@ int RTX::K_request_process_status(MsgEnv* msg)
 {
 	if(msg != NULL)
 	{
-		string output = "\tPID\tSTATUS\tPRIORITY\n\t---\t------\t--------\n";
-		//string data[PROCESS_COUNT,3];
+		string output = "\tPID\tPRIORITY  STATUS\n\t---\t------\t  --------\n";
+		
 		PCB* curr;
 		for(int i=0; i < PROCESS_COUNT && getPcb(i,&curr) == EXIT_SUCCESS; i++)
-		{
-			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->getState()) + "\t" + intToStr(curr->getPriority()) + "\n";
-	//		data[i][0] = intToStr(i);
-	//		data[i][1] = intToStr(curr->getState());
-	//		data[i][2] = intToStr(curr->get_priority());
-		}
-		
-		debugMsg(output);
-	
-	//	msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
-	//	msg->setMsgData(output);
+			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->getPriority()) + "\t  " + curr->getStateName() + "\n";
+
+		msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
+		msg->setMsgData(output);
 		return EXIT_SUCCESS;
 	}
 	return EXIT_ERROR;

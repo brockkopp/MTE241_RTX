@@ -94,11 +94,12 @@ int CCI::processCCI()
 					errMsg = "Too many parameters for 'Display Process Status' command";
 				else
 				{
-					cout<<"request process status\n";
-//					if( gRTX->K_request_process_status(ioLetter) == EXIT_SUCCESS )
+					if( gRTX->K_request_process_status(ioLetter) == EXIT_SUCCESS )
+						cout << ioLetter->getMsgData();
+//						while(gRTX->K_send_console_chars(ioLetter) != EXIT_SUCCESS);
 //						ioLetter = gRTX->K_receive_message();
-//					else
-//						ioLetter->setMsgData("Request Process Status Failed\n");
+					else
+						ioLetter->setMsgData("Request Process Status Failed\n");
 
 //					while(gRTX->K_send_console_chars(ioLetter) != EXIT_SUCCESS);
 //					ioLetter = gRTX->K_receive_message();
