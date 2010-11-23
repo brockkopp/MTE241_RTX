@@ -32,7 +32,9 @@ class MsgEnv
 		static string CONSOLE_INPUT;
 		
 		static string COUNT_REPORT;
-
+		
+		MsgEnv();
+		~MsgEnv();
 		int getDestPid();
 		int setDestPid(int newDestPid);
 		int getOriginPid();

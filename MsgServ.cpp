@@ -13,7 +13,7 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 	_freeEnvQ = new Queue(Queue::MSG_ENV);
 	while(msgTotal < 20)
 	{
-		MsgEnv* msg = new MsgEnv;
+		MsgEnv* msg = new MsgEnv();
 		_freeEnvQ->enqueue(msg);
 		msgTotal++;
 	}
@@ -85,10 +85,9 @@ MsgEnv* MsgServ::recieveMsg()
 	//retrieve PCB of currently excecuting process 
 	PCB* tempPCB;
 
-	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
-	//assure(gRTX->getPcb(6,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
+	//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
+	assure(gRTX->getPcb(6,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
 	if (tempPCB->checkMail() == 0)
-
 	{
 		//i_process cannot be blocked
 		if (tempPCB->getProcessType() == PROCESS_I)
@@ -112,9 +111,8 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 		
 	//return envelope to _freeEnvQ
 	_freeEnvQ->enqueue(msg);
-	debugMsg("length of free env Q: "+intToStr(_freeEnvQ->get_length())+"\n");  //ERic
 	//check if another process is waiting for an envelope
-	
+	/*
 	PCB* tempPcb = _scheduler->get_blocked_on_env(); 
 	//unblock waiting process, if one is waiting   
 	bool temp;
@@ -122,7 +120,7 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 		temp = _scheduler->unblock_process(tempPcb);
 	if(!temp)
 		return EXIT_ERROR;
-	 // ERic
+	*/ // ERic
 	return EXIT_SUCCESS;
 }
 
@@ -142,6 +140,5 @@ MsgEnv* MsgServ::requestEnv()
 		gRTX->K_release_processor();
 	}
 	MsgEnv* ptrMsg = _freeEnvQ->dequeue_MsgEnv();
-	debugMsg("free env Q length: "+intToStr(_freeEnvQ->get_length())+"\n"); //ERic
 	return ptrMsg;
 }

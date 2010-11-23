@@ -31,8 +31,6 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_mailMan = new MsgServ(_scheduler, _msgTrace);
 		
 	_signalHandler->setSigMasked(false);
-	
-	_mailMan = new MsgServ(_scheduler, _msgTrace);
 
 	_started = false;
 

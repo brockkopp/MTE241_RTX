@@ -92,9 +92,11 @@ int main(void)
 	sleep(1);
 	debugMsg("\n");
 //*******************************************************ERIC TEST****************************************************************	
-	/*
+	
 	debugMsg("ERIC TEST\n---------\n");
 	
+	PCB* tempPCB;
+	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
 	
 	MsgEnv* msg = gRTX->K_request_msg_env();
 	debugMsg("msg allocated\n");
@@ -113,19 +115,25 @@ int main(void)
 	debugMsg("receiver PCB retrieved\n");
 	msg = gRTX->K_receive_message();
 	debugMsg("mail retrieved\n");
-	debugMsg("dest PID: "+intToStr(msg->getDestPid())+"\n");
+	if (msg != NULL)
+	{
 	debugMsg("origin PID: "+intToStr(msg->getOriginPid())+"\n");
+	debugMsg("dest PID: "+intToStr(msg->getDestPid())+"\n");
 	debugMsg("Msg Type: "+msg->getMsgType()+"\n");
 	debugMsg("Time Stamp: "+intToStr(msg->getTimeStamp())+"\n");
 	debugMsg("MsgData: "+msg->getMsgData()+"\n");
-	
+	}
 	debugMsg("releasing env..\n");
 	debugMsg("Successful?: "+intToStr(gRTX->K_release_msg_env(msg))+"\n");
 	
+	msg = gRTX->K_request_msg_env();
+	debugMsg("msg allocated\n");
+	debugMsg("printing trace buffers...\n");
+	gRTX->K_get_trace_buffers(msg);
 	
 	
 	
-	debugMsg("ERIC TEST END\n-------------\n");	*/
+	debugMsg("ERIC TEST END\n-------------\n");	
 //********************************************************ERIC TEST END************************************************************	
 
 

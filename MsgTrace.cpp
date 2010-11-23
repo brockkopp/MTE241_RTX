@@ -76,8 +76,11 @@ int MsgTrace::getTraces(MsgEnv* msg)
 		
 		for(int i=0; i<16; i++)
 		{
+			int temp = _receiveArray[i]._destPid;
+			string temps = intToStr(temp);
+			
 			//constructing one row of the trace buffer table to be displayed
-			tempTableRow = "   "+intToStr(_receiveArray[i]._destPid)+"            "+intToStr(_receiveArray[i]._originPid)+"       " +_receiveArray[i]._msgType+"        "+intToStr(_receiveArray[i]._timeStamp)+"\n";
+			tempTableRow = "   "+intToStr(_receiveArray[i]._destPid)+"            "+intToStr(_receiveArray[i]._originPid)+"       " +/*_receiveArray[i]._msgType+*/"        "+intToStr(_receiveArray[i]._timeStamp)+"\n";
 			//adding above row to the trace buffer table
 			tempTraceTable = tempTraceTable + tempTableRow;
 		}
