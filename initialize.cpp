@@ -14,6 +14,11 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
+
+//#include <setjmp.h>
+
+
+
 //Globals
 RTX* gRTX;
 CCI* gCCI;
@@ -68,6 +73,10 @@ int main(void)
 	debugMsg("\n");
 
 	gRTX = new RTX(initTable, sigHandler);
+//	cout << ">>" << gRTX->_jmpList[0]->_id << "<<\n";
+//	longjmp(gRTX->_jmpList[0]->_buffer,1);
+//	gRTX->_jmpList[0]->restore_context();
+	
 	debugMsg("\n");
 
 	//Create keyborad thread
@@ -91,6 +100,47 @@ int main(void)
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
 	debugMsg("\n");
+
+
+	debugMsg("Type help at any time to list possible CCI commands",0,1);	
+
+	gCCI = new CCI();
+
+#if TESTS_MODE == 1
+	doTests();
+#endif
+
+	//Start scheduler. Put the first process onto the CPU
+//	gRTX->start_execution();
+
+//	Signal cci init failed, program should not normally reach this point
+	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
+}
+
+void doTests()
+{
+	/*
+	debugMsg("Testing...",1,1);
+	debugMsg("\tParser Test:\t");    
+	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tSignal Test:\t");    
+	   debugMsg((testSignals() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tQueue Test: \t");    
+	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tMessaging Test:\t"); 
+	   debugMsg("Not Implemented\n");
+//	debugMsg("\tScheduler Test:\t");   
+//	   debugMsg((testScheduler( gRTX->getScheduler() ) == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tPQ Test:\t");   
+	   debugMsg((testPQ() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+ 	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+ 	debugMsg("\tAnother Test:\t");   
+	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+*/
+	   
 //*******************************************************ERIC TEST****************************************************************	
 	
 	debugMsg("ERIC TEST\n---------\n");
@@ -134,48 +184,7 @@ int main(void)
 	
 	
 	debugMsg("ERIC TEST END\n-------------\n");	
-//********************************************************ERIC TEST END************************************************************	
-
-
-	debugMsg("Type help at any time to list possible CCI commands",0,1);	
-
-	gCCI = new CCI();
-
-#if TESTS_MODE == 1
-//	doTests();
-#endif
-
-	//Start scheduler. Put the first process onto the CPU
-	//gRTX->start_execution();
-
-//	Signal cci init failed, program should not normally reach this point
-	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
-	
-	
-}
-
-void doTests()
-{
-	
-	debugMsg("Testing...",1,1);
-	debugMsg("\tParser Test:\t");    
-	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tSignal Test:\t");    
-	   debugMsg((testSignals() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tQueue Test: \t");    
-	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tMessaging Test:\t"); 
-	   debugMsg("Not Implemented\n");
-//	debugMsg("\tScheduler Test:\t");   
-//	   debugMsg((testScheduler( gRTX->getScheduler() ) == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tPQ Test:\t");   
-	   debugMsg((testPQ() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
- 	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
- 	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+//********************************************************ERIC TEST END**********************************************************	 
 }
 
 void die(int sigNum)
@@ -299,37 +308,40 @@ int cleanupShmem()
 void a()
 {
 	cout << "\nA\n\n";
-	gRTX->K_release_processor();
+//	gRTX->_jmpList[1]->restore_context();
+//	gRTX->K_release_processor();
 }
 void b()
 {
 	cout << "\nB\n\n";
-	gRTX->K_release_processor();
+//	longjmp(gRTX->_jmpList[2]->_buffer,1);
+//	gRTX->K_release_processor();
 }
 void c()
 {
 	cout << "\nC\n\n";
-	gRTX->K_release_processor();
+//	longjmp(gRTX->_jmpList[3]->_buffer,1);
+//	gRTX->K_release_processor();
 }
 void d()
 {
 	cout << "\nD\n\n";
-	gRTX->K_release_processor();
+//	gRTX->K_release_processor();
 }
 void e()
 {
 	cout << "\nuserA\n\n";
-	gRTX->K_release_processor();
+//	gRTX->K_release_processor();
 }
 void f()
 {
 	cout << "\nuserB\n\n";
-	gRTX->K_release_processor();
+//	gRTX->K_release_processor();
 }
 void g()
 {
 	cout << "\nuserC\n\n";
-	gRTX->K_release_processor();
+//	gRTX->K_release_processor();
 }
 
 int createInitTable(PcbInfo* initTable[])

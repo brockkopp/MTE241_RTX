@@ -68,8 +68,9 @@ class RTX
 		Scheduler* getScheduler(); //Used only for scheduler's test cases.
 #endif
 	
-	private:
+	//private:
 		PCB*			_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
+		Jmper*			_jmpList[PROCESS_COUNT];		//Should be private, prevent invalid pid
 		Scheduler* 		_scheduler;
 		SignalHandler* 	_signalHandler;
 
@@ -80,4 +81,5 @@ class RTX
 		friend class SignalHandler;
 
 };
+
 #endif

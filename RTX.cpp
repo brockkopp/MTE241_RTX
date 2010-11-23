@@ -22,8 +22,13 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 			pcbTmpList->enqueue(_pcbList[i]);
 	}
 
-//	Jmper* jmp = new Jmper();
-//	jmp->restore_context();
+//	for(int i=0; i < PROCESS_COUNT; i++)
+//	{
+//		_jmpList[i] = new Jmper(i,initTable[i]->address);
+//	}
+
+//	_jmpList[0]->restore_context();
+//	_jmpList[1]->restore_context();
 
 	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;
@@ -39,6 +44,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_started = false;
 
 	debugMsg("RTX Init Done",0,1);
+//	_jmpList[1]->restore_context();
 }
 
 RTX::~RTX()
