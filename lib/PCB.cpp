@@ -48,16 +48,16 @@ void PCB::initContext(int stackSize)
 			char* stkPtr = _stack + stackSize - 1280;	
 			__asm__("movl %0,%%esp" :"=m" (stkPtr));
 			
-			cout << "ini: " << _localJmpBuf << endl;
+//			cout << "ini: " << _localJmpBuf << endl;
 			longjmp(tempBuf ,1 );
 		}
 		else //First time the PCB is put on CPU. Function runs here.
 		{
-			PCB* tmp;
-			gRTX->getCurrentPcb(&tmp);
-			cout << "run:\t" << _localJmpBuf << "   " << /*tmp->getName() <<*/ endl;
-			cout << "runPtr:\t" << endl;
-			cout << "runPcb:\t" << tmp->getName() << endl;
+//			PCB* tmp;
+//			gRTX->getCurrentPcb(&tmp);
+//			cout << "run:\t" << _localJmpBuf << "   " << /*tmp->getName() <<*/ endl;
+//			cout << "runPtr:\t" << endl;
+//			cout << "runPcb:\t" << tmp->getName() << endl;
 			_fPtr();
 		}
 	}
