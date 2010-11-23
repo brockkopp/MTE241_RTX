@@ -48,7 +48,6 @@ void Scheduler::start()
 	_currentProcess->setState( EXECUTING );
 
 	//Restore context 
-	debugMsg(_readyProcs->toString(),1,1);
 	_currentProcess->restoreContext();	
 }
 

@@ -2,7 +2,7 @@ CMP=g++
 CMPFLGS= -g -c -Wall	#compile only, show all warnings
 LNKFLGS= -o
 TITLE=RTX.out
-OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o Mailbox.o MsgEnv.o MsgServ.o MsgTrace.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o
+OBJ= debug.o initialize.o iprocesses.o RTX.o SignalHandler.o Scheduler.o CCI.o TimingServices.o Mailbox.o MsgEnv.o MsgServ.o MsgTrace.o WallClock.o Queue.o PQ.o PCB.o Context.o userProcesses.o tests.o tools.o jmper.o
 KB=KB.out
 KB_OBJ=keyboard.o debug.o
 CRT=CRT.out
@@ -66,6 +66,9 @@ initialize.o: initialize.cpp debug.h RTX.h CCI.h lib/PcbInfo.h Shmem.h
 	
 iprocesses.o: iprocesses.cpp RTX.h SignalHandler.h Shmem.h lib/Queue.h
 	@$(CMP) $(CMPFLGS) iprocesses.cpp
+	
+jmper.o: lib/jmper.cpp lib/jmper.h
+	@$(CMP) $(CMPFLGS) lib/jmper.cpp
 
 Mailbox.o: lib/Mailbox.cpp lib/Mailbox.h lib/Queue.h
 	@$(CMP) $(CMPFLGS) lib/Mailbox.cpp
@@ -79,7 +82,7 @@ MsgServ.o:MsgServ.cpp MsgServ.h MsgTrace.h
 MsgTrace.o:MsgTrace.cpp MsgTrace.h
 	@$(CMP) $(CMPFLGS) MsgTrace.cpp
 	
-PCB.o: lib/PCB.cpp lib/PCB.h lib/PcbInfo.h
+PCB.o: lib/PCB.cpp lib/PCB.h lib/PcbInfo.h lib/jmp.h
 	@$(CMP) $(CMPFLGS) lib/PCB.cpp
 
 PQ.o: lib/PQ.cpp lib/PQ.h lib/Queue.h lib/PCB.h

@@ -8,6 +8,8 @@
 
 #define PRIORITY_LEVELS 4
 
+class PCB;
+
 typedef PCB* pItemType;
 
 class PQ {

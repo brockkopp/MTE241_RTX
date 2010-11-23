@@ -3,14 +3,15 @@
 
 #include "../debug.h"
 #include <stdlib.h>
+#include "../RTX.h"
 //#include "Context.h"
 #include "PcbInfo.h"
 #include "Mailbox.h"
-#include "MsgEnv.h"
 #include <setjmp.h>
-#include "jmp.h"
+//#include <lib/Jmper.h>
 
 class Mailbox;
+class RTX;
 
 //Process state constant declarations.
 #define READY 				0
@@ -26,6 +27,7 @@ class PCB
 	public:			
 		/*~*~* Member functions ~*~*~*~*/
 		PCB( PcbInfo* tableEntry ); 	//Constructor
+		PCB( PcbInfo* tableEntry, jmp_buf* jmpBuf ); 	//Constructor
 		~PCB();							//Destructor
 		
 		//Private Member Getters/Setters
