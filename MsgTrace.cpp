@@ -37,7 +37,7 @@ int MsgTrace::addTrace(MsgEnv* msg, int callingFunction)
 			debugMsg("\t\torigin set\n"); //ERic
 			_sendArray[_sendArrayPosition]._timeStamp = gRunTime;
 			debugMsg("\t\ttime stamp set\n"); //ERic
-			//_sendArray[_sendArrayPosition]._msgType = msg->getMsgType();     //ERic
+			_sendArray[_sendArrayPosition]._msgType = msg->getMsgType();     //ERic
 			debugMsg("\t\ttype set\n"); //ERic
 			_sendArrayPosition ++;
 		}
