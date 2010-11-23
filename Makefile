@@ -82,7 +82,7 @@ MsgServ.o:MsgServ.cpp MsgServ.h MsgTrace.h
 MsgTrace.o:MsgTrace.cpp MsgTrace.h
 	@$(CMP) $(CMPFLGS) MsgTrace.cpp
 	
-PCB.o: lib/PCB.cpp lib/PCB.h lib/PcbInfo.h lib/jmp.h
+PCB.o: lib/PCB.cpp lib/PCB.h lib/PcbInfo.h
 	@$(CMP) $(CMPFLGS) lib/PCB.cpp
 
 PQ.o: lib/PQ.cpp lib/PQ.h lib/Queue.h lib/PCB.h
