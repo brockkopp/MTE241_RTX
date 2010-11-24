@@ -4,12 +4,10 @@
 #include "../debug.h"
 #include <stdlib.h>
 #include "../RTX.h"
-//#include "Context.h"
 #include "PcbInfo.h"
 #include "Mailbox.h"
 #include <setjmp.h>
 #include "../tools.h"
-//#include <lib/Jmper.h>
 
 class Mailbox;
 class RTX;
@@ -28,11 +26,8 @@ class PCB
 {
 	public:			
 		/*~*~* Member functions ~*~*~*~*/
-		PCB();
-		void init(PcbInfo* tableEntry);
 		PCB( PcbInfo* tableEntry ); 	//Constructor
-		PCB( PcbInfo* tableEntry, jmp_buf* jmpBuf ); 	//Constructor
-		~PCB();							//Destructor
+		~PCB();								//Destructor
 		
 		//Private Member Getters/Setters
 		int getId( );
@@ -42,10 +37,10 @@ class PCB
 		int getProcessType( );
 		int getState( );
 		int setState( int state );
-		string getStateName();
+		string getStateName( );
 
-		int incAtomicCount();
-		int decAtomicCount();
+		int incAtomicCount( );
+		int decAtomicCount( );
 		
 		int saveContext();
 		void restoreContext();
@@ -57,7 +52,7 @@ class PCB
 		bool addMail( MsgEnv* message );
 		int checkMail( ); //returns number of messages in mailbox
 
-//	private:
+	private:
 		/*~*~*~*~*~* Members *~*~*~*~*~*/
 		//Context* _context;     //Includes jmp_buf
 		int _atomicCount; 
@@ -73,6 +68,5 @@ class PCB
 		int _state;
 		Mailbox* _mailbox; //Message mailbox
 		jmp_buf _localJmpBuf;
-		//Context is a public member - WHY?
 };
 #endif

@@ -50,15 +50,10 @@ int pidKB = 0,
 	pidRTX = 0;
 	
 PcbInfo **initTable;
-//PCB **gPcb_list;
-PCB gPcb_list[7];
 
 int main(void)
 {
-	//Create init table
-//	PcbInfo* initTable[PROCESS_COUNT];
-initTable = new PcbInfo *[7];
-cout << "HERE !\n";
+	initTable = new PcbInfo *[7];
 
 	pidRTX = getpid();
 
@@ -116,7 +111,7 @@ cout << "HERE !\n";
 #endif
 
 	//Start scheduler. Put the first process onto the CPU
-//	gRTX->start_execution();
+	//gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
@@ -151,7 +146,7 @@ void doTests()
 	debugMsg("ERIC TEST\n---------\n");
 	
 	PCB* tempPCB;
-	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
+	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
 	
 	MsgEnv* msg = gRTX->K_request_msg_env();
 	debugMsg("msg allocated\n");

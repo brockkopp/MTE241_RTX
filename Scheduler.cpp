@@ -9,7 +9,6 @@ arguments:
 */
 
 extern RTX* gRTX;
-extern PCB* gCurrentProcess;
 
 Scheduler::Scheduler(Queue* readyProcs)
 {
@@ -45,22 +44,11 @@ Scheduler::~Scheduler() {
 void Scheduler::start() 
 {
 	//set current process to highest priority process 
-	_currentProcess = _readyProcs->pq_dequeue();
-	_currentProcess->setState( EXECUTING );
+	gRTX->_currentProcess = _readyProcs->pq_dequeue();
+	gRTX->_currentProcess->setState( EXECUTING );
 	//Restore context 
-	gCurrentProcess = _currentProcess;
-	cout <<"SCHED: gCurrentProcess: " << gCurrentProcess << "\n";
-	cout <<"SCHED: gCurrentProcess's fPtr: " << &gCurrentProcess->_fPtr << "\n";
-	
-	cout <<"SCHED: _currentProc's addr : " << gCurrentProcess << "\n";
-	cout <<"SCHED: _currentProc's fptr: " << &gCurrentProcess->_fPtr << "\n";
-	_currentProcess->restoreContext();	
-	
-	
-	
-//gCurrentProcess = _readyProcs->pq_dequeue();
-//gCurrentProcess->setState( EXECUTING );
-//gCurrentProcess->restoreContext();
+
+	gRTX->_currentProcess->restoreContext();	
 }
 
 ///*
@@ -70,40 +58,31 @@ void Scheduler::release_processor( ) {
 
 	//Save the context of the currently executing proc.
 	//Does some crazy context save shinanigans need to be done here???
-	if (_currentProcess->saveContext() == 0 ) {
-			
-		//Put currentProcess on the ready queue.
-		_currentProcess->setState( READY );
+	if (gRTX->getCurrentPcb()->saveContext() == 0 ) {
 				
-		_readyProcs->pq_enqueue( _currentProcess, _currentProcess->getPriority() );
+		//Put currentProcess on the ready queue.
+		gRTX->getCurrentPcb()->setState( READY );
+				
+		_readyProcs->pq_enqueue( gRTX->getCurrentPcb(), gRTX->getCurrentPcb()->getPriority() );
 						
 		//Allow next process to start executing.
 		//Note that if there is nothing waiting,
 		//Then the single existing proc will be
 		//put back on the CPU. Therefore, this
 		//edgecase is covered.
-		
-		_currentProcess = _readyProcs->pq_dequeue();
 
-		_currentProcess->setState( EXECUTING );
+		gRTX->setCurrentPcb(_readyProcs->pq_dequeue());
+
+		gRTX->getCurrentPcb()->setState( EXECUTING );
 	
 		//Restore this proc's context		
-		cout << "\tto: " << _currentProcess->getName() << "\n";
-		cout << "READY PROCS: " << _readyProcs->toString();
-//			cout <<"SCHED: gCurrentProcess: " << gCurrentProcess << "\n";
-//	cout <<"SCHED: gCurrentProcess's fPtr: " << &gCurrentProcess->_fPtr << "\n";
-//	
-//	cout <<"SCHED: _currentProc's addr : " << gCurrentProcess << "\n";
-//	cout <<"SCHED: _currentProc's fptr: " << &gCurrentProcess->_fPtr << "\n";
-//		gCurrentProcess = _currentProcess;
-		_currentProcess->restoreContext();
+		gRTX->getCurrentPcb()->restoreContext();
 	}
 	
-	PCB* tmp;
-	gRTX->getCurrentPcb(&tmp);
+	PCB* tmp = gRTX->getCurrentPcb();
 	cout << "HERE!!!!!!\n";
 	cout << "Restored to release_processor " << 	tmp->getName() << "\n";
-	cout << "gCurrentProcess " << 	gCurrentProcess->getName() << "\n";
+//	cout << "gCurrentProcess " << 	gCurrentProcess->getName() << "\n";
 	
 }
 /* Will change the priority of the target proc.
@@ -160,9 +139,9 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 		 return 1;
 	}
 	//Case 3: PCB is executing
-	else if ( _currentProcess == target ){
+	else if ( gRTX->getCurrentPcb() == target ){
 		//Save context
-		_currentProcess->saveContext();
+		gRTX->getCurrentPcb()->saveContext();
 		
 		//Remove from executing, put on ready queue
 		add_ready_process( target );
@@ -200,9 +179,9 @@ arguments:
 int Scheduler::context_switch( PCB * nextProc ) 
 {
 	//Switch out _currentProcessfor nextProc.
-	PCB* oldProc = _currentProcess;
-	_currentProcess = nextProc;
-	_currentProcess->setState( EXECUTING );
+	PCB* oldProc = gRTX->getCurrentPcb();
+	gRTX->setCurrentPcb(nextProc);
+	gRTX->getCurrentPcb()->setState( EXECUTING );
 	oldProc->setState( READY );
 	
 	//Perform context_save shinanigans. See page in Sample Kernel Design
@@ -213,7 +192,7 @@ int Scheduler::context_switch( PCB * nextProc )
 	//a long_jmp
 	if (save_return == 0) {
 		_readyProcs->pq_enqueue( oldProc, oldProc->getPriority() );
-		_currentProcess->restoreContext();
+		gRTX->getCurrentPcb()->restoreContext();
 	}
 	
 	return 1;
@@ -228,7 +207,7 @@ arguments: target PCB to put on ready queue.
 */
 int Scheduler::add_ready_process( PCB * target ) 
 {
-	if (_currentProcess == target){
+	if (gRTX->getCurrentPcb() == target){
 		return 0; //Failure, process is on CPU
 	}
 
@@ -332,24 +311,24 @@ PCB* Scheduler::get_blocked_on_env()
 	return _blockedEnv->dequeue_PCB();
 }
 
-PCB* Scheduler::get_current_process() {
-	return _currentProcess;
-}
+//PCB* Scheduler::get_current_process() {
+//	return gRTX->_currentProcess;
+//}
 
-int Scheduler::setCurrentProcess(int pid)
-{
-	PCB* newProcess;
-	gRTX->getPcb(pid,&newProcess);
-	if(newProcess == NULL)
-		return EXIT_ERROR;
-	else
-		return setCurrentProcess(newProcess);
-}
-int Scheduler::setCurrentProcess(PCB* newProcess)
-{
-	if(newProcess == NULL)
-		return EXIT_ERROR;
-		
-	_currentProcess = newProcess;
-	return EXIT_SUCCESS;
-}
+//int Scheduler::setCurrentProcess(int pid)
+//{
+//	PCB* newProcess;
+//	gRTX->getPcb(pid,&newProcess);
+//	if(newProcess == NULL)
+//		return EXIT_ERROR;
+//	else
+//		return setCurrentProcess(newProcess);
+//}
+//int Scheduler::setCurrentProcess(PCB* newProcess)
+//{
+//	if(newProcess == NULL)
+//		return EXIT_ERROR;
+//		
+//	gRTX->_currentProcess = newProcess;
+//	return EXIT_SUCCESS;
+//}

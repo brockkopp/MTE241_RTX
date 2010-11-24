@@ -45,7 +45,7 @@ class Scheduler {
     	bool _started;
 
 		//Members
-      	PCB * _currentProcess; // Executing state
+      	//PCB * _currentProcess; // Executing state
 		PQ* _readyProcs; // Ready to execute state
      	Queue* _blockedEnv; // Blocked on resource state
       	Queue* _blockedMsgRecieve;

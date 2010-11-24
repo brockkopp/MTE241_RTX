@@ -17,7 +17,7 @@ void i_timing_process()
 
 	//retrieve PCB of currently excecuting process (i_timing_process) 
 	PCB* tempPCB;
-	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
 	//get new message envelopes from mailbox
 	MsgEnv* tempMsg = tempPCB->retrieveMail();
@@ -56,7 +56,7 @@ void i_keyboard_handler()
 {
 	if (!ANGTEST) debugMsg("\nSignal Received: SIGUSR1: KB",0,1);
 	PCB* currPcb = NULL;
-	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS) //current PCB is valid
+	if((currPcb = gRTX->getCurrentPcb()) != NULL) //current PCB is valid
 	{
 		//extract information from shared memory
 		if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
@@ -82,8 +82,8 @@ void i_crt_handler()
 	
 	MsgEnv* retMsg;
 	int invoker;
-	PCB* currPcb = NULL;
-	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
+	PCB* currPcb;
+	if((currPcb = gRTX->getCurrentPcb()) != NULL && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 		retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
 		if(retMsg == NULL || retMsg->getMsgData() == "") //make the check anyways

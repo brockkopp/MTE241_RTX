@@ -76,21 +76,21 @@ void SignalHandler::handler( int sigNum )
 
 		case SIGALRM:
 			gRTX->_scheduler->setProcessState(PROC_TIMING,EXECUTING);
-			gRTX->_scheduler->setCurrentProcess(PROC_TIMING);
+			gRTX->setCurrentPcb(PROC_TIMING);
 			i_timing_process();
 			gRTX->_scheduler->setProcessState(PROC_TIMING,READY);
 			break;
 
 		case SIGUSR1:	//Keyboard
 			gRTX->_scheduler->setProcessState(PROC_KB,EXECUTING);
-			gRTX->_scheduler->setCurrentProcess(PROC_KB);
+			gRTX->setCurrentPcb(PROC_KB);
 			i_keyboard_handler();
 			gRTX->_scheduler->setProcessState(PROC_KB,READY);
 			break;
 
 		case SIGUSR2:	//Crt
 			gRTX->_scheduler->setProcessState(PROC_CRT,EXECUTING);
-			gRTX->_scheduler->setCurrentProcess(PROC_CRT);
+			gRTX->setCurrentPcb(PROC_CRT);
 			i_crt_handler();
 			gRTX->_scheduler->setProcessState(PROC_CRT,READY);
 			break;
@@ -100,5 +100,5 @@ void SignalHandler::handler( int sigNum )
 			break;			
 	}
 	gRTX->_scheduler->setProcessState(prevProc,EXECUTING);
-	gRTX->_scheduler->setCurrentProcess(prevProc);
+	gRTX->setCurrentPcb(prevProc);
 }

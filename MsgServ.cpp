@@ -38,7 +38,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB;		
 		
-		assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
+		assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
 		
 		//insert destination and origin into msg envelope
 		msg->setDestPid(destPid);
@@ -96,7 +96,7 @@ MsgEnv* MsgServ::retrieveOAck()
 {
 	PCB* tempPCB;
 	MsgEnv* ret;
-	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
 	//Attempt to retrieve a display acknowledgement
 	ret = tempPCB->retrieveMail( MsgEnv::DISPLAY_ACK );
@@ -137,7 +137,7 @@ MsgEnv* MsgServ::requestEnv()
 	{
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB;
-		assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+		assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 		//i_process cannot be blocked
 		if (tempPCB->getProcessType() == PROCESS_I)
     	return NULL;

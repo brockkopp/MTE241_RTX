@@ -41,7 +41,7 @@ class RTX
 		RTX(PcbInfo* initTable[], SignalHandler* signalHandler);
 		~RTX();
 		int getPcb(int pid, PCB** pcb);
-		int getCurrentPcb(PCB** pcb);
+		PCB* getCurrentPcb();
 		int getCurrentPid();
 		MsgEnv* retrieveOutAcknowledgement();
 		int atomic(bool on);
@@ -70,18 +70,22 @@ class RTX
 		Scheduler* getScheduler(); //Used only for scheduler's test cases.
 #endif
 	
-	//private:
-		PCB*			_pcbList[PROCESS_COUNT];		//Should be private, prevent invalid pid
-		Jmper*			_jmpList[PROCESS_COUNT];		//Should be private, prevent invalid pid
-		Scheduler* 		_scheduler;
+	protected:
+		int setCurrentPcb(PCB* pcb);
+		int setCurrentPcb(int pid);
+	
+	private:
+		PCB**					_pcbList;		//Should be private, prevent invalid pid
+		PCB*					_currentProcess;		
+		Scheduler* 			_scheduler;
 		SignalHandler* 	_signalHandler;
 
-		MsgTrace*		_msgTrace;
-		MsgServ* 		_mailMan;
-		bool			_started;
+		MsgTrace*			_msgTrace;
+		MsgServ* 			_mailMan;
+		bool					_started;
 		
 		friend class SignalHandler;
-
+		friend class Scheduler;
 };
 
 #endif

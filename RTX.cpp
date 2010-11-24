@@ -4,14 +4,12 @@
 
 extern CCI* gCCI;
 extern inputBuffer* gRxMemBuf;
-//extern PCB **gPcb_list;
-extern PCB gPcb_list[7];
 
 PCB* gCurrentProcess;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
-
+	_pcbList = new PCB* [7];
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
@@ -21,29 +19,22 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	//Put all processes from the intialize table into the queue to be passed
 	//to the scheduler to put on the ready queue. Do not allow i_processes onto
 	//this list.	
-//	gPcb_list = new PCB *[7];//(initTable[i]);
+
 	for(int i=0; i < PROCESS_COUNT; i++)
 	{
-		//_pcbList[i] = new PCB(initTable[i]);
-		//gPcb_list[i] = new PCB(initTable[i]);
-		gPcb_list[i].init(initTable[i]);
-		if ( gPcb_list[i].getProcessType() != PROCESS_I )
-			pcbTmpList->enqueue(&gPcb_list[i]);
+		//gPcbList[i] = new PCB(initTable[i]);
+		_pcbList[i] = new PCB(initTable[i]);
+		
+		if ( _pcbList[i]->getProcessType() != PROCESS_I )
+			pcbTmpList->enqueue(_pcbList[i]);
 	}
-
-//	for(int i=0; i < PROCESS_COUNT; i++)
-//	{
-//		_jmpList[i] = new Jmper(i,initTable[i]->address);
-//	}
-
-//	_jmpList[0]->restore_context();
-//	_jmpList[1]->restore_context();
-
+	
 	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;
 	
-	_scheduler->setCurrentProcess(&gPcb_list[0]);	//TESTING ONLY!!!
-	
+	//_scheduler->setCurrentProcess(_pcbList[0]);	//TESTING ONLY!!!
+	setCurrentPcb(0);
+
 	_msgTrace = new MsgTrace();
 	
 	_mailMan = new MsgServ(_scheduler, _msgTrace);
@@ -53,7 +44,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_started = false;
 
 	debugMsg("RTX Init Done",0,1);
-//	_jmpList[1]->restore_context();
+
 }
 
 RTX::~RTX()
@@ -110,35 +101,35 @@ int RTX::getPcb(int pid, PCB** pcb)
 	return ret;
 }
 
-//int RTX::setCurrentProcess(int pid)
-//{
-//	PCB* tempPcb;
-//	int ret = EXIT_SUCCESS;
-//	
-//	if( getPcb(pid,&tempPcb) == EXIT_SUCCESS)
-//		_scheduler->setCurrentProcess(tempPcb);
-//	else
-//		ret = EXIT_ERROR;
-//	
-//	return ret;
-//}
-
-//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
-int RTX::getCurrentPcb(PCB** pcb)
+int RTX::setCurrentPcb(PCB* pcb)
 {
 	int ret = EXIT_SUCCESS;
 	
-	if(_scheduler == NULL || (*pcb = _scheduler->get_current_process()) == NULL)
+	if(pcb != NULL)
+		_currentProcess = pcb;
+	else
 		ret = EXIT_ERROR;
 
 	return ret;
+}
+
+int RTX::setCurrentPcb(int pid)
+{
+	PCB* tmp;
+	getPcb(pid,&tmp);
+	return setCurrentPcb(tmp);
+}
+
+PCB* RTX::getCurrentPcb()
+{
+	return _currentProcess;
 }
 
 int RTX::getCurrentPid()
 {
 	int pid = -1;
 	PCB* tempPcb;
-	if(getCurrentPcb(&tempPcb) == EXIT_SUCCESS)
+	if((tempPcb = getCurrentPcb()) != NULL)
 		pid = tempPcb->getId();
 		
 	return pid;
@@ -165,7 +156,7 @@ int RTX::atomic(bool on)
 	int ret = EXIT_SUCCESS;
 	PCB* currPcb = NULL;
 
-	if(assure(getCurrentPcb(&currPcb) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false))
+	if(assure((currPcb = getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false))
 	{	
 		int cnt = (on) ? currPcb->incAtomicCount() : currPcb->decAtomicCount();
 		
