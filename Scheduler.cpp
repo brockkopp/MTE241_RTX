@@ -103,6 +103,7 @@ void Scheduler::release_processor( ) {
 	gRTX->getCurrentPcb(&tmp);
 	cout << "HERE!!!!!!\n";
 	cout << "Restored to release_processor " << 	tmp->getName() << "\n";
+	cout << "gCurrentProcess " << 	gCurrentProcess->getName() << "\n";
 	
 }
 /* Will change the priority of the target proc.
