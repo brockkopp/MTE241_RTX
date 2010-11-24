@@ -111,7 +111,7 @@ int main(void)
 #endif
 
 	//Start scheduler. Put the first process onto the CPU
-//	gRTX->start_execution();
+	//gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
@@ -152,7 +152,7 @@ void doTests()
 	debugMsg("msg allocated\n");
 	msg->setMsgData("test 1");
 	debugMsg("msg data added\n");
-	msg->setMsgType("display_ack");
+	msg->setMsgType(5);
 	debugMsg("msg type added\n");
 	msg->setTimeStamp(10);
 	debugMsg("msg time stamp added\n");
@@ -169,7 +169,7 @@ void doTests()
 	{
 	debugMsg("origin PID: "+intToStr(msg->getOriginPid())+"\n");
 	debugMsg("dest PID: "+intToStr(msg->getDestPid())+"\n");
-	debugMsg("Msg Type: "+msg->getMsgType()+"\n");
+	debugMsg("Msg Type: "+intToStr(msg->getMsgType())+"\n");
 	debugMsg("Time Stamp: "+intToStr(msg->getTimeStamp())+"\n");
 	debugMsg("MsgData: "+msg->getMsgData()+"\n");
 	}
@@ -191,9 +191,9 @@ void die(int sigNum)
 {
 	debugMsg("Terminate command initiated ",2,0);
 	debugMsg((sigNum == 0) ? "normally" : "UNEXPECTEDLY: " + getSigDesc(sigNum) ,0,1);	//SIGNUM 0 denotes manual exit from RTX primitive
-
+	
+	ualarm(0,0);	//Disable alarm while exiting
 	assure(cleanupShmem() == EXIT_SUCCESS, "Shared memory cleanup failed (init)", __FILE__, __LINE__, __func__, false);
-	ualarm(0,0);	//Disable alarm
 
 	//Cleanup rtx, including signal handler
 	try
@@ -405,6 +405,3 @@ int createInitTable(PcbInfo* initTable[])
 	
 	return ret;
 }
-
-
-

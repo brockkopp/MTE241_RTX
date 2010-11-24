@@ -43,6 +43,7 @@ class RTX
 		int getPcb(int pid, PCB** pcb);
 		int getCurrentPcb(PCB** pcb);
 		int getCurrentPid();
+		MsgEnv* retrieveAcknowledgement();
 		int atomic(bool on);
 		int displayText(MsgEnv* ioLetter);
 		//int setCurrentProcess(int pid);

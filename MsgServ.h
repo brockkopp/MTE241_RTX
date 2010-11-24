@@ -19,6 +19,7 @@ class MsgServ
 		~MsgServ();
 		int sendMsg(int destPid, MsgEnv* msg);
 		MsgEnv* recieveMsg();
+		MsgEnv* retrieveAck();
 		int releaseEnv(MsgEnv* msg);
 		MsgEnv* requestEnv();
 	private:

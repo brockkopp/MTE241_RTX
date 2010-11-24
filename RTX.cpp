@@ -1,4 +1,7 @@
 #include "RTX.h"
+
+#include <stdio.h>
+
 extern CCI* gCCI;
 extern inputBuffer* gRxMemBuf;
 
@@ -33,7 +36,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;
 	
-	_scheduler->_currentProcess = _pcbList[0];	//TESTING ONLY!!!
+	_scheduler->setCurrentProcess(_pcbList[0]);	//TESTING ONLY!!!
 	
 	_msgTrace = new MsgTrace();
 	
@@ -69,7 +72,7 @@ int RTX::displayText(MsgEnv* ioLetter)
 	if(lineCount == 0)
 	{
 		K_send_console_chars(ioLetter);
-		ioLetter = _scheduler->get_current_process()->retrieveAck();
+		ioLetter = retrieveAcknowledgement();
 	}
 	else
 	{	
@@ -145,6 +148,12 @@ int RTX::getCurrentPid()
 //	return ret;
 //}
 
+
+MsgEnv* RTX::retrieveAcknowledgement()
+{
+	return _mailMan->retrieveAck();
+}
+
 int RTX::atomic(bool on)
 {
 	int ret = EXIT_SUCCESS;
@@ -202,21 +211,14 @@ int RTX::K_request_process_status(MsgEnv* msg)
 {
 	if(msg != NULL)
 	{
-		string output = "\tPID\tSTATUS\tPRIORITY\n\t---\t------\t--------\n";
-		//string data[PROCESS_COUNT,3];
+		string output = "\tPID\tPRIORITY  STATUS\n\t---\t------\t  --------\n";
+		
 		PCB* curr;
 		for(int i=0; i < PROCESS_COUNT && getPcb(i,&curr) == EXIT_SUCCESS; i++)
-		{
-			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->getState()) + "\t" + intToStr(curr->getPriority()) + "\n";
-	//		data[i][0] = intToStr(i);
-	//		data[i][1] = intToStr(curr->getState());
-	//		data[i][2] = intToStr(curr->get_priority());
-		}
-		
-		debugMsg(output);
-	
-	//	msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
-	//	msg->setMsgData(output);
+			output += "\t" + intToStr(i) + ":\t" + intToStr(curr->getPriority()) + "\t  " + curr->getStateName() + "\n";
+
+		msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
+		msg->setMsgData(output);
 		return EXIT_SUCCESS;
 	}
 	return EXIT_ERROR;
@@ -246,7 +248,7 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 	{
 		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay); 
-		msg_envelope->setMsgType(intToStr(wakeup_code));
+		msg_envelope->setMsgType(wakeup_code);
 		//call Kernal send message to send to timing iProcess
 		return K_send_message(0, msg_envelope); //i_timing_process PID is 0
 	}
@@ -262,54 +264,45 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
-	kill(getpid(), SIGUSR2);
-	return EXIT_SUCCESS;
-//	if(msg_envelope == NULL) //error check
-//		return EXIT_ERROR;
-//		
-//	string toSend = msg_envelope->getMsgData();
-//	if(toSend[toSend.length()-1] != '\0') //ensure message is terminated by null character	
-//		return EXIT_ERROR;
-//	
-//	//validated that message is in correct format
-//	int iCRTProcId = getpid(); //send a signal to the RTX
-//	int invoker = msg_envelope->getOriginPid();
-//	//send message to i_crt_handler to deal with transmission of the message to the console
-//	msg_envelope->setMsgType(msg_envelope->TRANSMIT_TO_CRT_REQUEST);
-//	int res = K_send_message(iCRTProcId, msg_envelope);
-//	
-//	if(res != EXIT_ERROR)
-//	{
-//		//make a copy of the current mailbox, then empty it so can receive message from iprocesses without hassle
-//		PCB* curr = NULL;
-//		getCurrentPcb(&curr);
-//		Queue* temp = curr->copy_mailbox();
-//		curr->empty_mailbox();
-//		
-//		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
-//	  	//this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the i_crt_handler sends a message before exiting	  
-//	  	msg_envelope = K_receive_message(); 
-//	  
-//	 	curr->set_mailbox(temp); //restore mailbox
-//	  
-//		bool transmission_failed = (msg_envelope == NULL);
-//		if(!transmission_failed)
-//		{
-//			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
-//			{
-//				res = EXIT_ERROR;
-//				K_send_message(invoker, msg_envelope);
-//			}
-//			else //display_ack
-//				res = K_send_message(invoker, msg_envelope); //the message type was set to DISPLAY_ACK by the iprocess
-//		}
-//		else
-//		{
-//			res = EXIT_ERROR;
-//			K_send_message(invoker, msg_envelope);
-//		}
-//	}
-//	return res;
+	if(msg_envelope == NULL) //error check
+		return EXIT_ERROR;
+			
+	//Don't have to check this since MsgData is a string, and strings have automatic null characters appended to them
+//	if(toSend[toSend.length()-1] != '\0') //ensure message is terminated by null character
+	
+	//validated that message is in correct format
+	int iCRTId = getpid(); //send a signal to the RTX
+	int iCRTPID = PROC_CRT;
+	int invoker = msg_envelope->getOriginPid();
+	//send message to i_crt_handler to deal with transmission of the message to the console
+	msg_envelope->setMsgType(msg_envelope->TO_CRT_F_RTX);
+	int res = K_send_message(iCRTPID, msg_envelope);
+	
+	if(res != EXIT_ERROR)
+	{
+		kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
+		msg_envelope = retrieveAcknowledgement(); //will receive a message
+	  	
+		bool transmission_failed = (msg_envelope == NULL);
+		if(!transmission_failed)
+		{
+			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+			{
+				res = EXIT_ERROR;
+				K_send_message(invoker, msg_envelope);
+			}
+			else //display_ack
+			{
+				res = K_send_message(invoker, msg_envelope); //the message type was set to DISPLAY_ACK by the iprocess
+			}
+		}
+		else //could be sending a null message
+		{
+			res = EXIT_ERROR;
+			K_send_message(invoker, msg_envelope);
+		}
+	}
+	return res;
 }
 
 /* Invoking process provides a message envelope (previously allocated)
@@ -355,6 +348,7 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
 	//call MsgTrace function to format trace buffers into table
 	_msgTrace->getTraces(msg_envelope);
+	cout << msg_envelope->getMsgData();
 	//send table formated string to user display 
 	return K_send_console_chars(msg_envelope);
 }
@@ -389,5 +383,3 @@ Scheduler* RTX::getScheduler()
 	return _scheduler; 
 #endif
 }
-
-

@@ -32,10 +32,6 @@ int Mailbox::deliverMail(MsgEnv* newMsg)
 }
 MsgEnv* Mailbox::getMail(int msgType)
 {
-	return getMail(intToStr(msgType));
-}
-MsgEnv* Mailbox::getMail(string msgType)
-{
 	QueueNode* curr = _q->_rear;
 	QueueNode* prev = _q->_rear;
 	MsgEnv* retMsg = NULL;
@@ -43,7 +39,7 @@ MsgEnv* Mailbox::getMail(string msgType)
 	while(curr != NULL)
 	{
 		retMsg = (MsgEnv*)curr->item;
-		if( retMsg->getMsgType().compare(msgType) )
+		if( retMsg->getMsgType() == msgType )
 		{
 			if(_q->_length == 1)
 			{

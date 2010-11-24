@@ -150,10 +150,11 @@ string PCB::getStateName()
 	string state = "Unknown State";
 	switch(_state)
 	{
-		case READY: 				state = "Ready"; break;
-		case BLOCKED_ENV: 			state = "Blocked-Env"; break;
-		case BLOCKED_MSG_RECIEVE: 	state = "Blocked-Rx"; break;
-		case SLEEPING: 				state = "Asleep"; break;
+		case EXECUTING: 			state = "EXECUTING"; break;	
+		case READY: 				state = "READY"; break;
+		case BLOCKED_ENV: 			state = "BLK-ENV"; break;
+		case BLOCKED_MSG_RECIEVE: 	state = "BLK-REC"; break;
+		case SLEEPING: 				state = "SLEEPING"; break;
 	}
 	return state;
 }
@@ -170,11 +171,6 @@ MsgEnv* PCB::retrieveMail( int msgType )
 	return _mailbox->getMail( msgType );
 }
 
-MsgEnv* PCB::retrieveMail( string msgType )
-{
-	return _mailbox->getMail( msgType );
-}
-
 MsgEnv* PCB::retrieveAck()
 {
 	MsgEnv* ret;
@@ -183,7 +179,8 @@ MsgEnv* PCB::retrieveAck()
 	//If no acknowledgements, search for display failure
 	if(ret == NULL)
 		ret = _mailbox->getMail( MsgEnv::DISPLAY_FAIL );
-	
+	if(ret == NULL)
+		ret = _mailbox->getMail( MsgEnv::BUFFER_OVERFLOW );
 	//return message (or NULL)
 	return ret;
 }

@@ -14,9 +14,6 @@ WallClock::WallClock(unsigned int tickLength)
 void WallClock::setDisplayed(bool isDisplayed)
 {
 	_isDisplayed = isDisplayed;
-	_isNewTime = isDisplayed;
-	if (isDisplayed)			//TESTING ONLY
-		ualarm(_tickLength,_tickLength);
 }
 
 void WallClock::increment()
