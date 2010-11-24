@@ -66,36 +66,36 @@ RTX::~RTX()
 	//delete _signalHandler;
 }
 
-int RTX::displayText(MsgEnv* ioLetter)
-{
-//	int ret = EXIT_ERROR;
-	if(ioLetter == NULL)
-		return NULL;
-	string content = ioLetter->getMsgData();
-	
-	int lineCount = countChars(content,'\n');
-	
-	if(lineCount == 0)
-	{
-		K_send_console_chars(ioLetter);
-		while( K_send_console_chars(ioLetter) != EXIT_SUCCESS );
-		//ioLetter = gRTX->K_receive_message();
-	}
-	else
-	{	
-		string lines[lineCount];
-		parseString(content,lines,'\n',lineCount);
-	
-		for(int i=0; i < lineCount; i++)
-		{
-			ioLetter->setMsgData(lines[i] + "\n");
-			while( K_send_console_chars(ioLetter) != EXIT_SUCCESS );
-			//ioLetter = gRTX->K_receive_message();
-		}
-	}
-		
-	return EXIT_SUCCESS;
-}
+//int RTX::displayText(MsgEnv* ioLetter)
+//{
+////	int ret = EXIT_ERROR;
+//	if(ioLetter == NULL)
+//		return NULL;
+//	string content = ioLetter->getMsgData();
+//	
+//	int lineCount = countChars(content,'\n');
+//	
+//	if(lineCount == 0)
+//	{
+//		K_send_console_chars(ioLetter);
+//		ioLetter = retrieveOutAcknowledgement();
+//	}
+//	else
+//	{	
+//		string lines[lineCount];
+//		parseString(content,lines,'\n',lineCount);
+//	
+//		for(int i=0; i < lineCount; i++)
+//		{
+//			cout << lines[i] + '\n';
+//			//ioLetter->setMsgData(lines[i]);
+//			//K_send_console_chars(ioLetter);
+//		}
+//		cout.flush();
+//	}
+//		
+//	return -2;
+//}
 
 //assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getPcb(int pid, PCB** pcb)
@@ -154,6 +154,12 @@ int RTX::getCurrentPid()
 //	return ret;
 //}
 
+
+MsgEnv* RTX::retrieveOutAcknowledgement()
+{
+	return _mailMan->retrieveOAck();
+}
+
 int RTX::atomic(bool on)
 {
 	int ret = EXIT_SUCCESS;
@@ -202,7 +208,7 @@ int RTX::K_release_processor()
 {
 	//We need a scheduler object names scheduler to be declared (in initialization???)
 	
-	_scheduler->release_processor();
+	//_scheduler->release_processor();
 	return 1;
 
 }
@@ -240,6 +246,7 @@ int RTX::K_change_priority(int new_priority, int target_process_id)
 	return -2;
 }
 
+//sends a msg to the i_timing_process with a sleep time
 int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
 	
@@ -263,57 +270,73 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
-	cout << msg_envelope->getMsgData() << flush;
-	return EXIT_SUCCESS;
+	if(msg_envelope == NULL) //error check
+		return EXIT_ERROR;
+	//Don't have to check this since MsgData is a string, and strings have automatic null characters appended to them
 	
-	kill(getpid(), SIGUSR2);
-	return EXIT_SUCCESS;
-//	if(msg_envelope == NULL) //error check
-//		return EXIT_ERROR;
-//		
-//	string toSend = msg_envelope->getMsgData();
-//	if(toSend[toSend.length()-1] != '\0') //ensure message is terminated by null character	
-//		return EXIT_ERROR;
-//	
-//	//validated that message is in correct format
-//	int iCRTProcId = getpid(); //send a signal to the RTX
-//	int invoker = msg_envelope->getOriginPid();
-//	//send message to i_crt_handler to deal with transmission of the message to the console
-//	msg_envelope->setMsgType(msg_envelope->TRANSMIT_TO_CRT_REQUEST);
-//	int res = K_send_message(iCRTProcId, msg_envelope);
-//	
-//	if(res != EXIT_ERROR)
-//	{
-//		//make a copy of the current mailbox, then empty it so can receive message from iprocesses without hassle
-//		PCB* curr = NULL;
-//		getCurrentPcb(&curr);
-//		Queue* temp = curr->copy_mailbox();
-//		curr->empty_mailbox();
-//		
-//		kill(iCRTProcId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message
-//	  	//this is a blocking call, but not really since the i_crt_process runs to completion after the signal is sent, and the i_crt_handler sends a message before exiting	  
-//	  	msg_envelope = K_receive_message(); 
-//	  
-//	 	curr->set_mailbox(temp); //restore mailbox
-//	  
-//		bool transmission_failed = (msg_envelope == NULL);
-//		if(!transmission_failed)
-//		{
-//			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
-//			{
-//				res = EXIT_ERROR;
-//				K_send_message(invoker, msg_envelope);
-//			}
-//			else //display_ack
-//				res = K_send_message(invoker, msg_envelope); //the message type was set to DISPLAY_ACK by the iprocess
-//		}
-//		else
-//		{
-//			res = EXIT_ERROR;
-//			K_send_message(invoker, msg_envelope);
-//		}
-//	}
-//	return res;
+	//validated that message is in correct format
+	int invoker = msg_envelope->getOriginPid();
+	int res = EXIT_SUCCESS; //hurray for optimism!
+	string content = msg_envelope->getMsgData();
+	//implement multi-line display	
+	int lineCount = countChars(content,'\n');
+	if(lineCount == 0)
+	{
+		msg_envelope->setMsgData(content);
+		res = send_chars_to_screen(msg_envelope);
+	}
+	else
+	{	
+		string lines[lineCount];
+		string thisLine = "";
+		parseString(content, lines, '\n', lineCount);
+	
+		for(int i = 0; i < lineCount; i++)
+		{
+			thisLine = (lines[i] + '\n');
+			msg_envelope->setMsgData(thisLine);
+			res = send_chars_to_screen(msg_envelope);
+			usleep(100000);
+		}
+		msg_envelope->setMsgData(content); //reset data to original before breaking it down
+	}	
+	res = K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
+	return res;
+}
+
+int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
+{
+	int iCRTId = getpid(); //send a signal to the RTX
+	int iCRTPID = PROC_CRT;
+	
+	int res = EXIT_SUCCESS;
+	//send message to i_crt_handler to deal with transmission of the message to the console
+	msg_envelope->setMsgType(msg_envelope->TO_CRT);
+	res = K_send_message(iCRTPID, msg_envelope);
+	if(res != EXIT_ERROR)
+	{
+		kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
+		msg_envelope = retrieveOutAcknowledgement(); //will receive a message
+	  	
+		bool transmission_failed = (msg_envelope == NULL);
+		if(!transmission_failed)
+		{
+			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+			{
+				res = EXIT_ERROR;
+			}
+			else //display_ack
+			{
+				//cout<<"display_ack\n";
+				res = EXIT_SUCCESS;
+			}
+		}
+		else //could be sending a null message
+		{
+			res = EXIT_ERROR;
+		}
+	}
+	return res;
 }
 
 /* Invoking process provides a message envelope (previously allocated)

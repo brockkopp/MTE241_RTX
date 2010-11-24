@@ -3,12 +3,26 @@
 //Message Types
 //int MsgEnv::TO_CRT = 			0;
 //int MsgEnv::BUFFER_OVERFLOW = 1;
-//int MsgEnv::DISPLAY_ACK = 		2;
+//int MsgEnv::DISPLAY_ACK = 	2;
 //int MsgEnv::DISPLAY_FAIL = 	3;
 //int MsgEnv::DELAY_REQUEST = 	4;
-//int MsgEnv::NO_INPUT = 			5;
+//int MsgEnv::NO_INPUT = 		5;
 //int MsgEnv::CONSOLE_INPUT = 	6;
 //int MsgEnv::COUNT_REPORT = 	7;
+
+MsgEnv::MsgEnv()
+{
+	msgFields._destPid = -1;
+	msgFields._originPid = -1;
+	msgFields._timeStamp = -1;
+	msgFields._msgType = -1;
+	msgFields._msgData = " ";
+}
+
+MsgEnv::~MsgEnv()
+{
+	//do i need anything here?
+}
 
 int MsgEnv::getDestPid()
 {
@@ -58,6 +72,7 @@ int MsgEnv::getMsgType()
 	return msgFields._msgType;
 }
 
+
 void MsgEnv::setMsgType(int newMsgType)
 {
 		msgFields._msgType = newMsgType;
@@ -83,10 +98,7 @@ string MsgEnv::getMsgTypeName()
 
 string MsgEnv::getMsgData()
 {
-//	debugMsg("\tgetting msg data...\n"); //ERic
-	string temp = msgFields._msgData;
-//	debugMsg("\tgot it\n"); //ERic
-	return temp;
+	return msgFields._msgData;
 }
 
 int MsgEnv::setMsgData(string msgInfo)

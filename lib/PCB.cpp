@@ -214,7 +214,8 @@ MsgEnv* PCB::retrieveAck()
 	//If no acknowledgements, search for display failure
 	if(ret == NULL)
 		ret = _mailbox->getMail( MsgEnv::DISPLAY_FAIL );
-	
+	if(ret == NULL)
+		ret = _mailbox->getMail( MsgEnv::BUFFER_OVERFLOW );
 	//return message (or NULL)
 	return ret;
 }

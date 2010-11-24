@@ -43,8 +43,9 @@ class RTX
 		int getPcb(int pid, PCB** pcb);
 		int getCurrentPcb(PCB** pcb);
 		int getCurrentPid();
+		MsgEnv* retrieveOutAcknowledgement();
 		int atomic(bool on);
-		int displayText(MsgEnv* ioLetter);
+		//int displayText(MsgEnv* ioLetter);
 		//int setCurrentProcess(int pid);
 		//int setProcessState(int pid, int state);
 		
@@ -58,6 +59,7 @@ class RTX
 		int K_change_priority(int new_priority, int target_process_id);
 		int K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope);
 		int K_send_console_chars(MsgEnv* msg_envelope);
+		int send_chars_to_screen(MsgEnv* msg_envelope);
 		int K_get_console_chars(MsgEnv* msg_envelope);
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
 		
@@ -74,7 +76,7 @@ class RTX
 		Scheduler* 		_scheduler;
 		SignalHandler* 	_signalHandler;
 
-		MsgTrace*				_msgTrace;
+		MsgTrace*		_msgTrace;
 		MsgServ* 		_mailMan;
 		bool			_started;
 		
