@@ -202,7 +202,7 @@ int RTX::K_release_processor()
 {
 	//We need a scheduler object names scheduler to be declared (in initialization???)
 	
-	_scheduler->release_processor();
+	//_scheduler->release_processor();
 	return 1;
 
 }

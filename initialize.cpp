@@ -100,21 +100,20 @@ int main(void)
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
 	debugMsg("\n");
-
-
+	
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gCCI = new CCI();
 
 #if TESTS_MODE == 1
-	doTests();
+	//doTests();
 #endif
 
 	//Start scheduler. Put the first process onto the CPU
 	//gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
-	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
+	//assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
 }
 
 void doTests()
@@ -139,8 +138,8 @@ void doTests()
 	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
  	debugMsg("\tAnother Test:\t");   
 	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-*/
-	   
+
+	  */ 
 //*******************************************************ERIC TEST****************************************************************	
 	
 	debugMsg("ERIC TEST\n---------\n");
@@ -185,6 +184,8 @@ void doTests()
 	
 	debugMsg("ERIC TEST END\n-------------\n");	
 //********************************************************ERIC TEST END**********************************************************	 
+
+
 }
 
 void die(int sigNum)
