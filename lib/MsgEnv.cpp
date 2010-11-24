@@ -1,28 +1,14 @@
 #include "MsgEnv.h"
 
 //Message Types
-//string MsgEnv::TO_CRT_F_CCI = "transmit_to_crt_request_fromCCI";
-//string MsgEnv::TO_CRT_F_RTX = "transmit_to_crt_request_fromRTX";
-//string MsgEnv::BUFFER_OVERFLOW = "buffer_overflow";
-//string MsgEnv::DISPLAY_ACK = "display_ack";
-//string MsgEnv::DISPLAY_FAIL = "display_fail";
-
-//string MsgEnv::DELAY_REQUEST = "delay_request";
-
-//string MsgEnv::NO_INPUT = "";
-//string MsgEnv::CONSOLE_INPUT = "console_input";
-
-//string MsgEnv::COUNT_REPORT = "count_report";
-
-//int MsgEnv::TO_CRT_F_CCI = 	0;
-//int MsgEnv::TO_CRT_F_RTX = 		1;
-//int MsgEnv::BUFFER_OVERFLOW = 2;
-//int MsgEnv::DISPLAY_ACK = 	3;
-//int MsgEnv::DISPLAY_FAIL = 	4;
-//int MsgEnv::DELAY_REQUEST = 	5;
-//int MsgEnv::NO_INPUT = 		6;
-//int MsgEnv::CONSOLE_INPUT = 	7;
-//int MsgEnv::COUNT_REPORT = 	8;
+//int MsgEnv::TO_CRT = 			0;
+//int MsgEnv::BUFFER_OVERFLOW = 1;
+//int MsgEnv::DISPLAY_ACK = 	2;
+//int MsgEnv::DISPLAY_FAIL = 	3;
+//int MsgEnv::DELAY_REQUEST = 	4;
+//int MsgEnv::NO_INPUT = 		5;
+//int MsgEnv::CONSOLE_INPUT = 	6;
+//int MsgEnv::COUNT_REPORT = 	7;
 
 int MsgEnv::getDestPid()
 {
@@ -83,8 +69,7 @@ string MsgEnv::getMsgTypeName()
    string ret;
 	switch(msgFields._msgType)
 	{
-		case TO_CRT_F_CCI : ret = "TO_CRT_F_CCI"; break;
-		case TO_CRT_F_RTX : ret = "TO_CRT_F_RTX"; break;
+		case TO_CRT : ret = "TO_CRT"; break;
 		case BUFFER_OVERFLOW : ret = "BUF_OVFLW"; break;
 		case DISPLAY_ACK : ret = "D_ACK"; break;
 		case DISPLAY_FAIL : ret = "D_FAIL"; break;

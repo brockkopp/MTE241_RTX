@@ -99,7 +99,7 @@ MsgEnv* MsgServ::recieveMsg()
 	return tempMsg;
 }
 
-MsgEnv* MsgServ::retrieveAck()
+MsgEnv* MsgServ::retrieveOAck()
 {
 	PCB* tempPCB;
 	MsgEnv* ret;

@@ -60,36 +60,36 @@ RTX::~RTX()
 	//delete _signalHandler;
 }
 
-int RTX::displayText(MsgEnv* ioLetter)
-{
-//	int ret = EXIT_ERROR;
-	if(ioLetter == NULL)
-		return NULL;
-	string content = ioLetter->getMsgData();
-	
-	int lineCount = countChars(content,'\n');
-	
-	if(lineCount == 0)
-	{
-		K_send_console_chars(ioLetter);
-		ioLetter = retrieveAcknowledgement();
-	}
-	else
-	{	
-		string lines[lineCount];
-		parseString(content,lines,'\n',lineCount);
-	
-		for(int i=0; i < lineCount; i++)
-		{
-			cout << lines[i] + '\n';
-			//ioLetter->setMsgData(lines[i]);
-			//K_send_console_chars(ioLetter);
-		}
-		cout.flush();
-	}
-		
-	return -2;
-}
+//int RTX::displayText(MsgEnv* ioLetter)
+//{
+////	int ret = EXIT_ERROR;
+//	if(ioLetter == NULL)
+//		return NULL;
+//	string content = ioLetter->getMsgData();
+//	
+//	int lineCount = countChars(content,'\n');
+//	
+//	if(lineCount == 0)
+//	{
+//		K_send_console_chars(ioLetter);
+//		ioLetter = retrieveOutAcknowledgement();
+//	}
+//	else
+//	{	
+//		string lines[lineCount];
+//		parseString(content,lines,'\n',lineCount);
+//	
+//		for(int i=0; i < lineCount; i++)
+//		{
+//			cout << lines[i] + '\n';
+//			//ioLetter->setMsgData(lines[i]);
+//			//K_send_console_chars(ioLetter);
+//		}
+//		cout.flush();
+//	}
+//		
+//	return -2;
+//}
 
 //assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getPcb(int pid, PCB** pcb)
@@ -149,9 +149,9 @@ int RTX::getCurrentPid()
 //}
 
 
-MsgEnv* RTX::retrieveAcknowledgement()
+MsgEnv* RTX::retrieveOutAcknowledgement()
 {
-	return _mailMan->retrieveAck();
+	return _mailMan->retrieveOAck();
 }
 
 int RTX::atomic(bool on)
@@ -263,42 +263,95 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
+	//cout<<"entering send console chars\n";
 	if(msg_envelope == NULL) //error check
 		return EXIT_ERROR;
-			
+	
+	//cout<<"envelope is't null\n";
 	//Don't have to check this since MsgData is a string, and strings have automatic null characters appended to them
-//	if(toSend[toSend.length()-1] != '\0') //ensure message is terminated by null character
 	
 	//validated that message is in correct format
+	int invoker = msg_envelope->getOriginPid();
+	int res = EXIT_SUCCESS; //hurray for optimism!
+	
+	string content = msg_envelope->getMsgData();
+	//implement multi-line display	
+	int lineCount = countChars(content,'\n');
+	
+	if(lineCount == 0)
+	{
+		msg_envelope->setMsgData(content);
+		//cout<<"Send chars to screen... : "<<content<<" \n";
+		res = send_chars_to_screen(msg_envelope);
+	}
+	else
+	{	
+		string lines[lineCount];
+		string thisLine = "";
+		parseString(content, lines, '\n', lineCount);
+	
+		for(int i = 0; i < lineCount; i++)
+		{
+			thisLine = (lines[i] + '\n');
+			msg_envelope->setMsgData(thisLine);
+			//cout<<"Send line of chars to screen... : "<<thisLine<<" \n";
+			res = send_chars_to_screen(msg_envelope);
+			usleep(100000);
+		}
+		msg_envelope->setMsgData(content); //reset data to original before breaking it down
+	}		
+	//cout<<"Printing to screen was a "<< (res == EXIT_SUCCESS? "SUCCESS!!\n" : "FAILURE :(\n");
+	res = K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
+	//cout<<"Sending message was a "<< (res == EXIT_SUCCESS? "SUCCESS!!\n" : "FAILURE :(\n");
+	//cout<<"Leaving send console char primitive\n";
+	return res;
+}
+
+int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
+{
 	int iCRTId = getpid(); //send a signal to the RTX
 	int iCRTPID = PROC_CRT;
-	int invoker = msg_envelope->getOriginPid();
+	
+	int res = EXIT_SUCCESS;
 	//send message to i_crt_handler to deal with transmission of the message to the console
-	msg_envelope->setMsgType(msg_envelope->TO_CRT_F_RTX);
-	int res = K_send_message(iCRTPID, msg_envelope);
+	msg_envelope->setMsgType(msg_envelope->TO_CRT);
+	
+	res = K_send_message(iCRTPID, msg_envelope);
 	
 	if(res != EXIT_ERROR)
 	{
+		//cout<<"RTX: sending signal...\n";
 		kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
-		msg_envelope = retrieveAcknowledgement(); //will receive a message
+		msg_envelope = retrieveOutAcknowledgement(); //will receive a message
 	  	
 		bool transmission_failed = (msg_envelope == NULL);
 		if(!transmission_failed)
 		{
-			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+//			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+//			{
+//				cout<<"display_fail\n";
+//				res = EXIT_ERROR;
+//			}
+			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW)
 			{
+				//cout<<"buffer_overflow\n";
 				res = EXIT_ERROR;
-				K_send_message(invoker, msg_envelope);
+			}
+			else if(msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+			{
+				//cout<<"display_fail\n";
+				res = EXIT_ERROR;
 			}
 			else //display_ack
 			{
-				res = K_send_message(invoker, msg_envelope); //the message type was set to DISPLAY_ACK by the iprocess
+				//cout<<"display_ack\n";
+				res = EXIT_SUCCESS;
 			}
 		}
 		else //could be sending a null message
 		{
+			//cout<<"null envelope\n";
 			res = EXIT_ERROR;
-			K_send_message(invoker, msg_envelope);
 		}
 	}
 	return res;

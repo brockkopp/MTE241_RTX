@@ -101,25 +101,33 @@ void i_crt_handler()
 		//if busy, return fail 
 		if(gTxMemBuf->busyFlag == 1) //CRT is busy (currently transmitting something to , cannot output to screen
 		{
+			//cout<<"I'm busy, leave me alone!\n";
 			retMsg->setMsgType(retMsg->DISPLAY_FAIL);
 		}	
 		else //CRT is NOT busy - perform transmission
 		{
 			if(msgToConsole.size() > MAXDATA) //buffer would overflows
 			{
+				//cout<<"MAXDATA is "<<MAXDATA<<". Message "<<msgToConsole<<" is "<<msgToConsole.size()<<" chars long\n";
+				//cout<<"I'm overflowing, leave me alone!\n";
 				//don't bother copying message into buffer; partial messages are not acceptable. Invoking process must do it line by line
 				retMsg->setMsgType(retMsg->BUFFER_OVERFLOW);
 			}
 			else //CRT is NOT busy - perform transmission
 			{
+				//cout<<"I'm good, let's do this!!\n";
+				//cout<<"ICRT: busyFlag = 1\t";
 				gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
 				int indexInBuf = 0; //start writing from beginning of the shmem
+				
 				for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
 				{
 					gTxMemBuf->data[indexInBuf] = msgToConsole[i];
 					indexInBuf++;
 				}
+				gTxMemBuf->data[indexInBuf] = '\0'; 
 				
+				//cout<<"Current contents: !!"<<gTxMemBuf->data<<"!!\n";
 				//CRT process will set busyFlag back to 0 once it has taken everything out of the buffer
 				//So can assume that once things are in the buffer, they have been "successfully transmitted"
 				retMsg->setMsgType(retMsg->DISPLAY_ACK); 
