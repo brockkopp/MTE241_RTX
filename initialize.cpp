@@ -100,12 +100,13 @@ int main(void)
 	//wait to assure that keyboard and crt initialize properly
 	sleep(1);
 	debugMsg("\n");
+	
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gCCI = new CCI();
 
 #if TESTS_MODE == 1
-//	doTests();
+	//doTests();
 #endif
 
 	//Start scheduler. Put the first process onto the CPU
@@ -117,7 +118,7 @@ int main(void)
 
 void doTests()
 {
-	
+	/*
 	debugMsg("Testing...",1,1);
 	debugMsg("\tParser Test:\t");    
 	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
@@ -137,18 +138,20 @@ void doTests()
 	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
  	debugMsg("\tAnother Test:\t");   
 	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	   
-	   
-	   //*******************************************************ERIC TEST****************************************************************	
-	/*
+
+	  */ 
+//*******************************************************ERIC TEST****************************************************************	
+	
 	debugMsg("ERIC TEST\n---------\n");
 	
+	PCB* tempPCB;
+	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
 	
 	MsgEnv* msg = gRTX->K_request_msg_env();
 	debugMsg("msg allocated\n");
 	msg->setMsgData("test 1");
 	debugMsg("msg data added\n");
-	msg->setMsgType("display_ack");
+	msg->setMsgType(5);
 	debugMsg("msg type added\n");
 	msg->setTimeStamp(10);
 	debugMsg("msg time stamp added\n");
@@ -161,17 +164,28 @@ void doTests()
 	debugMsg("receiver PCB retrieved\n");
 	msg = gRTX->K_receive_message();
 	debugMsg("mail retrieved\n");
-	debugMsg("dest PID: "+intToStr(msg->getDestPid())+"\n");
+	if (msg != NULL)
+	{
 	debugMsg("origin PID: "+intToStr(msg->getOriginPid())+"\n");
-	debugMsg("Msg Type: "+msg->getMsgType()+"\n");
+	debugMsg("dest PID: "+intToStr(msg->getDestPid())+"\n");
+	debugMsg("Msg Type: "+intToStr(msg->getMsgType())+"\n");
 	debugMsg("Time Stamp: "+intToStr(msg->getTimeStamp())+"\n");
 	debugMsg("MsgData: "+msg->getMsgData()+"\n");
-	
+	}
 	debugMsg("releasing env..\n");
 	debugMsg("Successful?: "+intToStr(gRTX->K_release_msg_env(msg))+"\n");
+	
+	msg = gRTX->K_request_msg_env();
+	debugMsg("msg allocated\n");
+	debugMsg("printing trace buffers...\n");
+	gRTX->K_get_trace_buffers(msg);
+	gRTX->K_send_console_chars(msg);
+	
+	
+	debugMsg("ERIC TEST END\n-------------\n");	
+//********************************************************ERIC TEST END**********************************************************	 
 
-	debugMsg("ERIC TEST END\n-------------\n");	*/
-//********************************************************ERIC TEST END************************************************************	 
+
 }
 
 void die(int sigNum)

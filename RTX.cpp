@@ -202,7 +202,7 @@ int RTX::K_release_processor()
 {
 	//We need a scheduler object names scheduler to be declared (in initialization???)
 	
-	_scheduler->release_processor();
+	//_scheduler->release_processor();
 	return 1;
 
 }
@@ -240,6 +240,7 @@ int RTX::K_change_priority(int new_priority, int target_process_id)
 	return -2;
 }
 
+//sends a msg to the i_timing_process with a sleep time
 int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
 	
@@ -263,25 +264,19 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
-	//cout<<"entering send console chars\n";
 	if(msg_envelope == NULL) //error check
 		return EXIT_ERROR;
-	
-	//cout<<"envelope is't null\n";
 	//Don't have to check this since MsgData is a string, and strings have automatic null characters appended to them
 	
 	//validated that message is in correct format
 	int invoker = msg_envelope->getOriginPid();
 	int res = EXIT_SUCCESS; //hurray for optimism!
-	
 	string content = msg_envelope->getMsgData();
 	//implement multi-line display	
 	int lineCount = countChars(content,'\n');
-	
 	if(lineCount == 0)
 	{
 		msg_envelope->setMsgData(content);
-		//cout<<"Send chars to screen... : "<<content<<" \n";
 		res = send_chars_to_screen(msg_envelope);
 	}
 	else
@@ -294,16 +289,12 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 		{
 			thisLine = (lines[i] + '\n');
 			msg_envelope->setMsgData(thisLine);
-			//cout<<"Send line of chars to screen... : "<<thisLine<<" \n";
 			res = send_chars_to_screen(msg_envelope);
 			usleep(100000);
 		}
 		msg_envelope->setMsgData(content); //reset data to original before breaking it down
-	}		
-	//cout<<"Printing to screen was a "<< (res == EXIT_SUCCESS? "SUCCESS!!\n" : "FAILURE :(\n");
+	}	
 	res = K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
-	//cout<<"Sending message was a "<< (res == EXIT_SUCCESS? "SUCCESS!!\n" : "FAILURE :(\n");
-	//cout<<"Leaving send console char primitive\n";
 	return res;
 }
 
@@ -315,31 +306,17 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 	int res = EXIT_SUCCESS;
 	//send message to i_crt_handler to deal with transmission of the message to the console
 	msg_envelope->setMsgType(msg_envelope->TO_CRT);
-	
 	res = K_send_message(iCRTPID, msg_envelope);
-	
 	if(res != EXIT_ERROR)
 	{
-		//cout<<"RTX: sending signal...\n";
 		kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
 		msg_envelope = retrieveOutAcknowledgement(); //will receive a message
 	  	
 		bool transmission_failed = (msg_envelope == NULL);
 		if(!transmission_failed)
 		{
-//			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
-//			{
-//				cout<<"display_fail\n";
-//				res = EXIT_ERROR;
-//			}
-			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW)
+			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
 			{
-				//cout<<"buffer_overflow\n";
-				res = EXIT_ERROR;
-			}
-			else if(msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
-			{
-				//cout<<"display_fail\n";
 				res = EXIT_ERROR;
 			}
 			else //display_ack
@@ -350,7 +327,6 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 		}
 		else //could be sending a null message
 		{
-			//cout<<"null envelope\n";
 			res = EXIT_ERROR;
 		}
 	}

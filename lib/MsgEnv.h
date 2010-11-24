@@ -27,6 +27,8 @@ class MsgEnv
 		static const int CONSOLE_INPUT = 	6;
 		static const int COUNT_REPORT = 	7;
 
+		MsgEnv();
+		~MsgEnv();
 		int getDestPid();
 		int setDestPid(int newDestPid);
 		int getOriginPid();

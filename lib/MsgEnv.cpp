@@ -10,6 +10,20 @@
 //int MsgEnv::CONSOLE_INPUT = 	6;
 //int MsgEnv::COUNT_REPORT = 	7;
 
+MsgEnv::MsgEnv()
+{
+	msgFields._destPid = -1;
+	msgFields._originPid = -1;
+	msgFields._timeStamp = -1;
+	msgFields._msgType = -1;
+	msgFields._msgData = " ";
+}
+
+MsgEnv::~MsgEnv()
+{
+	//do i need anything here?
+}
+
 int MsgEnv::getDestPid()
 {
 	return msgFields._destPid;
@@ -84,10 +98,7 @@ string MsgEnv::getMsgTypeName()
 
 string MsgEnv::getMsgData()
 {
-	//debugMsg("\tgetting msg data...\n"); //ERic
-	string temp = msgFields._msgData;
-	//debugMsg("\tgot it\n"); //ERic
-	return temp;
+	return msgFields._msgData;
 }
 
 int MsgEnv::setMsgData(string msgInfo)

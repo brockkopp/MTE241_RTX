@@ -40,13 +40,8 @@ int CCI::processCCI()
 		{
 			ioLetter->setMsgData(">RTX$ ");
 			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //; //if exiting while loop, sure that message type is display_ack
-//			{
-//				//cout<<"loopy\n";
-//			}
 			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
-			
 			assure(ioLetter != NULL,"CCI:46 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
-						
 			ioLetter->setMsgData("");
 			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
 				usleep(1000000);
@@ -121,7 +116,7 @@ int CCI::processCCI()
 					message = "Too many parameters for 'Display Msg Buffers' command\n";
 				else
 				{
-					cout<<"get trace buffers\n";
+					message = "get trace buffers\n";
 //					if( gRTX->K_get_trace_buffers(ioLetter) == EXIT_SUCCESS )
 //						ioLetter = gRTX->K_receive_message();
 //					else
@@ -179,22 +174,11 @@ int CCI::processCCI()
 		if(message.length() > 0)
 		{
 			ioLetter->setMsgData(message);
-			//cout<<"CCI: send console chars\n";
+			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);//; //if exiting while loop, sure that message type is display_ack
 			
-			int result = EXIT_SUCCESS;
-			do
-			{
-				//cout<<"Before: contents of msg: "<<ioLetter->getMsgData()<<endl<<flush;
-				result = gRTX->K_send_console_chars(ioLetter);
-				//cout<<"After one attempt at send, result is " << ((result==EXIT_SUCCESS)?"SUCCESS!\t":"FAILURE :(\t") <<"Contents of msg: "<<ioLetter->getMsgData()<<endl;
-			}while(result == EXIT_ERROR);//; //if exiting while loop, sure that message type is display_ack
-			
-			//cout<<"Sent console chars. Waiting for acknowledgement\n";
 			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
-			//cout<<"Received acknowledgement\n";
 			
 			assure(ioLetter != NULL,"CCI:182 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
-			//cout<<"Assured ioLetter isn't null\n";
 			
 			//gRTX->displayText(ioLetter);
 		}

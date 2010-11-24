@@ -15,13 +15,15 @@ class MsgTrace
 		~MsgTrace();
 		int addTrace(MsgEnv* msg, int callingFunction);
 		int getTraces(MsgEnv* msg);
+		string getMsgTypeName(int msgType);
+		string padString(string msgType);
 		
 	private:
 		struct TraceElement
 		{
 			int _destPid;
 			int _originPid;
-			string _msgType;
+			int _msgType;
 			int _timeStamp;
 		};
 

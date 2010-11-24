@@ -46,7 +46,6 @@ void Scheduler::start()
 	//set current process to highest priority process 
 	_currentProcess = _readyProcs->pq_dequeue();
 	_currentProcess->setState( EXECUTING );
-
 	//Restore context 
 	_currentProcess->restoreContext();	
 }
