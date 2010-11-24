@@ -62,13 +62,15 @@ void PCB::initContext(int stackSize)
 
 	if( setjmp(tempBuf) == 0 )
 	{
+	
+		
+			char* stkPtr = _stack + stackSize - 8;	
+			__asm__("movl %0,%%esp" :"=m" (stkPtr));
 		//_set_sp(stackPtr + stackSize);
 		if( setjmp( _localJmpBuf ) == 0 )
 		{
 //			cout << "savPtr: " << &_fPtr <<  endl;
-cout << "Init, jmp_buf" << _localJmpBuf << "\n";			
-			char* stkPtr = _stack + stackSize - 8;	
-			__asm__("movl %0,%%esp" :"=m" (stkPtr));
+	cout << "Init, jmp_buf" << _localJmpBuf << "\n";	
 			
 //			cout << "ini: " << _localJmpBuf << endl;
 			longjmp(tempBuf ,1 );
