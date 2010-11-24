@@ -9,7 +9,7 @@ arguments:
 */
 
 extern RTX* gRTX;
-extern PCB* gCurrrentProcess;
+extern PCB* gCurrentProcess;
 
 Scheduler::Scheduler(Queue* readyProcs)
 {
@@ -48,19 +48,19 @@ void Scheduler::start()
 	_currentProcess = _readyProcs->pq_dequeue();
 	_currentProcess->setState( EXECUTING );
 	//Restore context 
-	gCurrrentProcess = _currentProcess;
-	cout <<"SCHED: gCurrentProcess: " << gCurrrentProcess << "\n";
-	cout <<"SCHED: gCurrentProcess's fPtr: " << &gCurrrentProcess->_fPtr << "\n";
+	gCurrentProcess = _currentProcess;
+	cout <<"SCHED: gCurrentProcess: " << gCurrentProcess << "\n";
+	cout <<"SCHED: gCurrentProcess's fPtr: " << &gCurrentProcess->_fPtr << "\n";
 	
-	cout <<"SCHED: _currentProc's addr : " << gCurrrentProcess << "\n";
-	cout <<"SCHED: _currentProc's fptr: " << &gCurrrentProcess->_fPtr << "\n";
+	cout <<"SCHED: _currentProc's addr : " << gCurrentProcess << "\n";
+	cout <<"SCHED: _currentProc's fptr: " << &gCurrentProcess->_fPtr << "\n";
 	_currentProcess->restoreContext();	
 	
 	
 	
-//gCurrrentProcess = _readyProcs->pq_dequeue();
-//gCurrrentProcess->setState( EXECUTING );
-//gCurrrentProcess->restoreContext();
+//gCurrentProcess = _readyProcs->pq_dequeue();
+//gCurrentProcess->setState( EXECUTING );
+//gCurrentProcess->restoreContext();
 }
 
 ///*
@@ -89,10 +89,22 @@ void Scheduler::release_processor( ) {
 	
 		//Restore this proc's context		
 		cout << "\tto: " << _currentProcess->getName() << "\n";
+		cout << "READY PROCS: " << _readyProcs->toString();
+//			cout <<"SCHED: gCurrentProcess: " << gCurrentProcess << "\n";
+//	cout <<"SCHED: gCurrentProcess's fPtr: " << &gCurrentProcess->_fPtr << "\n";
+//	
+//	cout <<"SCHED: _currentProc's addr : " << gCurrentProcess << "\n";
+//	cout <<"SCHED: _currentProc's fptr: " << &gCurrentProcess->_fPtr << "\n";
+//		gCurrentProcess = _currentProcess;
 		_currentProcess->restoreContext();
 	}
-} 
-
+	
+	PCB* tmp;
+	gRTX->getCurrentPcb(&tmp);
+	cout << "HERE!!!!!!\n";
+	cout << "Restored to release_processor " << 	tmp->getName() << "\n";
+	
+}
 /* Will change the priority of the target proc.
 
 arguments: 

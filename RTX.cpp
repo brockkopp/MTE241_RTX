@@ -7,7 +7,7 @@ extern inputBuffer* gRxMemBuf;
 //extern PCB **gPcb_list;
 extern PCB gPcb_list[7];
 
-PCB* gCurrrentProcess;
+PCB* gCurrentProcess;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
@@ -208,7 +208,7 @@ int RTX::K_release_processor()
 {
 	//We need a scheduler object names scheduler to be declared (in initialization???)
 	
-	//_scheduler->release_processor();
+	_scheduler->release_processor();
 	return 1;
 
 }

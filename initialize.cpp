@@ -116,7 +116,7 @@ cout << "HERE !\n";
 #endif
 
 	//Start scheduler. Put the first process onto the CPU
-	//gRTX->start_execution();
+//	gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
@@ -316,39 +316,48 @@ void a()
 {
 	cout << "\nA\n\n";
 //	gRTX->_jmpList[1]->restore_context();
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
 }
 void b()
 {
 	cout << "\nB\n\n";
 //	longjmp(gRTX->_jmpList[2]->_buffer,1);
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
 }
 void c()
 {
 	cout << "\nC\n\n";
 //	longjmp(gRTX->_jmpList[3]->_buffer,1);
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
 }
 void d()
 {
 	cout << "\nD\n\n";
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
 }
 void e()
 {
+while (true) {
 	cout << "\nuserA\n\n";
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
+	cout << "\nuserA here #2!\n";
+}
 }
 void f()
 {
+while (true) {
 	cout << "\nuserB\n\n";
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
+	cout << "\nuserB here #2!\n";
+}
 }
 void g()
 {
+while (true) {
 	cout << "\nuserC\n\n";
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
+	cout << "\nuserC here #2!\n";
+}
 }
 
 int createInitTable(PcbInfo* initTable[])

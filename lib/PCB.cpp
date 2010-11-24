@@ -2,7 +2,7 @@
 
 /*~*~*~*~*~*~* Constructors *~*~*~*~*~*~*~*/
 extern RTX* gRTX;
-extern PCB* gCurrrentProcess;
+extern PCB* gCurrentProcess;
 
 PCB::PCB() {};
 
@@ -80,12 +80,12 @@ cout << "Init, jmp_buf" << _localJmpBuf << "\n";
 //			cout << "run:\t" << _localJmpBuf << "   " << /*tmp->getName() <<*/ endl;
 //			cout << "runPtr:\t" << endl;
 //			cout << "runPcb:\t" << tmp->getName() << endl;
-cout << "Restored, global current proc" << gCurrrentProcess << "\n";
-cout << "Restored, global current proc's _fPtr" << &gCurrrentProcess->_fPtr << "\n";
+cout << "Restored, global current proc" << gCurrentProcess << "\n";
+cout << "Restored, global current proc's _fPtr" << &gCurrentProcess->_fPtr << "\n";
 cout << "Restored, jmp_buf" << _localJmpBuf << "\n";
 cout << "Abut to start fptr....\n";
 //			_fPtr();
-gCurrrentProcess->_fPtr();
+gCurrentProcess->_fPtr();
 
 		}
 	}
@@ -93,27 +93,33 @@ gCurrrentProcess->_fPtr();
 
 int PCB::saveContext() 
 {
-//	PCB* tmp;
-//	gRTX->getCurrentPcb(&tmp);
+	PCB* tmp;
+	gRTX->getCurrentPcb(&tmp);
 //	debugMsg("%Context: about to SAVE context: " + tmp->getName() + "%\n");
 	//return gSaveContext(_localJmpBuf);
 	
-	return setjmp( _localJmpBuf );
+//	return setjmp( _localJmpBuf );
+
+debugMsg("%Context: about to SAVE context: " + tmp->getName() + "%\n");
+int ret = setjmp( gCurrentProcess->_localJmpBuf );
+debugMsg("%Context: returned from SAVE context: " + tmp->getName() + " with return value: "+ intToStr(ret)  +"%\n");
+return ret;
 }
 
 void PCB::restoreContext() 
 {
-//	PCB* tmp;
+	PCB* tmp;
 //	gRTX->getCurrentPcb(&tmp);
 //	debugMsg("%Context: about to RESTORE context: " + tmp->getName() + "%\n");
 //	cout << "res: " << _localJmpBuf << endl;
 	//gRestoreContext(_localJmpBuf);
 	cout << "About to jump, jmp_buf" << _localJmpBuf << "\n";
 
-//gCurrrentProcess = _readyProcs->pq_dequeue();
-//gCurrrentProcess->setState( EXECUTING );
-//gCurrrentProcess->restoreContext();	
-	
+//gCurrentProcess = _readyProcs->pq_dequeue();
+//gCurrentProcess->setState( EXECUTING );
+//gCurrentProcess->restoreContext();	
+	gRTX->getCurrentPcb(&tmp);
+	gCurrentProcess = tmp;
 	longjmp( _localJmpBuf, 1);
 }
 
