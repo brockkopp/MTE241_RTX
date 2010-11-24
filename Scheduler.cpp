@@ -9,6 +9,7 @@ arguments:
 */
 
 extern RTX* gRTX;
+extern PCB* gCurrrentProcess;
 
 Scheduler::Scheduler(Queue* readyProcs)
 {
@@ -48,7 +49,19 @@ void Scheduler::start()
 	_currentProcess->setState( EXECUTING );
 
 	//Restore context 
+	gCurrrentProcess = _currentProcess;
+	cout <<"SCHED: gCurrentProcess: " << gCurrrentProcess << "\n";
+	cout <<"SCHED: gCurrentProcess's fPtr: " << &gCurrrentProcess->_fPtr << "\n";
+	
+	cout <<"SCHED: _currentProc's addr : " << gCurrrentProcess << "\n";
+	cout <<"SCHED: _currentProc's fptr: " << &gCurrrentProcess->_fPtr << "\n";
 	_currentProcess->restoreContext();	
+	
+	
+	
+//gCurrrentProcess = _readyProcs->pq_dequeue();
+//gCurrrentProcess->setState( EXECUTING );
+//gCurrrentProcess->restoreContext();
 }
 
 ///*

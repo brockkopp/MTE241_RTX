@@ -2,8 +2,31 @@
 
 /*~*~*~*~*~*~* Constructors *~*~*~*~*~*~*~*/
 extern RTX* gRTX;
+extern PCB* gCurrrentProcess;
+
+PCB::PCB() {};
 
 PCB::PCB(PcbInfo* info)
+{ 
+	_atomicCount = 0;
+	_id = info->processId;
+	_name = info->name;
+	_priority = info->priority;
+	_processType = info->processType;	
+	_fPtr = info->address;
+	_stack = (char *)(malloc(info->stackSize));
+	assure(_stack != NULL, "Stack initialization failed", __FILE__, __LINE__, __func__, true);
+	_state = READY;
+
+	//_localJmpBuf = (jmp_buf*)malloc(sizeof(jmp_buf));
+
+	_mailbox = new Mailbox();
+	
+	initContext(info->stackSize);
+	//_context = new Context(_stack, info->stackSize, _fPtr);	
+}
+
+void PCB::init(PcbInfo* info)
 { 
 	_atomicCount = 0;
 	_id = info->processId;
@@ -34,7 +57,6 @@ PCB::~PCB()
 void PCB::initContext(int stackSize)
 {
 	//SEE rtxInitialization on UW-ACE
-
 	jmp_buf tempBuf;
 	//Init the function pointer.
 
@@ -44,8 +66,8 @@ void PCB::initContext(int stackSize)
 		if( setjmp( _localJmpBuf ) == 0 )
 		{
 //			cout << "savPtr: " << &_fPtr <<  endl;
-			
-			char* stkPtr = _stack + stackSize - 1280;	
+cout << "Init, jmp_buf" << _localJmpBuf << "\n";			
+			char* stkPtr = _stack + stackSize - 8;	
 			__asm__("movl %0,%%esp" :"=m" (stkPtr));
 			
 //			cout << "ini: " << _localJmpBuf << endl;
@@ -58,7 +80,13 @@ void PCB::initContext(int stackSize)
 //			cout << "run:\t" << _localJmpBuf << "   " << /*tmp->getName() <<*/ endl;
 //			cout << "runPtr:\t" << endl;
 //			cout << "runPcb:\t" << tmp->getName() << endl;
-			_fPtr();
+cout << "Restored, global current proc" << gCurrrentProcess << "\n";
+cout << "Restored, global current proc's _fPtr" << &gCurrrentProcess->_fPtr << "\n";
+cout << "Restored, jmp_buf" << _localJmpBuf << "\n";
+cout << "Abut to start fptr....\n";
+//			_fPtr();
+gCurrrentProcess->_fPtr();
+
 		}
 	}
 }
@@ -69,6 +97,7 @@ int PCB::saveContext()
 //	gRTX->getCurrentPcb(&tmp);
 //	debugMsg("%Context: about to SAVE context: " + tmp->getName() + "%\n");
 	//return gSaveContext(_localJmpBuf);
+	
 	return setjmp( _localJmpBuf );
 }
 
@@ -79,6 +108,12 @@ void PCB::restoreContext()
 //	debugMsg("%Context: about to RESTORE context: " + tmp->getName() + "%\n");
 //	cout << "res: " << _localJmpBuf << endl;
 	//gRestoreContext(_localJmpBuf);
+	cout << "About to jump, jmp_buf" << _localJmpBuf << "\n";
+
+//gCurrrentProcess = _readyProcs->pq_dequeue();
+//gCurrrentProcess->setState( EXECUTING );
+//gCurrrentProcess->restoreContext();	
+	
 	longjmp( _localJmpBuf, 1);
 }
 

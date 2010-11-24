@@ -4,6 +4,10 @@
 
 extern CCI* gCCI;
 extern inputBuffer* gRxMemBuf;
+//extern PCB **gPcb_list;
+extern PCB gPcb_list[7];
+
+PCB* gCurrrentProcess;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
@@ -17,12 +21,14 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	//Put all processes from the intialize table into the queue to be passed
 	//to the scheduler to put on the ready queue. Do not allow i_processes onto
 	//this list.	
-
+//	gPcb_list = new PCB *[7];//(initTable[i]);
 	for(int i=0; i < PROCESS_COUNT; i++)
 	{
-		_pcbList[i] = new PCB(initTable[i]);
-		if ( _pcbList[i]->getProcessType() != PROCESS_I )
-			pcbTmpList->enqueue(_pcbList[i]);
+		//_pcbList[i] = new PCB(initTable[i]);
+		//gPcb_list[i] = new PCB(initTable[i]);
+		gPcb_list[i].init(initTable[i]);
+		if ( gPcb_list[i].getProcessType() != PROCESS_I )
+			pcbTmpList->enqueue(&gPcb_list[i]);
 	}
 
 //	for(int i=0; i < PROCESS_COUNT; i++)
@@ -36,7 +42,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;
 	
-	_scheduler->setCurrentProcess(_pcbList[0]);	//TESTING ONLY!!!
+	_scheduler->setCurrentProcess(&gPcb_list[0]);	//TESTING ONLY!!!
 	
 	_msgTrace = new MsgTrace();
 	

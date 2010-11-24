@@ -27,6 +27,8 @@ class PCB
 {
 	public:			
 		/*~*~* Member functions ~*~*~*~*/
+		PCB();
+		void init(PcbInfo* tableEntry);
 		PCB( PcbInfo* tableEntry ); 	//Constructor
 		PCB( PcbInfo* tableEntry, jmp_buf* jmpBuf ); 	//Constructor
 		~PCB();							//Destructor
@@ -54,7 +56,7 @@ class PCB
 		bool addMail( MsgEnv* message );
 		int checkMail( ); //returns number of messages in mailbox
 
-	private:
+//	private:
 		/*~*~*~*~*~* Members *~*~*~*~*~*/
 		//Context* _context;     //Includes jmp_buf
 		int _atomicCount; 
