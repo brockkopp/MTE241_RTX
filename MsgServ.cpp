@@ -42,8 +42,9 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		
 		//insert destination and origin into msg envelope
 		msg->setDestPid(destPid);
-
+		
 		_msgTrace->addTrace(msg, SEND); 
+		
 		msg->setOriginPid(tempPCB->getId()); 
 
 		//retrieve destination process PCB

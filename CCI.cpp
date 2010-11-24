@@ -45,7 +45,6 @@ int CCI::processCCI()
 			ioLetter->setMsgData("");
 			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
 				usleep(1000000);
-				
 			command = *(gCCI->userInputs->dequeue_string());
 						
 			//ioLetter = gRTX->K_receive_message();
