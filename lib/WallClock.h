@@ -7,15 +7,6 @@
 
 class WallClock
 {
-	private:
-		unsigned int _hours;
-		unsigned int _minutes;
-		unsigned int _seconds;
-		unsigned int _miliseconds;
-		bool _isDisplayed;
-		bool _isNewTime;
-		unsigned int _tickLength;
-
 	public:
 		WallClock(unsigned int tickLength);
 		void increment();
@@ -23,5 +14,14 @@ class WallClock
 		int setTime(string time[]);
 		void setDisplayed(bool isDisplayed);
 		string toString();
+		
+//	private:
+		unsigned int _hours;
+		unsigned int _minutes;
+		unsigned int _seconds;
+		unsigned int _miliseconds;
+		bool _isDisplayed;
+		bool _isNewTime;
+		unsigned int _tickLength;
 };
 #endif

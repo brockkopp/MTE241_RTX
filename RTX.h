@@ -20,8 +20,8 @@ class Queue;
 
 //RTX Global Constants
 
-#define PROCESS_COUNT 	8		//Total number of processes existing in the RTX
-#define TICK_TIME		100000
+#define PROCESS_COUNT 	8			//Total number of processes existing in the RTX
+#define TICK_TIME			100000 	//100mSec / 0.1s
 
 //Constants used to denote process types
 #define PROCESS_I		0	

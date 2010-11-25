@@ -7,7 +7,7 @@
 #include "lib/Mailbox.h"
 
 /* Not sure it'salright to include .cpp's need to review this --Karl */
-//#include "iprocesses.cpp"
+#include "iprocesses.h"
 #include "userProcesses.h"
 
 #include <sys/types.h>
@@ -328,7 +328,6 @@ void e()
 while (true) {
 	cout << "\nuserA output\n";
 	gRTX->K_release_processor();
-	cout << "\nuserA here #2!\n";
 }
 }
 void f()
@@ -336,7 +335,6 @@ void f()
 while (true) {	
 	cout << "\nuserB output\n";
 	gRTX->K_release_processor();
-	cout << "\nuserB here #2!\n";
 }
 }
 void g()
@@ -344,8 +342,6 @@ void g()
 while (true) {
 	cout << "\nuserC output\n";
 	gRTX->K_release_processor();
-	cout << "\nuserC here #2!\n";
-	
 }
 }
 void test_CCI()
@@ -399,45 +395,45 @@ int createInitTable(PcbInfo* initTable[])
 			initTable[i]->stackSize = STACK_SIZE;
 		}
 
-		initTable[0]->name =		"i_timing";	
-		initTable[0]->priority =    0;
-		initTable[0]->processType = PROCESS_I;
-		initTable[0]->address = 	&(a);
+		initTable[0]->name =				"i_timing";	
+		initTable[0]->priority =    	0;
+		initTable[0]->processType = 	PROCESS_I;
+		initTable[0]->address = 		&(i_timing_process);
 
-		initTable[1]->name =		"i_kb";	
-		initTable[1]->priority =    0;
-		initTable[1]->processType = PROCESS_I;
-		initTable[1]->address = 	&(b);
+		initTable[1]->name =				"i_kb";	
+		initTable[1]->priority =    	0;
+		initTable[1]->processType = 	PROCESS_I;
+		initTable[1]->address = 		&(i_keyboard_handler);
 
-		initTable[2]->name =		"i_crt";	
-		initTable[2]->priority =    0;
-		initTable[2]->processType = PROCESS_I;
-		initTable[2]->address = 	&(c);
+		initTable[2]->name =				"i_crt";	
+		initTable[2]->priority =    	0;
+		initTable[2]->processType = 	PROCESS_I;
+		initTable[2]->address = 		&(i_crt_handler);
 
-		initTable[3]->name =		"null_proc";	
-		initTable[3]->priority =    3;
-		initTable[3]->processType = PROCESS_N;
-		initTable[3]->address = 	&(d);
+		initTable[3]->name =				"null_proc";	
+		initTable[3]->priority =    	3;
+		initTable[3]->processType = 	PROCESS_N;
+		initTable[3]->address = 		&(RTX::null_proc);
 
-		initTable[4]->name =		"userA";	
-		initTable[4]->priority =    2;
-		initTable[4]->processType = PROCESS_U;
-		initTable[4]->address = 	&(e);
+		initTable[4]->name =				"userA";	
+		initTable[4]->priority =    	2;
+		initTable[4]->processType = 	PROCESS_U;
+		initTable[4]->address = 		&(userProcessA);
 
-		initTable[5]->name =		"userB";	
-		initTable[5]->priority =    2;
-		initTable[5]->processType = PROCESS_U;
-		initTable[5]->address = 	&(f);
+		initTable[5]->name =				"userB";	
+		initTable[5]->priority =    	2;
+		initTable[5]->processType = 	PROCESS_U;
+		initTable[5]->address = 		&(userProcessB);
 
-		initTable[6]->name =		"userC";	
-		initTable[6]->priority =    2;
-		initTable[6]->processType = PROCESS_U;
-		initTable[6]->address = 	&(g);
+		initTable[6]->name =				"userC";	
+		initTable[6]->priority =    	2;
+		initTable[6]->processType = 	PROCESS_U;
+		initTable[6]->address = 		&(userProcessC);
 		
-		initTable[7]->name =		"CCI";	
-		initTable[7]->priority =    2;
-		initTable[7]->processType = PROCESS_K;
-		initTable[7]->address = 	&(processCCI);
+		initTable[7]->name =				"CCI";	
+		initTable[7]->priority =    	2;
+		initTable[7]->processType = 	PROCESS_K;
+		initTable[7]->address = 		&(processCCI);
 
 	}
 	catch(int e)

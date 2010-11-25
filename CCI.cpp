@@ -14,7 +14,7 @@ void processCCI()
 
 		assure(ioLetter != NULL, "CCI ioLetter is NULL",__FILE__,__LINE__,__func__,true);
 	
-		ualarm(TICK_TIME,TICK_TIME);
+//		ualarm(TICK_TIME,TICK_TIME);
 	
 		while(true)
 		{
@@ -24,29 +24,10 @@ void processCCI()
 
 			do
 			{
-			gRTX->atomic(true);
-//				ioLetter->setMsgData(">RTX$ ");
-//				//; //if exiting while loop, sure that message type is display_ack
-//				while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); 
-//					ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
-//			
-//				assure(ioLetter != NULL,"CCI:46 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
-
-//				ioLetter->setMsgData("");
-//				while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
-//					usleep(1000000);	
-				
+				gRTX->atomic(true);
 				cout << ">RTX$ ";
-				
 				getline(cin,command);
-				
-				//command = *(gCCI->userInputs->dequeue_string());
-						
-				//ioLetter = gRTX->K_receive_message();
-				//command = ioLetter->getMsgData();
-			
-				//cout<<"CCI repeat command: "<<command;
-			gRTX->atomic( false);			
+				gRTX->atomic(false);			
 			}while(command.length() == 0);
 
 			params = parseString( command, input, ' ', 3);
@@ -132,17 +113,13 @@ void processCCI()
 				else if(input[0] == "n")
 				{
 					int pid,priority;
-					PCB* pcb = NULL;
+					PCB* pcb = NULL;					
 					if(strToInt(input[1],&priority) != EXIT_SUCCESS || strToInt(input[2],&pid) != EXIT_SUCCESS)
 						message = "invalid parameters\n";
 					else if(gRTX->getPcb(pid,&pcb) != EXIT_SUCCESS)
 						message = "Invalid process id\n";
 					else if(pcb->setPriority(priority) != EXIT_SUCCESS)
 						message = "Invalid priority\n";
-				}
-				else if(input[0] == "scc")		//TESTING - ANGTEST
-				{
-					gRTX->K_send_console_chars(NULL);
 				}
 				else if(input[0] == "help")	//remove for demo
 				{
@@ -169,17 +146,8 @@ void processCCI()
 		
 			if(message.length() > 0)
 			{
-//				ioLetter->setMsgData(message);
-//				while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);//; //if exiting while loop, sure that message type is display_ack
-//			
-//				ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
-			
-//				assure(ioLetter != NULL,"CCI:182 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
-			
-				//gRTX->displayText(ioLetter);
 				cout << message;
 			}
-			//usleep(100000);
 			gRTX->K_release_processor();
 		}	
 	}
