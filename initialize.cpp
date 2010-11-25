@@ -101,7 +101,7 @@ int main(void)
 	//processCCI();		//TESTING ONLY -- SHOULD BE PROCESS
 
 	//Start scheduler. Put the first process onto the CPU
-//	gRTX->start_execution();
+	gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
 
@@ -327,36 +327,26 @@ void d()
 }
 void e()
 {
-while (true) {	cout << "_readyProcs: " << gRTX->getScheduler()->_readyProcs->toString() << "\n";
-	cout << "\nuserA\n\n";
+while (true) {
+	cout << "\nuserA output\n";
 	gRTX->K_release_processor();
 	cout << "\nuserA here #2!\n";
 }
 }
 void f()
 {
-while (true) {	cout << "_readyProcs: " << gRTX->getScheduler()->_readyProcs->toString() << "\n";
-	cout << "\nuserB\n\n";
+while (true) {	
+	cout << "\nuserB output\n";
 	gRTX->K_release_processor();
 	cout << "\nuserB here #2!\n";
-	
-	cout << "UNBLOCK CCI \n";
-	cout << "_blockedEnv: " << gRTX->getScheduler()->_blockedEnv->toString() << "\n";
-	cout << "blocked_proc_state: " << gRTX->_pcbList[7]->getState() << "\n";
-	gRTX->getScheduler()->unblock_process( gRTX->_pcbList[7] );//Unblock CCI
 }
 }
 void g()
 {
 while (true) {
-	cout << "_readyProcs: " << gRTX->getScheduler()->_readyProcs->toString() << "\n";
-	cout << "\nuserC\n\n";
+	cout << "\nuserC output\n";
 	gRTX->K_release_processor();
 	cout << "\nuserC here #2!\n";
-	
-	cout << "CCI_proc_state: " << gRTX->_pcbList[7]->getState() << "\n";
-	cout << "About to change priority of CCI\n";
-	gRTX->_scheduler->change_priority(gRTX->_pcbList[7], 0);
 	
 }
 }
@@ -446,10 +436,10 @@ int createInitTable(PcbInfo* initTable[])
 		initTable[6]->processType = PROCESS_U;
 		initTable[6]->address = 	&(g);
 		
-		initTable[7]->name =		"testCCI";	
+		initTable[7]->name =		"CCI";	
 		initTable[7]->priority =    2;
 		initTable[7]->processType = PROCESS_K;
-		initTable[7]->address = 	&(test_CCI);
+		initTable[7]->address = 	&(processCCI);
 
 	}
 	catch(int e)
