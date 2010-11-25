@@ -245,12 +245,14 @@ int RTX::K_terminate()
 
 int RTX::K_change_priority(int new_priority, int target_process_id)
 {
-	atomic(true);
-	//We need a scheduler object names scheduler to be declared (in initialization???)
-	
-	//return scheduler.change_priority(new_priority,target_process_id);
+	int return_val;
+	atomic(true);	
+	PCB* tmpPcb;
+	getPcb(target_process_id, &tmpPcb);
+	return_val = _scheduler->change_priority( tmpPcb , new_priority);
 	atomic(false);	
-	return -2;
+	
+	return return_val;
 }
 
 //sends a msg to the i_timing_process with a sleep time
