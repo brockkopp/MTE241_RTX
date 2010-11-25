@@ -16,12 +16,11 @@
 
 
 //#include <setjmp.h>
-
+#define STACK_SIZE 		16372	//Stack size in bytes
 
 
 //Globals
 RTX* gRTX;
-CCI* gCCI;
 Queue* gUserInputs;
 
 int gRunTime = 0;
@@ -73,13 +72,6 @@ int main(void)
 	//Create and initialize rtx and its child members (schedling services etc)
 	debugMsg("\n");
 
-	gRTX = new RTX(initTable, sigHandler);
-//	cout << ">>" << gRTX->_jmpList[0]->_id << "<<\n";
-//	longjmp(gRTX->_jmpList[0]->_buffer,1);
-//	gRTX->_jmpList[0]->restore_context();
-	
-	debugMsg("\n");
-
 	//Create keyborad thread
 	if ((pidKB = fork()) == 0)
 	{
@@ -104,17 +96,20 @@ int main(void)
 	
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
-	gCCI = new CCI();
-
 #if TESTS_MODE == 1
 	//doTests();
 #endif
-
+	gRTX = new RTX(initTable, sigHandler);
+	//processCCI();		//TESTING ONLY -- SHOULD BE PROCESS
+	
+	
+	
 	//Start scheduler. Put the first process onto the CPU
 	//gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
-	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
+	//assure(processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
+	die(-1);
 }
 
 void doTests()
@@ -201,7 +196,6 @@ void die(int sigNum)
 	try
 	{
 		delete gRTX;
-		delete gCCI;
 	}
 	catch(int e)
 	{
@@ -354,6 +348,13 @@ while (true) {
 	cout << "\nuserC here #2!\n";
 }
 }
+void h()
+{
+	while (true) {
+		cout << "CCI!!!\n\n";
+		gRTX->K_release_processor();
+	}
+}
 
 int createInitTable(PcbInfo* initTable[])
 {	
@@ -375,7 +376,6 @@ int createInitTable(PcbInfo* initTable[])
 			initTable[i]->stackSize = STACK_SIZE;
 		}
 
-		//Kernel Processes
 		initTable[0]->name =		"i_timing";	
 		initTable[0]->priority =    0;
 		initTable[0]->processType = PROCESS_I;
@@ -393,24 +393,28 @@ int createInitTable(PcbInfo* initTable[])
 
 		initTable[3]->name =		"null_proc";	
 		initTable[3]->priority =    3;
-		initTable[3]->processType = PROCESS_K;
+		initTable[3]->processType = PROCESS_N;
 		initTable[3]->address = 	&(d);
 
-	//User Processes
 		initTable[4]->name =		"userA";	
-		initTable[4]->priority =    1;
+		initTable[4]->priority =    2;
 		initTable[4]->processType = PROCESS_U;
 		initTable[4]->address = 	&(e);
 
 		initTable[5]->name =		"userB";	
-		initTable[5]->priority =    1;
+		initTable[5]->priority =    2;
 		initTable[5]->processType = PROCESS_U;
 		initTable[5]->address = 	&(f);
 
 		initTable[6]->name =		"userC";	
-		initTable[6]->priority =    1;
+		initTable[6]->priority =    2;
 		initTable[6]->processType = PROCESS_U;
 		initTable[6]->address = 	&(g);
+		
+		initTable[7]->name =		"CCI";	
+		initTable[7]->priority =    1;
+		initTable[7]->processType = PROCESS_K;
+		initTable[7]->address = 	&(processCCI);
 	}
 	catch(int e)
 	{

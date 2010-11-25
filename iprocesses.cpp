@@ -1,5 +1,4 @@
 #include "iprocesses.h"
-extern CCI* gCCI;
 extern RTX* gRTX;
 extern Queue* gUserInputs;
 extern int gRunTime;
@@ -40,10 +39,10 @@ void i_timing_process()
 
 			
 	//increment user display wall clock
-	gCCI->wallClock->increment();
+	gRTX->wallClock->increment();
 
 	string time;
-	if((time = gCCI->wallClock->toString()) != "")
+	if((time = gRTX->wallClock->toString()) != "")
 		cout << time << endl;
 
 	return;
@@ -63,7 +62,7 @@ void i_keyboard_handler()
 		{
 			string* userMsg = new string();
 			*userMsg = gRxMemBuf->data;
-			gCCI->userInputs->enqueue(userMsg); 
+			//gCCI->userInputs->enqueue(userMsg); 
 			gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
 		}
 	}

@@ -10,22 +10,23 @@
 #include "lib/PCB.h"
 #include "lib/MsgEnv.h"
 #include "MsgTrace.h"
-#include "lib/jmper.h"
+#include "lib/WallClock.h"
 
 class PcbInfo;
 class SignalHandler;
 class MsgServ;
 class Scheduler;
+class Queue;
 
 //RTX Global Constants
 #define PROCESS_COUNT 	7		//Total number of processes existing in the RTX
-#define STACK_SIZE 		16372	//Stack size in bytes
-#define TICK_TIME		100000
+#define TICK_TIME			100000
 
 //Constants used to denote process types
-#define PROCESS_I		1	
+#define PROCESS_I		0	
+#define PROCESS_K		2
 #define PROCESS_U		2
-#define PROCESS_K		3
+#define PROCESS_N		3
 
 #define PROC_TIMING 	0
 #define PROC_KB 		1
@@ -34,10 +35,13 @@ class Scheduler;
 #define PROC_USER_A 	4
 #define PROC_USER_B 	5
 #define PROC_USER_C 	6
+#define PROC_CCI 		7
 
 class RTX
 {
 	public:
+		WallClock* 			wallClock;
+		
 		RTX(PcbInfo* initTable[], SignalHandler* signalHandler);
 		~RTX();
 		int getPcb(int pid, PCB** pcb);
@@ -73,7 +77,7 @@ class RTX
 	protected:
 		int setCurrentPcb(PCB* pcb);
 		int setCurrentPcb(int pid);
-	
+
 	private:
 		PCB**					_pcbList;		//Should be private, prevent invalid pid
 		PCB*					_currentProcess;		
