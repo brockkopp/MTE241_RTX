@@ -51,8 +51,8 @@ void i_keyboard_handler()
 	//debugMsg("\nSignal Received: SIGUSR1: KB", 0, 1);
 	gRTX->atomic(true);
 	MsgEnv* retMsg = NULL;
-	PCB* currPcb = NULL;
-	if((currPcb = gRTX->getCurrentPcb()) != NULL && ((*currPcb).checkMail() > 0)) //current PCB is valid
+	PCB* currPcb = gRTX->getCurrentPcb();
+	if(currPcb != NULL && (currPcb->checkMail() > 0)) //current PCB is valid
 	{
 		//extract information from shared memory
 		if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
@@ -60,16 +60,15 @@ void i_keyboard_handler()
 			string* userMsg = new string();
 			*userMsg = gRxMemBuf->data;
 			do
-			{
+			{				
 				retMsg = gRTX->K_receive_message(); //should never have to loop since ensure that an envelope is in the mailbox
 			}
 			while( retMsg == NULL);
 			
-			int invoker = retMsg->getOriginPid();	
+			int invoker = retMsg->getOriginPid();
 			retMsg->setMsgData(*userMsg);
 			retMsg->setMsgType(retMsg->CONSOLE_INPUT_FIKB);
 			gRTX->K_send_message(invoker, retMsg);
-//			gCCI->userInputs->enqueue(userMsg); 
 			gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
 		}
 	}

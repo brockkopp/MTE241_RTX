@@ -33,15 +33,10 @@ void processCCI()
 			}
 			do
 			{
+				ioLetter->setOriginPid(gRTX->getCurrentPid());
 				ioLetter = gRTX->K_receive_message(); 
 				assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
 				command = ioLetter->getMsgData();	
-				if(command == "\n")
-					cout<<"NEWLINE\n";
-				else if (command == "")
-					cout<<"Blank command!\n";
-				else
-					cout<<"Entered command: "<<command<<endl;
 			}while(command == "");
 		
 			

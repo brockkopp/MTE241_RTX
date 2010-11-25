@@ -285,19 +285,16 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 {
 	int iCRTId = getpid(); //send a signal to the RTX
-	int iCRTPID = PROC_CRT;
 	
 	int res = EXIT_SUCCESS;
 	//send message to i_crt_handler to deal with transmission of the message to the console
 	
-		msg_envelope->setMsgType(msg_envelope->TO_CRT);
-		
-		res = K_send_message(iCRTPID, msg_envelope);
-		//cout<<"RTX:300 Sent message\n";
+	msg_envelope->setMsgType(msg_envelope->TO_CRT);
+	
+	res = K_send_message(PROC_CRT, msg_envelope);
 		
 	if(res != EXIT_ERROR)
 	{
-	//	cout<<"RTX:305 Sending signal\n";
 		kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
 		
 		msg_envelope = retrieveOutAcknowledgement(); //will receive a message
@@ -330,7 +327,7 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (i.e. no characters waiting) */
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
-/*	int res;
+	int res;
 	if(atomic(true) == EXIT_SUCCESS)
 	{	
 		int invoker = msg_envelope->getOriginPid();
@@ -351,7 +348,7 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 		}
 	}	
 	atomic(false);
-	return res;*/ return -2;
+	return res;
 }
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
