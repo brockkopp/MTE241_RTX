@@ -1,11 +1,9 @@
 #include "iprocesses.h"
 extern RTX* gRTX;
-extern Queue* gUserInputs;
+//extern Queue* gUserInputs;
 extern int gRunTime;
 extern inputBuffer* gRxMemBuf;
 extern inputBuffer* gTxMemBuf;
-
-#define ANGTEST 1
 
 void i_timing_process()
 {	
@@ -40,12 +38,9 @@ void i_timing_process()
 			
 	//increment user display wall clock
 	gRTX->wallClock->increment();
-
 	string time;
 	if((time = gRTX->wallClock->toString()) != "")
 		cout << time << endl;
-
-	return;
 }
 
 /* Signal is sent to the i_keyboard_handler from the Keyboard process. 
@@ -53,19 +48,36 @@ void i_timing_process()
  * K_get_console_chars extracts user inputs from the global queue as necessary */
 void i_keyboard_handler()
 {
-	if (!ANGTEST) debugMsg("\nSignal Received: SIGUSR1: KB",0,1);
+	//debugMsg("\nSignal Received: SIGUSR1: KB", 0, 1);
+	gRTX->atomic(true);
+	MsgEnv* retMsg = NULL;
 	PCB* currPcb = NULL;
-	if((currPcb = gRTX->getCurrentPcb()) != NULL) //current PCB is valid
+	if((currPcb = gRTX->getCurrentPcb()) != NULL && ((*currPcb).checkMail() > 0)) //current PCB is valid
 	{
 		//extract information from shared memory
 		if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
 		{
 			string* userMsg = new string();
 			*userMsg = gRxMemBuf->data;
-			//gCCI->userInputs->enqueue(userMsg); 
+			do
+			{
+				retMsg = gRTX->K_receive_message(); //should never have to loop since ensure that an envelope is in the mailbox
+			}
+			while( retMsg == NULL);
+			
+			int invoker = retMsg->getOriginPid();	
+			retMsg->setMsgData(*userMsg);
+			retMsg->setMsgType(retMsg->CONSOLE_INPUT_FIKB);
+			gRTX->K_send_message(invoker, retMsg);
+//			gCCI->userInputs->enqueue(userMsg); 
 			gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
 		}
 	}
+	else //an error occurred
+	{
+		assure(false,"Input streaming has messed up royally",__FILE__,__LINE__,__func__,true);
+	}
+	gRTX->atomic(false);
 	return;
 }
 
@@ -77,14 +89,17 @@ void i_keyboard_handler()
  * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
-	//debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
+//	debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
+	gRTX->atomic(true);
 	
-	MsgEnv* retMsg;
+	MsgEnv* retMsg = NULL;
 	int invoker;
 	PCB* currPcb;
+
 	if((currPcb = gRTX->getCurrentPcb()) != NULL && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 		retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
+
 		if(retMsg == NULL || retMsg->getMsgData() == "") //make the check anyways
 		{		
 			retMsg = NULL;
@@ -121,13 +136,14 @@ void i_crt_handler()
 				//So can assume that once things are in the buffer, they have been "successfully transmitted"
 				retMsg->setMsgType(retMsg->DISPLAY_ACK); 
 			}
-		}
+		}		
+		gRTX->K_send_message(invoker, retMsg);	
 	}
-	else //an error occurred, send a NULL envelope
+	else //an error occurred
 	{
-		retMsg = NULL;
-		invoker = getpid();
+		assure(false,"Output streaming has messed up royally",__FILE__,__LINE__,__func__,true);
 	}
-	gRTX->K_send_message(invoker, retMsg);	
+	gRTX->atomic(false);
+	
 	return;	
 }

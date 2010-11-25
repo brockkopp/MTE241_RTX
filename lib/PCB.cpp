@@ -108,7 +108,6 @@ int PCB::setState( int state )
 		_state = state; 
 	else
 		ret = EXIT_ERROR;
-
 	return ret;
 } 
 string PCB::getStateName()

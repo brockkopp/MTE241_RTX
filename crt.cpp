@@ -39,6 +39,7 @@ int main(int arg1, char* arg[])
 	//polling shared memory to see what has to be printed to the screen
 	do
 	{
+		//cout<<"CRT polling...\n";
 		cout << flush;
 		if(tx_mem_buf->busyFlag == 1) //synchronized with crt_i_process; set to 1 once iprocess started inputting values
 		{
@@ -59,7 +60,7 @@ int main(int arg1, char* arg[])
 			tx_mem_buf->busyFlag = 0; //indicate that the entire message has been transmitted and the crt process is no longer busy
 		}
 		else
-			usleep(10000);
+			usleep(1000);
 	}
 	while(1); //infinite loop
 	

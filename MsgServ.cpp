@@ -67,10 +67,12 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 MsgEnv* MsgServ::recieveMsg()
 {
 	//retrieve PCB of currently excecuting process 
-	PCB* tempPCB;
-
-	//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
-	assure(gRTX->getPcb(2,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
+	PCB* tempPCB = gRTX->getCurrentPcb();
+	
+//	//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
+//	assure(gRTX->getPcb(PROC_CRT ,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
+//	assure(gRTX->getPcb(PROC_KB ,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
+	assure(tempPCB != NULL, "Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 
 	if (tempPCB->checkMail() == 0)
 	{
@@ -84,10 +86,8 @@ MsgEnv* MsgServ::recieveMsg()
 		gRTX->atomic(false);		//atomic ERIC	
 		gRTX->K_release_processor();
 	}
-	
 	//get mail
 	MsgEnv* tempMsg = tempPCB->retrieveMail();
-
 	_msgTrace->addTrace(tempMsg, RECEIVE);
 	return tempMsg;
 }

@@ -88,7 +88,7 @@ string MsgEnv::getMsgTypeName()
 		case DISPLAY_ACK : ret = "D_ACK"; break;
 		case DISPLAY_FAIL : ret = "D_FAIL"; break;
 		case DELAY_REQUEST : ret = "D_RQST"; break;
-		case NO_INPUT : ret = "NO_INPT"; break;
+		case CONSOLE_INPUT_FIKB : ret = "CONSOLE_INPUT_FIKB"; break;
 		case CONSOLE_INPUT : ret = "FRM_KB"; break;
 		case COUNT_REPORT : ret = "CNT_RPT"; break;
 		default: ret = "UNKNOWN"; break;
@@ -106,4 +106,3 @@ int MsgEnv::setMsgData(string msgInfo)
 	msgFields._msgData = msgInfo;
 	return EXIT_SUCCESS;
 }
-

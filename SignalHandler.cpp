@@ -1,7 +1,5 @@
 #include "SignalHandler.h"
 
-#define ANGTEST 0
-
 extern RTX* gRTX;
 
 SignalHandler::SignalHandler()
@@ -41,12 +39,12 @@ int SignalHandler::setSigMasked(bool masked)
 	{
 		if(masked)
 		{
-			if(ANGTEST) debugMsg("Atomic(on)",0,1);
+			//debugMsg("Atomic(on)",0,1);
 			sigprocmask(SIG_BLOCK, &_sigSetBlocked, NULL);
 		}
 		else
 		{
-			if(ANGTEST) debugMsg("Atomic(off)",0,1);
+			//Atomic(off)",0,1);
 			sigprocmask(SIG_SETMASK, &_sigSetHandled, NULL);
 		}
 	}
@@ -65,9 +63,7 @@ void SignalHandler::handler( int sigNum )
 	
 	//-1 Fatal since no process's stack to run on
 	assure(prevProc >= 0, "No Process on CPU during i_process call. Sig(" + intToStr(sigNum) + ")",__FILE__,__LINE__,__func__,true);
-
 	gRTX->_scheduler->setProcessState(prevProc,READY);
-	
 	switch(sigNum)
 	{
 		case SIGINT:
