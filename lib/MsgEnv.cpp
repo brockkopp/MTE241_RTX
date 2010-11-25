@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 #include "MsgEnv.h"
 
 //Message Types
@@ -107,3 +108,5 @@ int MsgEnv::setMsgData(string msgInfo)
 	return EXIT_SUCCESS;
 }
 
+=======
+>>>>>>> Stashed changes
