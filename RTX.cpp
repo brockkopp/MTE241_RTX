@@ -9,7 +9,7 @@ PCB* gCurrentProcess;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
-	_pcbList = new PCB* [7];
+	_pcbList = new PCB* [8];
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;

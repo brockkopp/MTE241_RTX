@@ -18,8 +18,7 @@ class MsgServ;
 class Scheduler;
 
 //RTX Global Constants
-#define PROCESS_COUNT 	7		//Total number of processes existing in the RTX
-#define STACK_SIZE 		16372	//Stack size in bytes
+#define PROCESS_COUNT 	8		//Total number of processes existing in the RTX
 #define TICK_TIME		100000
 
 //Constants used to denote process types
@@ -69,12 +68,14 @@ class RTX
 #if TESTS_MODE == 1
 		Scheduler* getScheduler(); //Used only for scheduler's test cases.
 #endif
+
 	
-	protected:
+//	protected:
 		int setCurrentPcb(PCB* pcb);
 		int setCurrentPcb(int pid);
 	
-	private:
+//	private:
+
 		PCB**					_pcbList;		//Should be private, prevent invalid pid
 		PCB*					_currentProcess;		
 		Scheduler* 			_scheduler;

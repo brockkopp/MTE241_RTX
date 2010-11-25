@@ -153,77 +153,77 @@ int testPQ() {
 
 	const int VERBAL = 0; // Turn this to zero to turn off output.
 
-//return -2;
+////return -2;
 
-	PQ* pq = new PQ(4);
-	
-	PcbInfo* initTable[8];
-	//MAKE PCBS TO  ENQUEUE
-/********************************************************************/	
-	//Loop through each init table entry and allocate memory
-		for(int i = 0; i <= PROCESS_COUNT; i++){
-			//Do not throw error upon failure, use own validation
-			initTable[i] = new PcbInfo();
+//	PQ* pq = new PQ(4);
+//	
+//	PcbInfo* initTable[8];
+//	//MAKE PCBS TO  ENQUEUE
+///********************************************************************/	
+//	//Loop through each init table entry and allocate memory
+//		for(int i = 0; i <= PROCESS_COUNT; i++){
+//			//Do not throw error upon failure, use own validation
+//			initTable[i] = new PcbInfo();
 
-			//Initialize fields which are consistent across processes
-			initTable[i]->processId = i;
-			initTable[i]->stackSize = STACK_SIZE;
-		}
+//			//Initialize fields which are consistent across processes
+//			initTable[i]->processId = i;
+//			initTable[i]->stackSize = STACK_SIZE;
+//		}
 
-		//Kernel Processes
-		initTable[0]->name =		"i_timing";	
-		initTable[0]->priority =    0;
-		initTable[0]->processType = PROCESS_I;
-		initTable[0]->address = 	NULL;
+//		//Kernel Processes
+//		initTable[0]->name =		"i_timing";	
+//		initTable[0]->priority =    0;
+//		initTable[0]->processType = PROCESS_I;
+//		initTable[0]->address = 	NULL;
 
-		initTable[1]->name =		"i_kb";	
-		initTable[1]->priority =    0;
-		initTable[1]->processType = PROCESS_I;
-		initTable[1]->address = 	NULL;
+//		initTable[1]->name =		"i_kb";	
+//		initTable[1]->priority =    0;
+//		initTable[1]->processType = PROCESS_I;
+//		initTable[1]->address = 	NULL;
 
-		initTable[2]->name =		"i_crt";	
-		initTable[2]->priority =    0;
-		initTable[2]->processType = PROCESS_I;
-		initTable[2]->address = 	NULL;
+//		initTable[2]->name =		"i_crt";	
+//		initTable[2]->priority =    0;
+//		initTable[2]->processType = PROCESS_I;
+//		initTable[2]->address = 	NULL;
 
-		initTable[3]->name =		"null_proc";	
-		initTable[3]->priority =    3;
-		initTable[3]->processType = PROCESS_K;
-		initTable[3]->address = 	NULL;
+//		initTable[3]->name =		"null_proc";	
+//		initTable[3]->priority =    3;
+//		initTable[3]->processType = PROCESS_K;
+//		initTable[3]->address = 	NULL;
 
-	//User Processes
-		initTable[4]->name =		"user1";	
-		initTable[4]->priority =    2;
-		initTable[4]->processType = PROCESS_U;
-		initTable[4]->address = 	NULL;
+//	//User Processes
+//		initTable[4]->name =		"user1";	
+//		initTable[4]->priority =    2;
+//		initTable[4]->processType = PROCESS_U;
+//		initTable[4]->address = 	NULL;
 
-		initTable[5]->name =		"user2";	
-		initTable[5]->priority =    2;
-		initTable[5]->processType = PROCESS_U;
-		initTable[5]->address = 	NULL;
+//		initTable[5]->name =		"user2";	
+//		initTable[5]->priority =    2;
+//		initTable[5]->processType = PROCESS_U;
+//		initTable[5]->address = 	NULL;
 
-		initTable[6]->name =		"user3";	
-		initTable[6]->priority =    2;
-		initTable[6]->processType = PROCESS_U;
-		initTable[6]->address = 	NULL;
-		
-/**************************************************************************/
-		
-if (VERBAL) debugMsg("\n\nPQ length:" + intToStr(pq->length()) + "\n");
-if (VERBAL) debugMsg("Enqueue one pcb\n");
-PCB* pcb = new PCB (initTable[0]);
-pq->pq_enqueue(pcb, initTable[0]->priority);
-if (VERBAL) debugMsg("PQ length:" +  intToStr(pq->length()) + "\n");
+//		initTable[6]->name =		"user3";	
+//		initTable[6]->priority =    2;
+//		initTable[6]->processType = PROCESS_U;
+//		initTable[6]->address = 	NULL;
+//		
+///**************************************************************************/
+//		
+//if (VERBAL) debugMsg("\n\nPQ length:" + intToStr(pq->length()) + "\n");
+//if (VERBAL) debugMsg("Enqueue one pcb\n");
+//PCB* pcb = new PCB (initTable[0]);
+//pq->pq_enqueue(pcb, initTable[0]->priority);
+//if (VERBAL) debugMsg("PQ length:" +  intToStr(pq->length()) + "\n");
 
-if (VERBAL) debugMsg("Enqueue rest of pcbs\n");
-for (int i=1; i<7; i++){
-	if (VERBAL) debugMsg("Enqueue pcb: " + intToStr(i) + "\n" );
-	PCB* pcb = new PCB (initTable[i]);
-	pq->pq_enqueue(pcb, initTable[i]->priority);
-	if (VERBAL) debugMsg("PQ length:" +  intToStr(pq->length()) + "\n");
-}
+//if (VERBAL) debugMsg("Enqueue rest of pcbs\n");
+//for (int i=1; i<7; i++){
+//	if (VERBAL) debugMsg("Enqueue pcb: " + intToStr(i) + "\n" );
+//	PCB* pcb = new PCB (initTable[i]);
+//	pq->pq_enqueue(pcb, initTable[i]->priority);
+//	if (VERBAL) debugMsg("PQ length:" +  intToStr(pq->length()) + "\n");
+//}
 
-if (VERBAL) debugMsg("PQ length:" +  intToStr(pq->length()) + "\n");
+//if (VERBAL) debugMsg("PQ length:" +  intToStr(pq->length()) + "\n");
 
 return -1;
 }

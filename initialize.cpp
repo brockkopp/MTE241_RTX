@@ -14,9 +14,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-
-//#include <setjmp.h>
-
+#define STACK_SIZE 		16372	//Stack size in bytes
 
 
 //Globals
@@ -111,7 +109,7 @@ int main(void)
 #endif
 
 	//Start scheduler. Put the first process onto the CPU
-	//gRTX->start_execution();
+	gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
 	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
@@ -354,6 +352,31 @@ while (true) {
 	cout << "\nuserC here #2!\n";
 }
 }
+void test_cci()
+{
+
+/* Acts as a tst cci process */
+
+//Note that this is a great place to place scheduler-specific fxns to test them.
+while (true) {
+	gRTX->atomic( 1 );
+	cout << "_readyProcs: " << gRTX->getScheduler()->_readyProcs->toString() << "\n";
+	cout << "Blocking a process : <not yet implemented>"<< "\n";
+	cout << "Adding a ready process userC\n";
+	gRTX->getScheduler()->add_ready_process( gRTX->_pcbList[6] );
+	cout << "_readyProcs: " << gRTX->getScheduler()->_readyProcs->toString() << "\n";
+	
+	cout << "\nTestCCI asks you for input: \n-->";
+	cin.get();
+	cout << "\nTest CCI acts on your input and releases CPU...\n";
+	gRTX->atomic( 0 );
+	gRTX->K_release_processor();
+	
+	
+	
+}
+
+}
 
 int createInitTable(PcbInfo* initTable[])
 {	
@@ -411,6 +434,11 @@ int createInitTable(PcbInfo* initTable[])
 		initTable[6]->priority =    1;
 		initTable[6]->processType = PROCESS_U;
 		initTable[6]->address = 	&(g);
+		
+		initTable[7]->name =		"testCCI";	
+		initTable[7]->priority =    1;
+		initTable[7]->processType = PROCESS_K;
+		initTable[7]->address = 	&(test_cci);
 	}
 	catch(int e)
 	{

@@ -26,7 +26,7 @@ class Scheduler {
 		PCB* get_current_process();
 		PCB* get_blocked_on_env();
 			
-	protected:
+//	protected:
 		void release_processor( );   
 		int change_priority( PCB * target, int newPriority );
 		int process_switch( );
@@ -40,7 +40,7 @@ class Scheduler {
 		int setCurrentProcess(int pid);
 		int setCurrentProcess(PCB* newProcess);
 
-    private:
+//    private:
     	int context_switch( PCB * next_proc );
     	bool _started;
 

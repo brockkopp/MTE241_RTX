@@ -25,11 +25,6 @@ Scheduler::Scheduler(Queue* readyProcs)
 		_readyProcs->pq_enqueue( temp, temp->getPriority() );
 	}
 	_started = false;
-
-//	for(int i=0; i < numProcs; i++) {
-//		PCB* temp = readyProcs->dequeue_PCB();
-//		_readyProcs->pq_enqueue( temp, temp->getPriority() );
-//	}
 }
 
 Scheduler::~Scheduler() {
@@ -57,13 +52,12 @@ void Scheduler::start()
 void Scheduler::release_processor( ) { 
 
 	//Save the context of the currently executing proc.
-	//Does some crazy context save shinanigans need to be done here???
+	//Do some crazy context save shinanigans need to be done here???
 	if (gRTX->getCurrentPcb()->saveContext() == 0 ) {
 				
 		//Put currentProcess on the ready queue.
-		gRTX->getCurrentPcb()->setState( READY );
-				
-		_readyProcs->pq_enqueue( gRTX->getCurrentPcb(), gRTX->getCurrentPcb()->getPriority() );
+//		gRTX->getCurrentPcb()->setState( READY );
+//		_readyProcs->pq_enqueue( gRTX->getCurrentPcb(), gRTX->getCurrentPcb()->getPriority() );
 						
 		//Allow next process to start executing.
 		//Note that if there is nothing waiting,
@@ -71,20 +65,84 @@ void Scheduler::release_processor( ) {
 		//put back on the CPU. Therefore, this
 		//edgecase is covered.
 
-		gRTX->setCurrentPcb(_readyProcs->pq_dequeue());
+//		process_switch();
 
-		gRTX->getCurrentPcb()->setState( EXECUTING );
+
+process_switch();
+/*************************88
+	TO BE REPLACED BY PROCESS_SWITCH*/
+//		gRTX->setCurrentPcb(_readyProcs->pq_dequeue());
+
+//		gRTX->getCurrentPcb()->setState( EXECUTING );
+//	
+//		//Restore this proc's context		
+//		gRTX->getCurrentPcb()->restoreContext();
+/***************************************************************/
+	}
+}
+
+/*
+Switches the currently executing process off the CPU and replaces it 
+with the next available ready process.
+*/
+int Scheduler::process_switch( ) {
+	context_switch( _readyProcs->pq_dequeue());
+
+	return 1;
+}
+
+/*
+Actually switch a process off the CPU for the given process.
+
+arguments:
+	nextProc: the process to put onto the CPU
+*/
+int Scheduler::context_switch( PCB * nextProc ) 
+{
+//	cout << "NEXT PROC: " << nextProc->getName();
+//	cin.get();
+//	//Switch out _currentProcessfor nextProc.
+//	PCB* oldProc = gRTX->getCurrentPcb();
+//	gRTX->setCurrentPcb(nextProc);
+//	gRTX->getCurrentPcb()->setState( EXECUTING );
+//	
+//	//Put old proc onto ready queue
+//	oldProc->setState( READY );
+//	_readyProcs->pq_enqueue( oldProc, oldProc->getPriority() );
+//	
+//	//Perform context_save shinanigans. See page in Sample Kernel Design
+//	//doc to see the suggested code that this is based on.
+//	
+//	//Restore context of next_proc iff setjmp is not returning from
+//	//a long_jmp
+//	if (oldProc->saveContext()) {
+//		gRTX->getCurrentPcb()->restoreContext();
+//	}
+//	
+//	return 1;
+	if (gRTX->getCurrentPcb()->saveContext() == 0) {
+		//Put current proc onto ready queue
+		gRTX->getCurrentPcb()->setState( READY );
+		_readyProcs->pq_enqueue( gRTX->getCurrentPcb(), gRTX->getCurrentPcb()->getPriority());
 	
-		//Restore this proc's context		
+		//Put the new pcb on the cpu
+		gRTX->setCurrentPcb( nextProc );
+		gRTX->getCurrentPcb()->setState( EXECUTING );
 		gRTX->getCurrentPcb()->restoreContext();
 	}
-	
-	PCB* tmp = gRTX->getCurrentPcb();
-	cout << "HERE!!!!!!\n";
-	cout << "Restored to release_processor " << 	tmp->getName() << "\n";
-//	cout << "gCurrentProcess " << 	gCurrentProcess->getName() << "\n";
-	
+	return 1;
 }
+
+//void context_switch(jmp_buf * previous,
+//return_code = setjmp(*previous);
+//if (return_code == 0)
+//{
+//longjmp(*next,1);
+
+
+
+
+
 /* Will change the priority of the target proc.
 
 arguments: 
@@ -159,46 +217,6 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 }   
 
 /*
-Switches the currently executing process off the CPU and replaces it 
-with the next available ready process.
-*/
-int Scheduler::process_switch( ) {
-	PCB* nextProc =  _readyProcs->pq_dequeue();
-	
-	context_switch( nextProc );
-	
-	return 1;
-}
-
-/*
-Actually switch a process off the CPU for the given process.
-
-arguments:
-	nextProc: the process to put onto the CPU
-*/
-int Scheduler::context_switch( PCB * nextProc ) 
-{
-	//Switch out _currentProcessfor nextProc.
-	PCB* oldProc = gRTX->getCurrentPcb();
-	gRTX->setCurrentPcb(nextProc);
-	gRTX->getCurrentPcb()->setState( EXECUTING );
-	oldProc->setState( READY );
-	
-	//Perform context_save shinanigans. See page in Sample Kernel Design
-	//doc to see the suggested code that this is based on.
-	int save_return = oldProc->saveContext();
-	
-	//Restore context of next_proc iff setjmp is not returning from
-	//a long_jmp
-	if (save_return == 0) {
-		_readyProcs->pq_enqueue( oldProc, oldProc->getPriority() );
-		gRTX->getCurrentPcb()->restoreContext();
-	}
-	
-	return 1;
-}
-
-/*
 Will put a process onto the ready queue from anywhere (except if 
 it is already executing. Therefore the process is either new, 
 or blocked on one to the two blocker queues.
@@ -211,9 +229,17 @@ int Scheduler::add_ready_process( PCB * target )
 		return 0; //Failure, process is on CPU
 	}
 
-//	if ( target->get_status() == )
-
-return -2;
+	else {
+		/* Check if the process is on any blocked queues, if so, pluck it from there */
+		_blockedEnv->pluck( target );
+		_blockedMsgRecieve->pluck( target );
+		
+		/* Set the process state to READY and add it to the ready Procs queue */
+		target->setState( READY );
+		_readyProcs->pq_pluck( target ); // <--- Just in case it already exists in the queue. *inefficient, intend to changed later.
+		_readyProcs->pq_enqueue( target, target->getPriority() );
+		return 1;
+	}
 }
 
 
