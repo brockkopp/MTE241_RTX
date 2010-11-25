@@ -5,7 +5,8 @@ extern RTX* gRTX;
 void userProcessA()
 {
 	while(true){
-		cout << "\nuserA real output\n";
+//		cout << "\nuserA real output\n";	
+	//	cout << "A ";
 		gRTX->K_release_processor();
 	}	
 	
@@ -29,7 +30,8 @@ void userProcessA()
 void userProcessB()
 {
 	while(true){
-		cout << "\nuserB real output\n";
+		//cout << "\nuserB real output\n";
+	//	cout << "B ";
 		gRTX->K_release_processor();
 	}	
 	
@@ -45,7 +47,8 @@ void userProcessB()
 void userProcessC()
 {
 	while(true){
-		cout << "\nuserC real output\n";
+		//cout << "\nuserC real output\n";
+	//	cout << "C ";
 		gRTX->K_release_processor();
 	}	
 	

@@ -277,7 +277,7 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 			}
 			msg_envelope->setMsgData(content); //reset data to original before breaking it down
 		}	
-		ret = K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
+		K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
 	}
 	return ret;
 }

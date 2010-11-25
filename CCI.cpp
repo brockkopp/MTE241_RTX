@@ -10,6 +10,7 @@ void processCCI()
 		string message;
 		int params;
 		MsgEnv* ioLetter = gRTX->K_request_msg_env();
+		ioLetter->setOriginPid(gRTX->getCurrentPid());
 
 		assure(ioLetter != NULL, "CCI ioLetter is NULL",__FILE__,__LINE__,__func__,true);
 	
@@ -20,24 +21,30 @@ void processCCI()
 			message = "";	
 			
 			ioLetter->setMsgData(">RTX$ ");
-			//cout<<"CCI:23 Want to send console chars\n";
-			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR)//; //if exiting while loop, sure that message type is display_ack
-			{
-				//cout<<"CCI: loopy\n";
-			}
-			//cout<<"CCI out of loop
+			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
 			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
 				
 			assure(ioLetter != NULL,"CCI:45 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
 
 			ioLetter->setMsgData("");
 			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
-				usleep(100000); //no user input provided yet. Wait!			
-			ioLetter = gRTX->K_receive_message();		
-			command = ioLetter->getMsgData();
+			{
+				usleep(100000); //no user input provided yet. Wait!	
+			}
+			do
+			{
+				ioLetter = gRTX->K_receive_message(); 
+				assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
+				command = ioLetter->getMsgData();	
+				if(command == "\n")
+					cout<<"NEWLINE\n";
+				else if (command == "")
+					cout<<"Blank command!\n";
+				else
+					cout<<"Entered command: "<<command<<endl;
+			}while(command == "");
 		
-			assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
-	
+			
 			if(command.length() > 0)
 			{
 				params = parseString( command, input, ' ', 3);
