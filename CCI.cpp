@@ -38,20 +38,12 @@ int CCI::processCCI()
 
 		do
 		{
-			MsgEnv* testMsg = new MsgEnv();
-			testMsg->setMsgType(MsgEnv::TO_CRT_F_CCI);
-			testMsg->setMsgData(">RTX$ ");
-
-//			testMsg->setMsgType(MsgEnv::TO_CRT);
-//			testMsg->setMsgData(">RTX$1\n>RTX$2\n>RTX$3\n>RTX$4\n");
-//			while(gRTX->displayText(testMsg) == EXIT_ERROR);
-			while(gRTX->K_send_console_chars(testMsg) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
-			testMsg = gRTX->retrieveAcknowledgement(); //will receive a message
-			
-			assure(testMsg != NULL,"CCI:49 Failed to received message after IO dealings!",__FILE__,__LINE__,__func__,true);
-						
-			testMsg->setMsgData("");
-			while(gRTX->K_get_console_chars(testMsg) == EXIT_ERROR)
+			ioLetter->setMsgData(">RTX$ ");
+			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //; //if exiting while loop, sure that message type is display_ack
+			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
+			assure(ioLetter != NULL,"CCI:46 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
+			ioLetter->setMsgData("");
+			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
 				usleep(1000000);
 				
 			command = *(gCCI->userInputs->dequeue_string());
@@ -70,7 +62,7 @@ int CCI::processCCI()
 			if(input[0] == "s")
 			{
 				if(params > 1)
-					message = "Too many parameters for 'Send Message' command";
+					message = "Too many parameters for 'Send Message' command\n";
 				else
 				{
 					MsgEnv* myEnv = gRTX->K_request_msg_env();
@@ -78,13 +70,15 @@ int CCI::processCCI()
 					myEnv->setMsgType(0);
 					
 					if(gRTX->K_send_message(PROC_USER_A, myEnv) != EXIT_SUCCESS)
-						message = "Message failed to send";					
+						message = "Message failed to send\n";	
+					else
+						message = "Sent message!\n";				
 				}
 			}
 			else if(input[0] == "ps")
 			{
 				if(params > 1)
-					message = "Too many parameters for 'Display Process Status' command";
+					message = "Too many parameters for 'Display Process Status' command\n";
 				else
 				{
 					if( gRTX->K_request_process_status(ioLetter) == EXIT_SUCCESS )
@@ -98,31 +92,31 @@ int CCI::processCCI()
 			{
 				string time[3];				
 				if(params > 2)
-					message = "Too many parameters for 'Set Clock' command";
+					message = "Too many parameters for 'Set Clock' command\n";
 				else if(parseString(input[1],time,':',3) != 3 || wallClock->setTime(time) != EXIT_SUCCESS)
-					message = "Invalid time format";
+					message = "Invalid time format\n";
 			}
 			else if(input[0] == "cd")
 			{
 				if(params > 1)
-					message = "Too many parameters for 'Display Clock' command";
+					message = "Too many parameters for 'Display Clock' command\n";
 				else
 					wallClock->setDisplayed(true);
 			}
 			else if(input[0] == "ct")
 			{
 				if(params > 1)
-					message = "Too many parameters for 'Hide Clock' command";
+					message = "Too many parameters for 'Hide Clock' command\n";
 				else
 					wallClock->setDisplayed(false);
 			}
 			else if(input[0] == "b")	//to complete
 			{
 				if(params > 1)
-					message = "Too many parameters for 'Display Msg Buffers' command";
+					message = "Too many parameters for 'Display Msg Buffers' command\n";
 				else
 				{
-					cout<<"get trace buffers\n";
+					message = "get trace buffers\n";
 //					if( gRTX->K_get_trace_buffers(ioLetter) == EXIT_SUCCESS )
 //						ioLetter = gRTX->K_receive_message();
 //					else
@@ -135,7 +129,7 @@ int CCI::processCCI()
 			else if(input[0] == "t")
 			{
 				if(params > 1)
-					message = "Too many parameters for 'Terminate' command";
+					message = "Too many parameters for 'Terminate' command\n";
 				else
 					kill(getpid(),SIGINT);
 			}
@@ -144,11 +138,11 @@ int CCI::processCCI()
 				int pid,priority;
 				PCB* pcb = NULL;
 				if(strToInt(input[1],&priority) != EXIT_SUCCESS || strToInt(input[2],&pid) != EXIT_SUCCESS)
-					message = "invalid parameters";
+					message = "invalid parameters\n";
 				else if(gRTX->getPcb(pid,&pcb) != EXIT_SUCCESS)
-					message = "Invalid process id";
+					message = "Invalid process id\n";
 				else if(pcb->setPriority(priority) != EXIT_SUCCESS)
-					message = "Invalid priority";
+					message = "Invalid priority\n";
 			}
 			else if(input[0] == "scc")		//TESTING - ANGTEST
 			{
@@ -157,7 +151,7 @@ int CCI::processCCI()
 			else if(input[0] == "help")	//remove for demo
 			{
 				if(params > 1)
-					message = "Too many parameters for 'Help' command";
+					message = "Too many parameters for 'Help' command\n";
 				else
 				{
 					message =  "\nRTX Commands:\n";
@@ -172,21 +166,23 @@ int CCI::processCCI()
 				}
 			}			
 			else
-				message = "Invalid Command Identifier: '" + input[0] + "'";
+				message = "Invalid Command Identifier: '" + input[0] + "'\n";
 		}
 		else
-			message = "Invalid Command String";
+			message = "Invalid Command String\n";
 		
 		if(message.length() > 0)
 		{
-			//cout<<"\t"<<errMsg<<"\n";
-//			//debugMsg("\t" + errMsg + "\n");
-//			ioLetter->setMsgData("\t" + errMsg + "\n");
 			ioLetter->setMsgData(message);
-			gRTX->displayText(ioLetter);
-			//while(gRTX->K_send_console_chars(ioLetter) != EXIT_SUCCESS);
-			//ioLetter = gRTX->K_receive_message();
+			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);//; //if exiting while loop, sure that message type is display_ack
+			
+			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
+			
+			assure(ioLetter != NULL,"CCI:182 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
+			
+			//gRTX->displayText(ioLetter);
 		}
+		usleep(100000);
 	}	
 	
 	return EXIT_ERROR;

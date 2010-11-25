@@ -17,7 +17,7 @@ void i_timing_process()
 
 	//retrieve PCB of currently excecuting process (i_timing_process) 
 	PCB* tempPCB;
-	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
 	//get new message envelopes from mailbox
 	MsgEnv* tempMsg = tempPCB->retrieveMail();
@@ -56,7 +56,7 @@ void i_keyboard_handler()
 {
 	if (!ANGTEST) debugMsg("\nSignal Received: SIGUSR1: KB",0,1);
 	PCB* currPcb = NULL;
-	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS) //current PCB is valid
+	if((currPcb = gRTX->getCurrentPcb()) != NULL) //current PCB is valid
 	{
 		//extract information from shared memory
 		if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
@@ -82,20 +82,18 @@ void i_crt_handler()
 	
 	MsgEnv* retMsg;
 	int invoker;
-
-	PCB* currPcb = NULL;
-	if(gRTX->getCurrentPcb(&currPcb) == EXIT_SUCCESS && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
+	PCB* currPcb;
+	if((currPcb = gRTX->getCurrentPcb()) != NULL && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 		retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
-		string msgToConsole = retMsg->getMsgData();
-		if(retMsg == NULL || msgToConsole == "") //make the check anyways
-		{				
+		if(retMsg == NULL || retMsg->getMsgData() == "") //make the check anyways
+		{		
 			retMsg = NULL;
 	   		gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error
 			return;
 		}
-	
-		invoker = retMsg->getOriginPid();				
+		invoker = retMsg->getOriginPid();	
+		string msgToConsole = retMsg->getMsgData();			
 	
 		//if busy, return fail 
 		if(gTxMemBuf->busyFlag == 1) //CRT is busy (currently transmitting something to , cannot output to screen
@@ -113,12 +111,13 @@ void i_crt_handler()
 			{
 				gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
 				int indexInBuf = 0; //start writing from beginning of the shmem
+				
 				for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
 				{
 					gTxMemBuf->data[indexInBuf] = msgToConsole[i];
 					indexInBuf++;
 				}
-				
+				gTxMemBuf->data[indexInBuf] = '\0'; 
 				//CRT process will set busyFlag back to 0 once it has taken everything out of the buffer
 				//So can assume that once things are in the buffer, they have been "successfully transmitted"
 				retMsg->setMsgType(retMsg->DISPLAY_ACK); 

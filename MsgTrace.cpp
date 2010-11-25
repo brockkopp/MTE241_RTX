@@ -57,22 +57,26 @@ int MsgTrace::getTraces(MsgEnv* msg)
 	if (msg != NULL)
 	{
 		//initialize column headers for table display
-		string tempTraceTable = "Dest PID   Origin PID     Msg Type     Time Stamp\n";
-		
+		string tempSendTraceTable = "SEND TRACE BUFFER\nDest PID   Origin PID     Msg Type     Time Stamp\n";
+		string tempRecTraceTable = "RECEIVE TRACE BUFFER\nDest PID   Origin PID     Msg Type     Time Stamp\n";
 		string tempTableRow;
 		
 		for(int i=0; i<16; i++)
 		{
-			int temp = _receiveArray[i]._destPid;
-			string temps = intToStr(temp);
-			
+			//SEND ARRAY
+			//constructing one row of the trace buffer table to be displayed
+			tempTableRow = "   "+intToStr(_sendArray[i]._destPid)+"            "+intToStr(_sendArray[i]._originPid)+"       " +padString(getMsgTypeName(_sendArray[i]._msgType))+"        "+intToStr(_sendArray[i]._timeStamp)+"\n";
+			//adding above row to the trace buffer table
+			tempSendTraceTable = tempSendTraceTable + tempTableRow;
+		
+			// RECEIVE ARRAY			
 			//constructing one row of the trace buffer table to be displayed
 			tempTableRow = "   "+intToStr(_receiveArray[i]._destPid)+"            "+intToStr(_receiveArray[i]._originPid)+"       " +padString(getMsgTypeName(_receiveArray[i]._msgType))+"        "+intToStr(_receiveArray[i]._timeStamp)+"\n";
 			//adding above row to the trace buffer table
-			tempTraceTable = tempTraceTable + tempTableRow;
+			tempRecTraceTable = tempRecTraceTable + tempTableRow;
 		}
 		//place table in msg data field
-		msg->setMsgData(tempTraceTable);
+		msg->setMsgData(tempSendTraceTable+tempRecTraceTable);
 		return EXIT_SUCCESS;
 	}	
 	return EXIT_ERROR;
@@ -83,8 +87,7 @@ string MsgTrace::getMsgTypeName(int msgType)
   string ret;
 	switch(msgType)
 	{
-		case MsgEnv::TO_CRT_F_CCI : ret = "TO_CRT_F_CCI"; break;
-		case MsgEnv::TO_CRT_F_RTX : ret = "TO_CRT_F_RTX"; break;
+		case MsgEnv::TO_CRT : ret = "TO_CRT"; break;
 		case MsgEnv::BUFFER_OVERFLOW : ret = "BUF_OVFLW"; break;
 		case MsgEnv::DISPLAY_ACK : ret = "D_ACK"; break;
 		case MsgEnv::DISPLAY_FAIL : ret = "D_FAIL"; break;

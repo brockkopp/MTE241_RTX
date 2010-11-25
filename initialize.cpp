@@ -48,11 +48,12 @@ struct Shmem
 int pidKB = 0, 
 	pidCRT = 0, 
 	pidRTX = 0;
+	
+PcbInfo **initTable;
 
 int main(void)
 {
-	//Create init table
-	PcbInfo* initTable[PROCESS_COUNT];
+	initTable = new PcbInfo *[7];
 
 	pidRTX = getpid();
 
@@ -114,7 +115,8 @@ int main(void)
 
 //	Signal cci init failed, program should not normally reach this point
 
-	//assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
+	assure(gCCI->processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
+
 }
 
 void doTests()
@@ -146,7 +148,7 @@ void doTests()
 	debugMsg("ERIC TEST\n---------\n");
 	
 	PCB* tempPCB;
-	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
+	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
 	
 	MsgEnv* msg = gRTX->K_request_msg_env();
 	debugMsg("msg allocated\n");
@@ -181,7 +183,7 @@ void doTests()
 	debugMsg("printing trace buffers...\n");
 	gRTX->K_get_trace_buffers(msg);
 	gRTX->K_send_console_chars(msg);
-	
+//	gRTX->atomic(true);
 	
 	debugMsg("ERIC TEST END\n-------------\n");	
 //********************************************************ERIC TEST END**********************************************************	 
@@ -311,39 +313,48 @@ void a()
 {
 	cout << "\nA\n\n";
 //	gRTX->_jmpList[1]->restore_context();
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
 }
 void b()
 {
 	cout << "\nB\n\n";
 //	longjmp(gRTX->_jmpList[2]->_buffer,1);
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
 }
 void c()
 {
 	cout << "\nC\n\n";
 //	longjmp(gRTX->_jmpList[3]->_buffer,1);
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
 }
 void d()
 {
 	cout << "\nD\n\n";
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
 }
 void e()
 {
+while (true) {
 	cout << "\nuserA\n\n";
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
+	cout << "\nuserA here #2!\n";
+}
 }
 void f()
 {
+while (true) {
 	cout << "\nuserB\n\n";
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
+	cout << "\nuserB here #2!\n";
+}
 }
 void g()
 {
+while (true) {
 	cout << "\nuserC\n\n";
-//	gRTX->K_release_processor();
+	gRTX->K_release_processor();
+	cout << "\nuserC here #2!\n";
+}
 }
 
 int createInitTable(PcbInfo* initTable[])
@@ -352,6 +363,10 @@ int createInitTable(PcbInfo* initTable[])
 
 	try	//Assure init table is allocated successfully
 	{
+//		foo **fooPointer;
+//fooPointer = new foo *[10] // memory for an array of 10 pointers
+
+	
 		//Loop through each init table entry and allocate memory
 		for(int i = 0; i <= PROCESS_COUNT; i++){
 			//Do not throw error upon failure, use own validation

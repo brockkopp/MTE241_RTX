@@ -37,15 +37,13 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 	{
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB;		
-		
-		assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
+		assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
 		
 		//insert destination and origin into msg envelope
 		msg->setDestPid(destPid);
-
+		msg->setOriginPid(tempPCB->getId());
 		_msgTrace->addTrace(msg, SEND); 
-		msg->setOriginPid(tempPCB->getId()); 
-
+ 
 		//retrieve destination process PCB
 		PCB* tempDestPCB;
 		assure(gRTX->getPcb(destPid, &tempDestPCB) == EXIT_SUCCESS,"Failed to retrieve dest. PCB",__FILE__,__LINE__,__func__,false);
@@ -72,7 +70,7 @@ MsgEnv* MsgServ::recieveMsg()
 	PCB* tempPCB;
 
 	//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
-	assure(gRTX->getPcb(6,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
+	assure(gRTX->getPcb(2,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
 
 	if (tempPCB->checkMail() == 0)
 	{
@@ -80,8 +78,9 @@ MsgEnv* MsgServ::recieveMsg()
 		if (tempPCB->getProcessType() == PROCESS_I)
     		return NULL;
   		
-  		//block calling process
-		_scheduler->block_process(tempPCB, BLOCKED_MSG_RECIEVE); 		
+  	//block calling process
+		_scheduler->block_process(tempPCB, BLOCKED_MSG_RECIEVE); 	
+		gRTX->atomic(false);		//atomic ERIC	
 		gRTX->K_release_processor();
 	}
 	
@@ -92,11 +91,11 @@ MsgEnv* MsgServ::recieveMsg()
 	return tempMsg;
 }
 
-MsgEnv* MsgServ::retrieveAck()
+MsgEnv* MsgServ::retrieveOAck()
 {
 	PCB* tempPCB;
 	MsgEnv* ret;
-	assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
 	//Attempt to retrieve a display acknowledgement
 	ret = tempPCB->retrieveMail( MsgEnv::DISPLAY_ACK );
@@ -118,7 +117,7 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 	_freeEnvQ->enqueue(msg);
 
 	//check if another process is waiting for an envelope
-	/*
+	
 	PCB* tempPcb = _scheduler->get_blocked_on_env(); 
 	//unblock waiting process, if one is waiting   
 	bool temp;
@@ -126,23 +125,23 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 		temp = _scheduler->unblock_process(tempPcb);
 	if(!temp)
 		return EXIT_ERROR;
-	*/ // ERic
+	 // ERic
 	return EXIT_SUCCESS;
 }
 
 MsgEnv* MsgServ::requestEnv()
 {
-
 	if( _freeEnvQ->isEmpty() ) 
 	{
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB;
-		assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+		assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 		//i_process cannot be blocked
 		if (tempPCB->getProcessType() == PROCESS_I)
     	return NULL;
 		//block process is no envelope is available
- 		_scheduler->block_process(tempPCB, BLOCKED_ENV); 			
+ 		_scheduler->block_process(tempPCB, BLOCKED_ENV);
+ 		gRTX->atomic(false);   //atomic ERIC 			
 		gRTX->K_release_processor();
 	}
 	MsgEnv* ptrMsg = _freeEnvQ->dequeue_MsgEnv();
