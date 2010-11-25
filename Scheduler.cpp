@@ -25,11 +25,6 @@ Scheduler::Scheduler(Queue* readyProcs)
 		_readyProcs->pq_enqueue( temp, temp->getPriority() );
 	}
 	_started = false;
-
-//	for(int i=0; i < numProcs; i++) {
-//		PCB* temp = readyProcs->dequeue_PCB();
-//		_readyProcs->pq_enqueue( temp, temp->getPriority() );
-//	}
 }
 
 Scheduler::~Scheduler() {
@@ -57,110 +52,25 @@ void Scheduler::start()
 void Scheduler::release_processor( ) { 
 
 	//Save the context of the currently executing proc.
-	//Does some crazy context save shinanigans need to be done here???
+	//Do some crazy context save shinanigans need to be done here???
 	if (gRTX->getCurrentPcb()->saveContext() == 0 ) {
 				
 		//Put currentProcess on the ready queue.
 		gRTX->getCurrentPcb()->setState( READY );
-				
 		_readyProcs->pq_enqueue( gRTX->getCurrentPcb(), gRTX->getCurrentPcb()->getPriority() );
-						
-		//Allow next process to start executing.
-		//Note that if there is nothing waiting,
-		//Then the single existing proc will be
-		//put back on the CPU. Therefore, this
-		//edgecase is covered.
 
-		gRTX->setCurrentPcb(_readyProcs->pq_dequeue());
+		process_switch();
 
-		gRTX->getCurrentPcb()->setState( EXECUTING );
-	
-		//Restore this proc's context		
-		gRTX->getCurrentPcb()->restoreContext();
 	}
 }
-/* Will change the priority of the target proc.
-
-arguments: 
-	target: the PCB/proc whose priority you would wish to change.
-	
-returnValues: 
-	-1 if PCB does not exist in any queue. 1 on success.
-*/
-int Scheduler::change_priority( PCB * target, int newPriority ) 
-{ 
-//	int oldPri = target->get_priority();
-
-	//Case 1: PCB is on ready queue
-	
-	//If the target exists in the ready queue...
-	if ( _readyProcs->pq_pluck( target ) ) { 
-		
-		//Change priority
-		target->setPriority( newPriority );
-		
-		//Re-enqueue the PCB
-		_readyProcs->pq_enqueue( target, target->getPriority() );
-		
-		return 1;
-	}
-	//Case 2a: PCB is on blockedEnv queue
-	
-	else if ( _blockedEnv->select( target ) ){
-		//Remove PCB from queue
-		 _blockedEnv->pluck( target );
-		
-		//Change priority
-		target->setPriority( newPriority );
-		
-		//Re-enqueue the PCB
-		 _blockedEnv->enqueue( target );
-		
-		return 1;
-	}
-	
-	//Case 2b: PCB is on blockedMsg queue
-	else if ( _blockedMsgRecieve->select( target ) ){
-		//Remove PCB from queue
-		 _blockedMsgRecieve->pluck( target );
-		
-		//Change priority
-		target->setPriority( newPriority );
-		
-		//Re-enqueue the PCB
-		 _blockedMsgRecieve->enqueue( target );
-		 
-		 return 1;
-	}
-	//Case 3: PCB is executing
-	else if ( gRTX->getCurrentPcb() == target ){
-		//Save context
-		gRTX->getCurrentPcb()->saveContext();
-		
-		//Remove from executing, put on ready queue
-		add_ready_process( target );
-		
-		//Process switch
-		process_switch();
-		
-		return 1;
-	}
-	
-	//Case 4: PCB does not exist in any queue
-	else {
-		return -1;
-	}
-}   
 
 /*
 Switches the currently executing process off the CPU and replaces it 
 with the next available ready process.
 */
 int Scheduler::process_switch( ) {
-	PCB* nextProc =  _readyProcs->pq_dequeue();
-	
-	context_switch( nextProc );
-	
+	context_switch( _readyProcs->pq_dequeue());
+
 	return 1;
 }
 
@@ -172,25 +82,97 @@ arguments:
 */
 int Scheduler::context_switch( PCB * nextProc ) 
 {
-	//Switch out _currentProcessfor nextProc.
-	PCB* oldProc = gRTX->getCurrentPcb();
-	gRTX->setCurrentPcb(nextProc);
-	gRTX->getCurrentPcb()->setState( EXECUTING );
-	oldProc->setState( READY );
+	if (gRTX->getCurrentPcb()->saveContext() == 0) {
+//		//Put current proc onto ready queue
+//		gRTX->getCurrentPcb()->setState( READY );
+//		_readyProcs->pq_enqueue( gRTX->getCurrentPcb(), gRTX->getCurrentPcb()->getPriority());
 	
-	//Perform context_save shinanigans. See page in Sample Kernel Design
-	//doc to see the suggested code that this is based on.
-	int save_return = oldProc->saveContext();
-	
-	//Restore context of next_proc iff setjmp is not returning from
-	//a long_jmp
-	if (save_return == 0) {
-		_readyProcs->pq_enqueue( oldProc, oldProc->getPriority() );
+		//Put the new pcb on the cpu
+		gRTX->setCurrentPcb( nextProc );
+		gRTX->getCurrentPcb()->setState( EXECUTING );
 		gRTX->getCurrentPcb()->restoreContext();
 	}
-	
 	return 1;
 }
+
+//void context_switch(jmp_buf * previous,
+//return_code = setjmp(*previous);
+//if (return_code == 0)
+//{
+//longjmp(*next,1);
+
+
+
+
+
+/* Will change the priority of the target proc.
+
+arguments: 
+	target: the PCB/proc whose priority you would wish to change.
+	
+returnValues: 
+	-1 if PCB does not exist in any queue. 1 on success.
+*/
+int Scheduler::change_priority( PCB * target, int newPriority ) 
+{ 
+//	int oldPri = target->get_priority();
+	
+	//Validate priority
+	if ( !(newPriority <= 4 && newPriority >= 0) )
+		return EXIT_ERROR;
+		
+	//Case 1: PCB is on ready queue
+	
+	//If the target exists in the ready queue...
+	if ( _readyProcs->pq_pluck( target ) ) { 
+		/* _readyProcs is a PQ, therefore when we change priority we must pluck
+			the target and restore the target.
+		*/
+		
+		//Change priority
+		target->setPriority( newPriority );
+		
+		//Re-enqueue the PCB
+		_readyProcs->pq_enqueue( target, target->getPriority() );
+		
+		return EXIT_SUCCESS;
+	}
+	//Case 2a: PCB is on blockedEnv queue
+	
+	else if ( _blockedEnv->select( target ) ){
+		//Change priority
+		target->setPriority( newPriority );
+		
+		return EXIT_SUCCESS;
+	}
+	
+	//Case 2b: PCB is on blockedMsg queue
+	else if ( _blockedMsgRecieve->select( target ) ){
+
+		//Change priority
+		target->setPriority( newPriority );
+		 
+		 return EXIT_SUCCESS;
+	}
+	//Case 3: PCB is executing
+	else if ( gRTX->getCurrentPcb() == target ){
+		//Save context
+//		gRTX->getCurrentPcb()->saveContext(); <-- This should not be necissary since the process switch call will save the context of the PCB.
+		
+		//Remove from executing, put on ready queue
+		add_ready_process( target );
+		
+		//Process switch
+		process_switch();
+		
+		return EXIT_SUCCESS;
+	}
+	
+	//Case 4: PCB does not exist anywhere
+	else {
+		return EXIT_ERROR;
+	}
+}   
 
 /*
 Will put a process onto the ready queue from anywhere (except if 
@@ -205,32 +187,46 @@ int Scheduler::add_ready_process( PCB * target )
 		return 0; //Failure, process is on CPU
 	}
 
-//	if ( target->get_status() == )
-
-return -2;
+	else {
+		/* Check if the process is on any blocked queues, if so, pluck it from there */
+		_blockedEnv->pluck( target );
+		_blockedMsgRecieve->pluck( target );
+		
+		/* Set the process state to READY and add it to the ready Procs queue */
+		target->setState( READY );
+		_readyProcs->pq_pluck( target ); // <--- Just in case it already exists in the queue. *inefficient, intend to changed later.
+		_readyProcs->pq_enqueue( target, target->getPriority() );
+		return 1;
+	}
 }
 
 
 /*
 
+Blocks the currently executing process.
+
 arguments: 
-	reason: g1 - blocked on envelope
+	reason: 1 - blocked on envelope
 					2 - blocked on message recieve
 					
 */
-int Scheduler::block_process (PCB * target, int reason ) 
+int Scheduler::block_process (int reason) 
 {
-	int return_value = 0; //assume success
+	int return_value = EXIT_SUCCESS; //assume success
 
 	//Remove process from CPU
+	if (gRTX->getCurrentPcb()->getProcessType() == PROCESS_I) {
+		/* I_processes may not be blocked */
+		return EXIT_ERROR;
+	}
 	
+	PCB* target = gRTX->getCurrentPcb();
 	//Put process on appropriate blocked queue
 	//and set its status
 	if (reason == BLOCKED_ENV)
 	{
 		target->setState( BLOCKED_ENV );
 		return_value = _blockedEnv->enqueue( target );
-			
 	}	
 	else if (reason == BLOCKED_MSG_RECIEVE){
 		target->setState( BLOCKED_MSG_RECIEVE );
@@ -238,33 +234,31 @@ int Scheduler::block_process (PCB * target, int reason )
 	}
 
 	//Put the next available process on the ready queue
-	if ( return_value == 0 )
-		return process_switch();
-
-	else
-		return return_value;
+	return process_switch();
 }
 
 /*
-Moves process from a blocked queue ack onto the ready queue
+Moves process from a blocked queue onto the ready queue
 and adjusts its status.
 
 
 return values:
-	0 - sucess
-	1 - Process was (inFakt!) not blocked
+	sucess
+	error - Process was (inFakt!) not blocked
 
 */
 int Scheduler::unblock_process( PCB * target )
 {
 	//If process is blocked on msg recieve
-	if (target->getState() == BLOCKED_MSG_RECIEVE){
-		_blockedMsgRecieve->pluck(target);	
-		target->setState( READY );
+	if (target->getState() == BLOCKED_MSG_RECIEVE) {
+			//Remove process from the blocked queue
+			_blockedMsgRecieve->pluck(target);
+			target->setState( READY );
 
-		//Re-enqueue on ready queue
-		return _readyProcs->pq_enqueue( target , target->getPriority());
-	}
+			//Re-enqueue on ready queue
+			return _readyProcs->pq_enqueue( target , target->getPriority());
+		}
+	
 	//If process is blocked on envelope
 	else if (target->getState() == BLOCKED_ENV) {
 		_blockedEnv->pluck(target);
@@ -273,15 +267,13 @@ int Scheduler::unblock_process( PCB * target )
 		return _readyProcs->pq_enqueue( target , target->getPriority());
 	}
 	else //Process was not blocked in the first place...
-		return 1;
+		return EXIT_ERROR;
 }
 
 
 /*
 Return values: //Will return the state constant value depending on which type of blocked it is.
-	0: 
-	1: If proc is blocked on enveloper
-	2: If proc is blocked on message recieve
+See declarations in header of PCB class.
 
 */
 
@@ -289,6 +281,8 @@ int Scheduler::setProcessState(int pid, int state)
 {
 	PCB* tmpPcb;
 	gRTX->getPcb(pid,&tmpPcb);
+	
+	// Ensure that PCB exists. State validation is done in PCB set fxn.
 	if(tmpPcb == NULL)
 		return EXIT_ERROR;
 	else
@@ -297,7 +291,14 @@ int Scheduler::setProcessState(int pid, int state)
 
 int Scheduler::is_blocked( PCB * target ) 
 {
-	return target->getState();
+	
+	if ( target->getState() == BLOCKED_ENV ||
+			 target->getState() == BLOCKED_MSG_RECIEVE
+			)
+			return EXIT_SUCCESS;
+			
+	else 
+			return EXIT_ERROR;
 }
 
 PCB* Scheduler::get_blocked_on_env()

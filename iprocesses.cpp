@@ -38,12 +38,9 @@ void i_timing_process()
 			
 	//increment user display wall clock
 	gRTX->wallClock->increment();
-
 	string time;
 	if((time = gRTX->wallClock->toString()) != "")
 		cout << time << endl;
-
-	return;
 }
 
 /* Signal is sent to the i_keyboard_handler from the Keyboard process. 

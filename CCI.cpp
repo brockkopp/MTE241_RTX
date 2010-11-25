@@ -18,18 +18,16 @@ void processCCI()
 			command = "";
 			input[0] = input[1] = input[2] = "";
 			message = "";	
-
+			
 			ioLetter->setMsgData(">RTX$ ");
 			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
 			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
-		
-			
+				
 			assure(ioLetter != NULL,"CCI:45 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
 
 			ioLetter->setMsgData("");
 			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
-				usleep(100000); //no user input provided yet. Wait!
-			
+				usleep(100000); //no user input provided yet. Wait!			
 			ioLetter = gRTX->K_receive_message();		
 			command = ioLetter->getMsgData();
 		
@@ -120,9 +118,9 @@ void processCCI()
 					else if(input[0] == "n")
 					{
 						int pid,priority;
-						PCB* pcb = NULL;
+						PCB* pcb = NULL;					
 						if(strToInt(input[1],&priority) != EXIT_SUCCESS || strToInt(input[2],&pid) != EXIT_SUCCESS)
-							message = "Invalid parameters\n";
+							message = "invalid parameters\n";
 						else if(gRTX->getPcb(pid,&pcb) != EXIT_SUCCESS)
 							message = "Invalid process id\n";
 						else if(pcb->setPriority(priority) != EXIT_SUCCESS)
@@ -150,7 +148,6 @@ void processCCI()
 				}
 				else
 					message = "Invalid Command String\n";
-		
 				if(message.length() > 0)
 				{
 					ioLetter->setMsgData(message);
@@ -160,9 +157,7 @@ void processCCI()
 			
 					assure(ioLetter != NULL,"CCI:182 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
 				}
-			}
-			usleep(100000);
-			//K_release_processor();
+			gRTX->K_release_processor();
 		}	
 	}
 }

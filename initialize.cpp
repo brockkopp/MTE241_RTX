@@ -7,15 +7,13 @@
 #include "lib/Mailbox.h"
 
 /* Not sure it'salright to include .cpp's need to review this --Karl */
-//#include "iprocesses.cpp"
+#include "iprocesses.h"
 #include "userProcesses.h"
 
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 
-
-//#include <setjmp.h>
 #define STACK_SIZE 		16372	//Stack size in bytes
 
 //Globals
@@ -98,17 +96,16 @@ int main(void)
 	//doTests();
 #endif
 	gRTX = new RTX(initTable, sigHandler);
-	processCCI();		//TESTING ONLY -- SHOULD BE PROCESS
-		
-	//Start scheduler. Put the first process onto the CPU
-	//gRTX->start_execution();
+	//processCCI();		//TESTING ONLY -- SHOULD BE PROCESS
 
-//	Signal cci init failed, program should not normally reach this point
+	//Start scheduler. Put the first process onto the CPU
+	gRTX->start_execution();
+
+	//	Signal cci init failed, program should not normally reach this point
+
 	//assure(processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
-	
-	debugMsg("************************************\n    CCI DISABLED, PENDING I/O\n************************************",1,0);	
-	
-	die(0);
+
+	die(-1);
 }
 
 void doTests()
@@ -175,7 +172,7 @@ void doTests()
 	debugMsg("printing trace buffers...\n");
 	gRTX->K_get_trace_buffers(msg);
 	gRTX->K_send_console_chars(msg);
-	
+//	gRTX->atomic(true);
 	
 	debugMsg("ERIC TEST END\n-------------\n");	
 //********************************************************ERIC TEST END**********************************************************	 
@@ -320,39 +317,60 @@ void c()
 }
 void d()
 {
-	cout << "\nD\n\n";
+	cout << "\ntest Null proc!\n\n";
+	sleep(2);
 	gRTX->K_release_processor();
 }
 void e()
 {
 while (true) {
-	cout << "\nuserA\n\n";
+	cout << "\nuserA output\n";
 	gRTX->K_release_processor();
-	cout << "\nuserA here #2!\n";
 }
 }
 void f()
 {
-while (true) {
-	cout << "\nuserB\n\n";
+while (true) {	
+	cout << "\nuserB output\n";
 	gRTX->K_release_processor();
-	cout << "\nuserB here #2!\n";
 }
 }
 void g()
 {
 while (true) {
-	cout << "\nuserC\n\n";
+	cout << "\nuserC output\n";
 	gRTX->K_release_processor();
-	cout << "\nuserC here #2!\n";
 }
 }
-void h()
+void test_CCI()
 {
-	while (true) {
-		cout << "CCI!!!\n\n";
-		gRTX->K_release_processor();
-	}
+
+/* Acts as a tst cci process */
+
+//Note that this is a great place to place scheduler-specific fxns to test them.
+while (true) {
+	gRTX->atomic( 1 );
+	cout << "_readyProcs: " << gRTX->getScheduler()->_readyProcs->toString() << "\n";
+	
+	cout << "_blockedEnv: " << gRTX->getScheduler()->_blockedEnv->toString() << "\n";
+//	cout << "Blocking a process : "<< "\n";
+//	gRTX->getScheduler()->block_process( 1 );
+	
+	cout << "_blockedEnv: " << gRTX->getScheduler()->_blockedEnv->toString() << "\n";
+	cout << "_readyProcs: " << gRTX->getScheduler()->_readyProcs->toString() << "\n";
+	
+	cout << "My prioirty is: " << gRTX->_pcbList[7]->getPriority() << "\n";
+	cout << "\nTestCCI asks you for input: \n-->";
+	cin.get();
+	cout << "\nTest CCI acts on your input and releases CPU...\n";
+	
+	
+	gRTX->atomic( 0 );
+	gRTX->K_release_processor();
+	
+	
+	
+}
 }
 
 int createInitTable(PcbInfo* initTable[])
@@ -375,45 +393,46 @@ int createInitTable(PcbInfo* initTable[])
 			initTable[i]->stackSize = STACK_SIZE;
 		}
 
-		initTable[0]->name =		"i_timing";	
-		initTable[0]->priority =    0;
-		initTable[0]->processType = PROCESS_I;
-		initTable[0]->address = 	&(a);
+		initTable[0]->name =				"i_timing";	
+		initTable[0]->priority =    	0;
+		initTable[0]->processType = 	PROCESS_I;
+		initTable[0]->address = 		&(i_timing_process);
 
-		initTable[1]->name =		"i_kb";	
-		initTable[1]->priority =    0;
-		initTable[1]->processType = PROCESS_I;
-		initTable[1]->address = 	&(b);
+		initTable[1]->name =				"i_kb";	
+		initTable[1]->priority =    	0;
+		initTable[1]->processType = 	PROCESS_I;
+		initTable[1]->address = 		&(i_keyboard_handler);
 
-		initTable[2]->name =		"i_crt";	
-		initTable[2]->priority =    0;
-		initTable[2]->processType = PROCESS_I;
-		initTable[2]->address = 	&(c);
+		initTable[2]->name =				"i_crt";	
+		initTable[2]->priority =    	0;
+		initTable[2]->processType = 	PROCESS_I;
+		initTable[2]->address = 		&(i_crt_handler);
 
-		initTable[3]->name =		"null_proc";	
-		initTable[3]->priority =    3;
-		initTable[3]->processType = PROCESS_N;
-		initTable[3]->address = 	&(d);
+		initTable[3]->name =				"null_proc";	
+		initTable[3]->priority =    	3;
+		initTable[3]->processType = 	PROCESS_N;
+		initTable[3]->address = 		&(RTX::null_proc);
 
-		initTable[4]->name =		"userA";	
-		initTable[4]->priority =    2;
-		initTable[4]->processType = PROCESS_U;
-		initTable[4]->address = 	&(e);
+		initTable[4]->name =				"userA";	
+		initTable[4]->priority =    	2;
+		initTable[4]->processType = 	PROCESS_U;
+		initTable[4]->address = 		&(userProcessA);
 
-		initTable[5]->name =		"userB";	
-		initTable[5]->priority =    2;
-		initTable[5]->processType = PROCESS_U;
-		initTable[5]->address = 	&(f);
+		initTable[5]->name =				"userB";	
+		initTable[5]->priority =    	2;
+		initTable[5]->processType = 	PROCESS_U;
+		initTable[5]->address = 		&(userProcessB);
 
-		initTable[6]->name =		"userC";	
-		initTable[6]->priority =    2;
-		initTable[6]->processType = PROCESS_U;
-		initTable[6]->address = 	&(g);
+		initTable[6]->name =				"userC";	
+		initTable[6]->priority =    	2;
+		initTable[6]->processType = 	PROCESS_U;
+		initTable[6]->address = 		&(userProcessC);
 		
-		initTable[7]->name =		"CCI";	
-		initTable[7]->priority =    1;
-		initTable[7]->processType = PROCESS_K;
-		initTable[7]->address = 	&(processCCI);
+		initTable[7]->name =				"CCI";	
+		initTable[7]->priority =    	2;
+		initTable[7]->processType = 	PROCESS_K;
+		initTable[7]->address = 		&(processCCI);
+
 	}
 	catch(int e)
 	{

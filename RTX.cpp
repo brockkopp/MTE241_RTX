@@ -6,7 +6,7 @@ extern inputBuffer* gRxMemBuf;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
-	_pcbList = new PCB* [7];
+	_pcbList = new PCB* [8];
 	debugMsg("RTX Initializing...",0,1);
 	//Inititalize RTX members, each cascades to its own constructor which performs memory allocation
 	_signalHandler = signalHandler;
@@ -170,10 +170,9 @@ MsgEnv* RTX::K_request_msg_env()
 //Call MsgServ class function releaseEnv
 int RTX::K_release_msg_env(MsgEnv* memory_block)
 {
-	int ret;
-	atomic(true);
-	ret = _mailMan->releaseEnv(memory_block);
-	atomic(false);
+//	atomic(true);
+	int ret = _mailMan->releaseEnv(memory_block);
+//	atomic(false);
 	return ret;
 }
 
