@@ -157,7 +157,8 @@ void processCCI()
 			
 					assure(ioLetter != NULL,"CCI:182 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
 				}
-			gRTX->K_release_processor();
-		}	
+				gRTX->K_release_processor();
+			}	
+		}
 	}
 }
