@@ -89,13 +89,12 @@ void i_keyboard_handler()
  * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
-//	debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
+	//debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
 	gRTX->atomic(true);
 	
 	MsgEnv* retMsg = NULL;
 	int invoker;
 	PCB* currPcb;
-
 	if((currPcb = gRTX->getCurrentPcb()) != NULL && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 		retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
@@ -103,9 +102,10 @@ void i_crt_handler()
 		if(retMsg == NULL || retMsg->getMsgData() == "") //make the check anyways
 		{		
 			retMsg = NULL;
-	   		gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error
+	   		gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error	   		
 			return;
 		}
+
 		invoker = retMsg->getOriginPid();	
 		string msgToConsole = retMsg->getMsgData();			
 	

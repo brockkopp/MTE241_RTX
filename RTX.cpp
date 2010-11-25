@@ -293,9 +293,11 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 		msg_envelope->setMsgType(msg_envelope->TO_CRT);
 		
 		res = K_send_message(iCRTPID, msg_envelope);
+		//cout<<"RTX:300 Sent message\n";
 		
 	if(res != EXIT_ERROR)
 	{
+	//	cout<<"RTX:305 Sending signal\n";
 		kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
 		
 		msg_envelope = retrieveOutAcknowledgement(); //will receive a message
