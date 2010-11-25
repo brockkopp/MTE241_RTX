@@ -2,10 +2,7 @@
 
 #include <stdio.h>
 
-extern CCI* gCCI;
 extern inputBuffer* gRxMemBuf;
-
-PCB* gCurrentProcess;
 
 RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 {
@@ -33,18 +30,19 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	delete pcbTmpList;
 	
 	//_scheduler->setCurrentProcess(_pcbList[0]);	//TESTING ONLY!!!
-	setCurrentPcb(0);
+	setCurrentPcb(PROC_CCI);
 
 	_msgTrace = new MsgTrace();
-	
+
 	_mailMan = new MsgServ(_scheduler, _msgTrace);
-		
+
+	wallClock = new WallClock(TICK_TIME);
+
 	_signalHandler->setSigMasked(false);
 
 	_started = false;
 
 	debugMsg("RTX Init Done",0,1);
-
 }
 
 RTX::~RTX()
@@ -337,7 +335,7 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (i.e. no characters waiting) */
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
-	int res;
+/*	int res;
 	if(atomic(true) == EXIT_SUCCESS)
 	{	
 		//int invoker = msg_envelope->getOriginPid();
@@ -366,7 +364,7 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 		}
 	}	
 	atomic(false);
-	return res;
+	return res;*/ return -2;
 }
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)

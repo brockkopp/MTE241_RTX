@@ -81,7 +81,7 @@ MsgEnv* MsgServ::recieveMsg()
     		return NULL;
   		
   		//block calling process
-		_scheduler->block_process(tempPCB, BLOCKED_MSG_RECIEVE); 		
+		_scheduler->block_process(BLOCKED_MSG_RECIEVE); 		
 		gRTX->K_release_processor();
 	}
 	
@@ -142,7 +142,7 @@ MsgEnv* MsgServ::requestEnv()
 		if (tempPCB->getProcessType() == PROCESS_I)
     	return NULL;
 		//block process is no envelope is available
- 		_scheduler->block_process(tempPCB, BLOCKED_ENV); 			
+ 		_scheduler->block_process(BLOCKED_ENV); 			
 		gRTX->K_release_processor();
 	}
 	MsgEnv* ptrMsg = _freeEnvQ->dequeue_MsgEnv();

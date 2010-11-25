@@ -225,6 +225,7 @@ int testPQ() {
 
 //if (VERBAL) debugMsg("PQ length:" +  intToStr(pq->length()) + "\n");
 
+
 return -1;
 }
 
