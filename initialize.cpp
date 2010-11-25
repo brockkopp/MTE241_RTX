@@ -104,8 +104,12 @@ int main(void)
 	gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
+
 	//assure(processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
-	die(-1);
+	
+	debugMsg("************************************\n    CCI DISABLED, PENDING I/O\n************************************",1,0);	
+	
+	die(0);
 }
 
 void doTests()
@@ -172,7 +176,7 @@ void doTests()
 	debugMsg("printing trace buffers...\n");
 	gRTX->K_get_trace_buffers(msg);
 	gRTX->K_send_console_chars(msg);
-	
+//	gRTX->atomic(true);
 	
 	debugMsg("ERIC TEST END\n-------------\n");	
 //********************************************************ERIC TEST END**********************************************************	 

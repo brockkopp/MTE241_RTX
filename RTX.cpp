@@ -172,38 +172,54 @@ int RTX::atomic(bool on)
 //Call MsgServ class function sendMsg
 int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
 {
-	return _mailMan->sendMsg(dest_process_id, msg_envelope);
+	int ret;
+	atomic(true);
+	ret = _mailMan->sendMsg(dest_process_id, msg_envelope);
+	atomic(false);
+	return ret;
 }
 
 //Call MsgServ class function recieveMsg
 MsgEnv* RTX::K_receive_message()
 {
-	return _mailMan->recieveMsg();
+	MsgEnv* ret;
+	atomic(true);
+	ret = _mailMan->recieveMsg();
+	atomic(false);
+	return ret;
 }
 
 //Call MsgServ class function requestEnv
 MsgEnv* RTX::K_request_msg_env()
 {	
-	return _mailMan->requestEnv();
+	MsgEnv* ret;
+	atomic(true);
+	ret = _mailMan->requestEnv();
+	atomic(false);
+	return ret;
 }
 
 //Call MsgServ class function releaseEnv
 int RTX::K_release_msg_env(MsgEnv* memory_block)
 {
-	return _mailMan->releaseEnv(memory_block);
+//	atomic(true);
+	int ret = _mailMan->releaseEnv(memory_block);
+//	atomic(false);
+	return ret;
 }
 
 int RTX::K_release_processor()
 {
-	//We need a scheduler object names scheduler to be declared (in initialization???)
-	
+	atomic(true);
 	_scheduler->release_processor();
-	return 1;
-
+	atomic(false);
+	return EXIT_SUCCESS;
 }
 
 int RTX::K_request_process_status(MsgEnv* msg) 
 {
+	atomic(true);
+	int ret = EXIT_ERROR;
 	if(msg != NULL)
 	{
 		string output = "\tPID\tPRIORITY  STATUS\n\t---\t------\t  --------\n";
@@ -214,9 +230,10 @@ int RTX::K_request_process_status(MsgEnv* msg)
 
 		msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
 		msg->setMsgData(output);
-		return EXIT_SUCCESS;
+		ret = EXIT_SUCCESS;
 	}
-	return EXIT_ERROR;
+	atomic(false);
+	return ret;
 }
 
 int RTX::K_terminate()
@@ -228,26 +245,29 @@ int RTX::K_terminate()
 
 int RTX::K_change_priority(int new_priority, int target_process_id)
 {
+	atomic(true);
 	//We need a scheduler object names scheduler to be declared (in initialization???)
 	
 	//return scheduler.change_priority(new_priority,target_process_id);
-	
+	atomic(false);	
 	return -2;
 }
 
 //sends a msg to the i_timing_process with a sleep time
 int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
-	
+	atomic(true);
+	int ret = EXIT_ERROR;
 	if(msg_envelope != NULL)
 	{
 		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay); 
 		msg_envelope->setMsgType(wakeup_code);
 		//call Kernal send message to send to timing iProcess
-		return K_send_message(0, msg_envelope); //i_timing_process PID is 0
+		ret = K_send_message(0, msg_envelope); //i_timing_process PID is 0
 	}
-	return EXIT_ERROR;
+	atomic(false);	
+	return ret;
 }
 
 /* Message envelope contains messages (character string) to sent to console. 
@@ -259,42 +279,46 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
-	if(msg_envelope == NULL) //error check
-		return EXIT_ERROR;
-	//Don't have to check this since MsgData is a string, and strings have automatic null characters appended to them
-	
-	//validated that message is in correct format
-	int invoker = msg_envelope->getOriginPid();
-	int res = EXIT_SUCCESS; //hurray for optimism!
-	string content = msg_envelope->getMsgData();
-	//implement multi-line display	
-	int lineCount = countChars(content,'\n');
-	if(lineCount == 0)
+	atomic(true);
+	int ret = EXIT_ERROR;
+	if(msg_envelope != NULL) //error check
 	{
-		msg_envelope->setMsgData(content);
-		res = send_chars_to_screen(msg_envelope);
-	}
-	else
-	{	
-		string lines[lineCount];
-		string thisLine = "";
-		parseString(content, lines, '\n', lineCount);
+		//Don't have to check this since MsgData is a string, and strings have automatic null characters appended to them
 	
-		for(int i = 0; i < lineCount; i++)
+		//validated that message is in correct format
+		int invoker = msg_envelope->getOriginPid();
+		string content = msg_envelope->getMsgData();
+		//implement multi-line display	
+		int lineCount = countChars(content,'\n');
+		if(lineCount == 0)
 		{
-			thisLine = (lines[i] + '\n');
-			msg_envelope->setMsgData(thisLine);
-			res = send_chars_to_screen(msg_envelope);
-			usleep(100000);
+			msg_envelope->setMsgData(content);
+			ret = send_chars_to_screen(msg_envelope);
 		}
-		msg_envelope->setMsgData(content); //reset data to original before breaking it down
-	}	
-	res = K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
-	return res;
+		else
+		{	
+			string lines[lineCount];
+			string thisLine = "";
+			parseString(content, lines, '\n', lineCount);
+	
+			for(int i = 0; i < lineCount; i++)
+			{
+				thisLine = (lines[i] + '\n');
+				msg_envelope->setMsgData(thisLine);
+				ret = send_chars_to_screen(msg_envelope);
+				usleep(100000);
+			}
+			msg_envelope->setMsgData(content); //reset data to original before breaking it down
+		}	
+		ret = K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
+	}
+	atomic(false);
+	return ret;
 }
 
 int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 {
+	atomic(true);
 	int iCRTId = getpid(); //send a signal to the RTX
 	int iCRTPID = PROC_CRT;
 	
@@ -325,6 +349,7 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 			res = EXIT_ERROR;
 		}
 	}
+	atomic(false);
 	return res;
 }
 
@@ -369,11 +394,14 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
+	atomic(true);
 	//call MsgTrace function to format trace buffers into table
 	_msgTrace->getTraces(msg_envelope);
 	cout << msg_envelope->getMsgData();
 	//send table formated string to user display 
-	return K_send_console_chars(msg_envelope);
+	int ret = K_send_console_chars(msg_envelope);
+	atomic(true);
+	return ret;
 }
 
 /*
