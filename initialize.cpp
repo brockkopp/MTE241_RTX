@@ -22,7 +22,7 @@
 //Globals
 RTX* gRTX;
 CCI* gCCI;
-Queue* gUserInputs;
+//Queue* gUserInputs;
 
 int gRunTime = 0;
 inputBuffer* gRxMemBuf;

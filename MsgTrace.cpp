@@ -88,7 +88,7 @@ string MsgTrace::getMsgTypeName(int msgType)
 		case MsgEnv::DISPLAY_ACK : ret = "D_ACK"; break;
 		case MsgEnv::DISPLAY_FAIL : ret = "D_FAIL"; break;
 		case MsgEnv::DELAY_REQUEST : ret = "D_RQST"; break;
-		case MsgEnv::NO_INPUT : ret = "NO_INPT"; break;
+		case MsgEnv::CONSOLE_INPUT_FIKB : ret = "FRM_FIKB"; break;
 		case MsgEnv::CONSOLE_INPUT : ret = "FRM_KB"; break;
 		case MsgEnv::COUNT_REPORT : ret = "CNT_RPT"; break;
 		default: ret = "UNKNOWN"; break;

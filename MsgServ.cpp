@@ -71,10 +71,11 @@ MsgEnv* MsgServ::recieveMsg()
 {
 	//retrieve PCB of currently excecuting process 
 	PCB* tempPCB;
-
+	
 	//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
-	assure(gRTX->getPcb(2,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
-
+	assure(gRTX->getPcb(PROC_CRT ,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
+	assure(gRTX->getPcb(PROC_KB ,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
+	
 	if (tempPCB->checkMail() == 0)
 	{
 		//i_process cannot be blocked
@@ -85,10 +86,8 @@ MsgEnv* MsgServ::recieveMsg()
 		_scheduler->block_process(tempPCB, BLOCKED_MSG_RECIEVE); 		
 		gRTX->K_release_processor();
 	}
-	
 	//get mail
 	MsgEnv* tempMsg = tempPCB->retrieveMail();
-
 	_msgTrace->addTrace(tempMsg, RECEIVE);
 	return tempMsg;
 }
