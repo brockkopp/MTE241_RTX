@@ -67,12 +67,13 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 MsgEnv* MsgServ::recieveMsg()
 {
 	//retrieve PCB of currently excecuting process 
-	PCB* tempPCB;
+	PCB* tempPCB = gRTX->getCurrentPcb();
 	
-	//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
-	assure(gRTX->getPcb(PROC_CRT ,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
-	assure(gRTX->getPcb(PROC_KB ,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
-	
+//	//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
+//	assure(gRTX->getPcb(PROC_CRT ,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
+//	assure(gRTX->getPcb(PROC_KB ,&tempPCB) == EXIT_SUCCESS,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);  //ERic
+	assure(tempPCB != NULL, "Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+
 	if (tempPCB->checkMail() == 0)
 	{
 		//i_process cannot be blocked

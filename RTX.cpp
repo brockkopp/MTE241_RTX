@@ -151,14 +151,9 @@ int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
 MsgEnv* RTX::K_receive_message()
 {
 	MsgEnv* ret;
-	cout<<"RTX:154\n";
 	atomic(true);
-	cout<<"RTX:156\n";
 	ret = _mailMan->recieveMsg();
-	cout<<"Is ret null? "<<(ret==NULL? "YES\n":"NO\n");
-	cout<<"RTX:158\n";
 	atomic(false);
-	cout<<"RTX:160\n";
 	return ret;
 }
 
