@@ -167,7 +167,7 @@ int testPQ() {
 
 			//Initialize fields which are consistent across processes
 			initTable[i]->processId = i;
-			initTable[i]->stackSize = STACK_SIZE;
+			initTable[i]->stackSize = 16000;
 		}
 
 		//Kernel Processes

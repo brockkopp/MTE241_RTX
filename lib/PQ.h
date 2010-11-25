@@ -9,6 +9,7 @@
 #define PRIORITY_LEVELS 4
 
 class PCB;
+class Queue;
 
 typedef PCB* pItemType;
 
