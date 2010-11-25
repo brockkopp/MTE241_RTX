@@ -141,12 +141,11 @@ MsgEnv* MsgServ::requestEnv()
 		if (tempPCB->getProcessType() == PROCESS_I)
     	return NULL;
 		//block process is no envelope is available
-<<<<<<< HEAD
+
  		_scheduler->block_process(BLOCKED_ENV); 			
-=======
- 		_scheduler->block_process(tempPCB, BLOCKED_ENV);
+
  		gRTX->atomic(false);   //atomic ERIC 			
->>>>>>> 531a65ce1bcb2e7f44e30ea587ef4491272c5e6b
+
 		gRTX->K_release_processor();
 	}
 	MsgEnv* ptrMsg = _freeEnvQ->dequeue_MsgEnv();

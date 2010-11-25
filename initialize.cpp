@@ -101,7 +101,7 @@ int main(void)
 	//processCCI();		//TESTING ONLY -- SHOULD BE PROCESS
 
 	//Start scheduler. Put the first process onto the CPU
-	gRTX->start_execution();
+//	gRTX->start_execution();
 
 //	Signal cci init failed, program should not normally reach this point
 
