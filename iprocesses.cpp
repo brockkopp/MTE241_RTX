@@ -1,5 +1,4 @@
 #include "iprocesses.h"
-extern CCI* gCCI;
 extern RTX* gRTX;
 //extern Queue* gUserInputs;
 extern int gRunTime;
@@ -38,10 +37,10 @@ void i_timing_process()
 
 			
 	//increment user display wall clock
-	gCCI->wallClock->increment();
+	gRTX->wallClock->increment();
 
 	string time;
-	if((time = gCCI->wallClock->toString()) != "")
+	if((time = gRTX->wallClock->toString()) != "")
 		cout << time << endl;
 
 	return;
@@ -93,7 +92,7 @@ void i_keyboard_handler()
  * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
-	//debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
+	debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
 	gRTX->atomic(true);
 	
 	MsgEnv* retMsg = NULL;

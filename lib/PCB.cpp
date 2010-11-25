@@ -104,11 +104,10 @@ int PCB::getState()
 int PCB::setState( int state ) 
 {	
 	int ret = EXIT_SUCCESS;
-	if(0 >= state && state <= 4)
+	if(0 <= state && state <= 4)
 		_state = state; 
 	else
 		ret = EXIT_ERROR;
-		
 	return ret;
 } 
 string PCB::getStateName()

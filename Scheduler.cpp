@@ -78,12 +78,6 @@ void Scheduler::release_processor( ) {
 		//Restore this proc's context		
 		gRTX->getCurrentPcb()->restoreContext();
 	}
-	
-	PCB* tmp = gRTX->getCurrentPcb();
-	cout << "HERE!!!!!!\n";
-	cout << "Restored to release_processor " << 	tmp->getName() << "\n";
-//	cout << "gCurrentProcess " << 	gCurrentProcess->getName() << "\n";
-	
 }
 /* Will change the priority of the target proc.
 
@@ -298,7 +292,7 @@ int Scheduler::setProcessState(int pid, int state)
 	if(tmpPcb == NULL)
 		return EXIT_ERROR;
 	else
-		return tmpPcb->setState(state);
+		return tmpPcb->setState(state);		
 }
 
 int Scheduler::is_blocked( PCB * target ) 
