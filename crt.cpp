@@ -33,17 +33,14 @@ int main(int arg1, char* arg[])
 	assure(tx_mmap_ptr != MAP_FAILED,"Memory Mapping in CRT Child Has Failed",__FILE__,__LINE__,__func__,true);
 	
 	inputBuffer* tx_mem_buf = (inputBuffer*) tx_mmap_ptr;  //x_mem_buf is now a pointer to mapped shared memory! :)
-	//cout<<"CRT1: busy flag = 0\tCurrent Contents: !!"<<tx_mem_buf->data<<"!!\n";
 	tx_mem_buf->busyFlag = 0;
 
 	//polling shared memory to see what has to be printed to the screen
 	do
 	{
-		//cout<<"CRT polling...\n";
 		cout << flush;
 		if(tx_mem_buf->busyFlag == 1) //synchronized with crt_i_process; set to 1 once iprocess started inputting values
 		{
-			//cout<<"In CRT, here. Grabbing stuff, hold on...\n";
 			int indexInBuf = 0;
 			char c = tx_mem_buf->data[indexInBuf];
 			while (c != '\0') //will also stop if '\n' is used
@@ -54,9 +51,7 @@ int main(int arg1, char* arg[])
 				if(indexInBuf == MAXDATA) //should  never happen
 					break;
 			}
-			//cout<<"Done grabbing. Setting flag to 0\n";
 			cout << flush;
-			//cout<<"CRT2: busy flag = 0\tCurrent Contents: !!"<<tx_mem_buf->data<<"!!\n";
 			tx_mem_buf->busyFlag = 0; //indicate that the entire message has been transmitted and the crt process is no longer busy
 		}
 		else

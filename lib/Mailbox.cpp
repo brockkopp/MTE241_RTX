@@ -61,5 +61,6 @@ MsgEnv* Mailbox::getMail(int msgType)
 		prev = curr;
 		curr = curr->link;
 	}
-	return retMsg; //if value wasn't in queue, pluckee is NULL
+
+	return retMsg; 	//if value wasn't in queue, retMsg is NULL
 }

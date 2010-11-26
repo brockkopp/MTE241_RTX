@@ -160,6 +160,7 @@ MsgEnv* RTX::K_request_msg_env()
 //Call MsgServ class function releaseEnv
 int RTX::K_release_msg_env(MsgEnv* usedEnv)
 {
+	assure(usedEnv != NULL,"Releasing NULL Env",__FILE__,__LINE__,__func__,false);
 	atomic(true);
 	int ret = _mailMan->releaseEnv(usedEnv);
 	atomic(false);
@@ -251,8 +252,6 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	int ret = EXIT_ERROR;
 	if(msg_envelope != NULL) //error check
 	{
-		//Don't have to check this since MsgData is a string, and strings have automatic null characters appended to them
-	
 		//validated that message is in correct format
 		int invoker = msg_envelope->getOriginPid();
 		string content = msg_envelope->getMsgData();
@@ -289,7 +288,6 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 	
 	int res = EXIT_SUCCESS;
 	//send message to i_crt_handler to deal with transmission of the message to the console
-	
 	msg_envelope->setMsgType(msg_envelope->TO_CRT);
 	
 	res = K_send_message(PROC_CRT, msg_envelope);
@@ -309,7 +307,6 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 			}
 			else //display_ack
 			{
-				//cout<<"display_ack\n";
 				res = EXIT_SUCCESS;
 			}
 		}

@@ -7,8 +7,6 @@
 */
 PQ::PQ( int nPriority ) 
 {
-	//Queue* _master = new Queue[nPriority];
-	
 	try
 	{
 		for(int i = 0; i < nPriority; i++)

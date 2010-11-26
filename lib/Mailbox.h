@@ -5,6 +5,7 @@
 #include "Queue.h"
 
 class Queue;
+class MsgEnv;
 
 class Mailbox
 {

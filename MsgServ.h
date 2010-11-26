@@ -11,7 +11,8 @@
 #define SLEEPING 3							
 #define ENV_NUMBER 20 //How many msg envelopes are available.
 
-class Scheduler; // what's this for? - eric
+class Scheduler;
+class MsgTrace;
 
 class MsgServ
 {

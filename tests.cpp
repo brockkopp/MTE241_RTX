@@ -151,7 +151,7 @@ int testQueues()
 
 int testPQ() {
 
-	const int VERBAL = 0; // Turn this to zero to turn off output.
+//	const int VERBAL = 0; // Turn this to zero to turn off output.
 
 ////return -2;
 

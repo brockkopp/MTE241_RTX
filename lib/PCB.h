@@ -1,24 +1,24 @@
 #ifndef H_PCB
 #define H_PCB
 
-#include "../debug.h"
 #include <stdlib.h>
+#include <setjmp.h>
+#include "../debug.h"
 #include "../RTX.h"
 #include "PcbInfo.h"
 #include "Mailbox.h"
-#include <setjmp.h>
 #include "../tools.h"
 
 class Mailbox;
 class RTX;
+class MsgEnv;
 
 //Process state constant declarations.
-#define READY 				0
-#define BLOCKED_ENV 		1
-#define BLOCKED_MSG_RECIEVE 2
-#define SLEEPING 			3
-#define EXECUTING 			4
-
+#define READY 							0
+#define BLOCKED_ENV 				1
+#define BLOCKED_MSG_RECIEVE	2
+#define SLEEPING 						3
+#define EXECUTING 					4
 
 class Queue;
 
@@ -26,10 +26,9 @@ class PCB
 {
 	public:			
 		/*~*~* Member functions ~*~*~*~*/
-		PCB( PcbInfo* tableEntry ); 	//Constructor
-		~PCB();								//Destructor
-		
-		//Private Member Getters/Setters
+		PCB( PcbInfo* tableEntry );
+		~PCB();				
+
 		int getId( );
 		string getName( );
 		int getPriority( );
@@ -54,20 +53,19 @@ class PCB
 		int checkMail( ); //returns number of messages in mailbox
 
 	private:
+
+		void initContext(int stackSize);
+
 		/*~*~*~*~*~* Members *~*~*~*~*~*/
-		//Context* _context;     //Includes jmp_buf
 		int _atomicCount; 
 		void (*_fPtr)(); 
-		
-		void initContext(int stackSize);
-		
-		int _id; //Process id
+		int _id;
 		string _name;
 		int _priority;   
 		int _processType;
 		char* _stack;
 		int _state;
-		Mailbox* _mailbox; //Message mailbox
+		Mailbox* _mailbox;
 		jmp_buf _localJmpBuf;
 };
 #endif

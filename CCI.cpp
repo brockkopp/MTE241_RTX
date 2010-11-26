@@ -1,4 +1,5 @@
 #include "CCI.h"
+
 extern RTX* gRTX;
 
 void processCCI()
@@ -22,37 +23,21 @@ void processCCI()
 			input[0] = input[1] = input[2] = "";
 			message = "";	
 			
-//			string temp = "";
-//			cout<<"temp : "<<temp<<"\ttemp length : "<<temp.size()<<endl;
-//			temp = "\0";
-//			cout<<"temp : "<<temp<<"\ttemp length : "<<temp.size()<<endl;
-//			temp = "\n";
-//			cout<<"temp : "<<temp<<"\ttemp length : "<<temp.size()<<endl;
-//			cout<<("\0" == "")?"EQUAL\n":"NOT equal\n";
-//			
-			
 			ioLetter->setMsgData(">RTX$ ");
 			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
 			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
 				
 			assure(ioLetter != NULL,"CCI:45 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
-
+	
 			ioLetter->setMsgData("");
 			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
-			{
 				usleep(100000); //no user input provided yet. Wait!	
-				//cout<<"CCI: waiting...\n";
-			}
 			
-			//do
-			//{
-				ioLetter->setOriginPid(gRTX->getCurrentPid());
-				ioLetter = gRTX->K_receive_message(); 
-				assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
-				command = ioLetter->getMsgData();	
-				//cout<<"CCI: Command : "<<command<<"\tcommand length : "<<command.size()<<endl;
-			//}while(command == "");		
-			
+			ioLetter->setOriginPid(gRTX->getCurrentPid());
+			ioLetter = gRTX->K_receive_message(); 
+			assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
+			command = ioLetter->getMsgData();	
+				
 			//check for an empty command!
 			if(command.length() > 0)
 			{
@@ -139,9 +124,11 @@ void processCCI()
 					else if(input[0] == "n")
 					{
 						int pid,priority;
-						PCB* pcb = NULL;					
-						if(strToInt(input[1],&priority) != EXIT_SUCCESS || strToInt(input[2],&pid) != EXIT_SUCCESS)
-							message = "invalid parameters\n";
+						PCB* pcb = NULL;			
+						if(params < 3)
+							message = "Not enough parameters for 'Change Priority' Command\n";		
+						else if(strToInt(input[1],&priority) != EXIT_SUCCESS || strToInt(input[2],&pid) != EXIT_SUCCESS)
+							message = "Invalid parameters\n";
 						else if(gRTX->getPcb(pid,&pcb) != EXIT_SUCCESS)
 							message = "Invalid process id\n";
 						else if(pcb->setPriority(priority) != EXIT_SUCCESS)

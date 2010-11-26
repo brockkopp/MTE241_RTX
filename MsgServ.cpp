@@ -20,15 +20,7 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 
 MsgServ::~MsgServ()
 {
-	//dealocate space from msg envelopes
-	int msgTotal = ENV_NUMBER;
-	MsgEnv* msg;
-	while(msgTotal > 0)
-	{
-		msg = _freeEnvQ->dequeue_MsgEnv();
-		delete msg;
-		msgTotal--;
-	}
+	delete _freeEnvQ;
 }
 
 int MsgServ::sendMsg(int destPid, MsgEnv* msg)
@@ -128,6 +120,7 @@ MsgEnv* MsgServ::requestEnv()
 {
 	if( _freeEnvQ->isEmpty() ) 
 	{
+		debugMsg("Empty Envelope Queue!!!",1,1);
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB;
 		assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);

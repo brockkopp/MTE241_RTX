@@ -16,7 +16,7 @@ void WallClock::setDisplayed(bool isDisplayed)
 	_isDisplayed = isDisplayed;
 }
 
-void WallClock::increment()
+bool WallClock::increment()
 {
 	_miliseconds += 100;
 
@@ -36,6 +36,7 @@ void WallClock::increment()
 		}
 		_isNewTime = true;
 	}
+	return _isDisplayed && _isNewTime;
 }
 
 int WallClock::setTime( int hours, int minutes, int seconds )
@@ -59,23 +60,16 @@ int WallClock::setTime(string time[])
 	int ret = EXIT_ERROR;
 	int hours = 0, minutes = 0, seconds = 0;
 
-	if (strToInt(time[0],&hours) == EXIT_SUCCESS && strToInt(time[1],&minutes) == EXIT_SUCCESS && strToInt(time[2],&seconds) == EXIT_SUCCESS)
-		ret = setTime(hours, minutes, seconds);
+	if (strToInt(time[0],&hours) == EXIT_SUCCESS && \
+		 strToInt(time[1],&minutes) == EXIT_SUCCESS && \
+		 strToInt(time[2],&seconds) == EXIT_SUCCESS)
+			ret = setTime(hours, minutes, seconds);
 
 	return ret;
 }
 
 string WallClock::toString()
 {
-	string ret;
-
-	if(_isDisplayed && _isNewTime)
-	{
-		_isNewTime = false;
-		ret = intToStr(_hours,2) + ":" + intToStr(_minutes,2) + ":" + intToStr(_seconds,2);
-	}
-	else
-		ret = "";
-
-	return ret;
+	_isNewTime = false;
+	return intToStr(_hours,2) + ":" + intToStr(_minutes,2) + ":" + intToStr(_seconds,2);
 }
