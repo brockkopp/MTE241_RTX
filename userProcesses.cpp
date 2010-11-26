@@ -13,7 +13,7 @@ void userProcessA()
 	
 	//Recieve a msg
 	MsgEnv* myMsg = gRTX->K_receive_message();
-	gRTX->K_release_msg_env(myMsg);
+	gRTX->K_release_msg_env(myMsg);	
 	
 	string data;
 	int num = 0;
@@ -26,7 +26,7 @@ cout << "PROCESS A in loop!\n";
 		data = intToStr(num);
 		
 		myMsg->setMsgData(data);
-cout << "MSG DATA IN A: " << myMsg->getMsgData() << "\n";
+
 		gRTX->K_send_message(PROC_USER_B,myMsg);
 		num++;
 		gRTX->K_release_processor();
@@ -46,7 +46,7 @@ void userProcessB()
 	{
 cout << "PROCESS B in loop!\n";	
 		myMsg = gRTX->K_receive_message();
-cout << "MSG DATA IN B: " << myMsg->getMsgData() << "\n";
+
 		gRTX->K_send_message(PROC_USER_C, myMsg);
 		gRTX->K_release_processor();
 	}
@@ -69,20 +69,24 @@ void userProcessC()
 cout << "PROCESS C in loop!\n";		
 		myMsg = gRTX->K_receive_message();
 	
-		if(myMsg->getMsgType() == MsgEnv::COUNT_REPORT)
+		if( myMsg!= NULL && 
+				myMsg->getMsgType() == MsgEnv::COUNT_REPORT
+			)
 		{
 			strToInt( myMsg->getMsgData(), &num );
 			
 			if(num%20 == 0 && num != 0)
 			{
-//				myMsg->setMsgData("Process C");
-//				while(gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS);
-				cout << "Process C <-- This is a cout. Needs to be send_console_chars when CCI is implemented.\n";
-			strToInt( myMsg->getMsgData(), &num );
-				myMsg = gRTX->K_receive_message();
+
+				myMsg->setMsgData("Process C");
+				while(gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS);
+				gRTX->retrieveOutAcknowledgement();
+//				cout << "Process C <-- This is a cout. Needs to be send_console_chars when CCI is implemented.\n";
+//			strToInt( myMsg->getMsgData(), &num );
+//				myMsg = gRTX->K_receive_message();
 
 				cout << "Process C <-- going to sleep. Needs to use timing services when they are implemented\n";
-				sleep(10);
+				sleep(1000);
 
 
 //				gRTX->K_request_delay(100, 20, myMsg);
@@ -93,10 +97,12 @@ cout << "PROCESS C in loop!\n";
 				//while(myMsg->getMsgData !
 			}
 		}
-			cout << "READY PROCS : \n" << gRTX->_scheduler->_readyProcs->toString();
-			cout << "BLOCKED_MSG : \n" << gRTX->_scheduler->_blockedMsgRecieve->toString();
-			cout << "BLOCKED_ENV : \n" << gRTX->_scheduler->_blockedEnv->toString();
-		gRTX->K_release_msg_env(myMsg);
-		gRTX->K_release_processor();
+//			cout << "READY PROCS : \n" << gRTX->_scheduler->_readyProcs->toString();
+//			cout << "BLOCKED_MSG : \n" << gRTX->_scheduler->_blockedMsgRecieve->toString();
+//			cout << "BLOCKED_ENV : \n" << gRTX->_scheduler->_blockedEnv->toString();
+	
+	gRTX->K_release_msg_env(myMsg);
+	gRTX->K_release_processor();
 	}
+
 }

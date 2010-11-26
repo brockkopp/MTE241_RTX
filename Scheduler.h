@@ -36,6 +36,7 @@ class Scheduler {
 	  	int add_ready_process( PCB * target );
 		int block_process (int reason );
 		int unblock_process( PCB * target );
+		int unblock_process( int reason );
 
 		int setProcessState(int pid, int state);
 		int setCurrentProcess(int pid);
