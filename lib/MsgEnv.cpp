@@ -32,7 +32,7 @@ int MsgEnv::getDestPid()
 int MsgEnv::setDestPid(int newDestPid)
 {
 	//check if a valid destPID was passed
-	if(newDestPid >=0 && newDestPid <=7)           //PROCESS_COUNT)
+	if(newDestPid >=0 && newDestPid <=PROCESS_COUNT)           //PROCESS_COUNT)
 	{
 		msgFields._destPid = newDestPid;
 		return EXIT_SUCCESS;
@@ -48,7 +48,7 @@ int MsgEnv::getOriginPid()
 int MsgEnv::setOriginPid(int newOriginPid)
 {
 	//check if passed PID is valid
-	if(newOriginPid >=0 && newOriginPid <= 7)           //PROCESS_COUNT)
+	if(newOriginPid >=0 && newOriginPid <= PROCESS_COUNT)           //PROCESS_COUNT)
 	{
 		msgFields._originPid = newOriginPid;
 		return EXIT_SUCCESS;
