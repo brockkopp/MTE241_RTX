@@ -94,12 +94,12 @@ int main(void)
 	
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
-#if TESTS_MODE == 1
-	//doTests();
-#endif
 	gRTX = new RTX(initTable, sigHandler);
 	//processCCI();		//TESTING ONLY -- SHOULD BE PROCESS
 
+#if TESTS_MODE == 1
+	doTests();
+#endif
 	//Start scheduler. Put the first process onto the CPU
 	gRTX->start_execution();
 
@@ -136,11 +136,11 @@ void doTests()
 	  */ 
 //*******************************************************ERIC TEST****************************************************************	
 	
-	debugMsg("ERIC TEST\n---------\n");
+	debugMsg("ERIC TEST\n---------\n make/get PCB\n");
 	
 	PCB* tempPCB;
 	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
-	
+	debugMsg("get msg\n");
 	MsgEnv* msg = gRTX->K_request_msg_env();
 	debugMsg("msg allocated\n");
 	msg->setMsgData("test 1");
@@ -165,16 +165,15 @@ void doTests()
 	debugMsg("Msg Type: "+intToStr(msg->getMsgType())+"\n");
 	debugMsg("Time Stamp: "+intToStr(msg->getTimeStamp())+"\n");
 	debugMsg("MsgData: "+msg->getMsgData()+"\n");
-	}
 	debugMsg("releasing env..\n");
 	debugMsg("Successful?: "+intToStr(gRTX->K_release_msg_env(msg))+"\n");
-	
+	}
 	msg = gRTX->K_request_msg_env();
 	debugMsg("msg allocated\n");
 	debugMsg("printing trace buffers...\n");
 	gRTX->K_get_trace_buffers(msg);
 	gRTX->K_send_console_chars(msg);
-//	gRTX->atomic(true);
+
 	
 	debugMsg("ERIC TEST END\n-------------\n");	
 //********************************************************ERIC TEST END**********************************************************	 
