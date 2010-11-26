@@ -248,7 +248,8 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	if(msg_envelope != NULL) //error check
 	{
 		//validated that message is in correct format
-		int invoker = msg_envelope->getOriginPid();
+		//int invoker = msg_envelope->getOriginPid();
+		int invoker = getCurrentPid();
 		string content = msg_envelope->getMsgData();
 		//implement multi-line display	
 		int lineCount = countChars(content,'\n');
@@ -267,7 +268,8 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 			{
 				thisLine = (lines[i] + '\n');
 				msg_envelope->setMsgData(thisLine);
-				ret = send_chars_to_screen(msg_envelope);
+				//ret = send_chars_to_screen(msg_envelope);
+				do { ret = send_chars_to_screen(msg_envelope); } while(ret == EXIT_ERROR);
 				usleep(100000);
 			}
 			msg_envelope->setMsgData(content); //reset data to original before breaking it down
@@ -290,12 +292,10 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 	if(res != EXIT_ERROR)
 	{
 		kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
-		
-//		msg_envelope = retrieveOutAcknowledgement(); //will receive a message
-			msg_envelope = getMessage(MsgEnv::DISPLAY_ACK,this);
+
+		msg_envelope = getMessage(MsgEnv::DISPLAY_ACK,this);
 	  	
-		bool transmission_failed = (msg_envelope == NULL);
-		if(!transmission_failed)
+		if(msg_envelope != NULL)
 		{
 			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
 			{
@@ -321,8 +321,8 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (i.e. no characters waiting) */
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
-	int res;
 	atomic(true);
+	int res;
 	int invoker = msg_envelope->getOriginPid();
 	res = K_send_message(PROC_KB, msg_envelope);
 	if(res == EXIT_SUCCESS)
@@ -347,7 +347,7 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 	ret = _msgTrace->getTraces(msg_envelope);
 	
 	//send table formated string to user display 
-	atomic(true);
+	atomic(false);
 	return ret;
 }
 
@@ -359,7 +359,7 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 extern RTX* gRTX;
 void RTX::null_proc() {
 	while(true)
-	{	
+	{
 		assure(gRTX != NULL, "gRTX pointer NULL",__FILE__,__LINE__,__func__,true);
 #if DEBUG_MODE == 1
 		usleep(100000);

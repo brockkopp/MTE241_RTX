@@ -6,7 +6,6 @@
 #include "../debug.h"
 #include "../RTX.h"
 #include "PcbInfo.h"
-#include "Mailbox.h"
 #include "../tools.h"
 
 class Mailbox;
