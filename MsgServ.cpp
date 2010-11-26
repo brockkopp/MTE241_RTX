@@ -21,7 +21,7 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 MsgServ::~MsgServ()
 {
 	//dealocate space from msg envelopes
-	int msgTotal = 20;
+	int msgTotal = ENV_NUMBER;
 	MsgEnv* msg;
 	while(msgTotal > 0)
 	{
