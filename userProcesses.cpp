@@ -94,16 +94,15 @@ void userProcessC()
 				myMsg->setMsgData("Process C");
 				while(gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS);
 				getMessage(MsgEnv::DISPLAY_ACK,gRTX);
-//				cout << "Process C <-- This is a cout. Needs to be send_console_chars when CCI is implemented.\n";
-//			strToInt( myMsg->getMsgData(), &num );
-//				myMsg = gRTX->K_receive_message();
 
-//				cout << "Process C <-- going to sleep. Needs to use timing services when they are implemented\n";
-//				sleep(10);
+				cout << "Sleep -- run time: " << gRTX->runTime << "  Num: "<<num << "\n";
+				gRTX->K_request_delay(100, 10, myMsg);
 
-				gRTX->K_request_delay(100, 20, myMsg);
-				myMsg = getMessage(20,gRTX);
-				gRTX->K_release_msg_env(myMsg);
+//DEBUGGING LEAD
+// We may be stuckk on this next loop (inifitiely)
+				while((myMsg = getMessage(10,gRTX)) == NULL);
+				
+				cout << "WakeU -- run time: " << gRTX->runTime << "  Num: "<<num << "\n";
 			}
 		}
 //			cout << "READY PROCS : \n" << gRTX->_scheduler->_readyProcs->toString();
