@@ -170,9 +170,9 @@ MsgEnv* RTX::K_request_msg_env()
 //Call MsgServ class function releaseEnv
 int RTX::K_release_msg_env(MsgEnv* memory_block)
 {
-//	atomic(true);
+	atomic(true);
 	int ret = _mailMan->releaseEnv(memory_block);
-//	atomic(false);
+	atomic(false);
 	return ret;
 }
 
