@@ -1,4 +1,5 @@
 #include "CCI.h"
+
 extern RTX* gRTX;
 
 void processCCI()
@@ -27,23 +28,16 @@ void processCCI()
 			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
 				
 			assure(ioLetter != NULL,"CCI:45 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
-
+	
 			ioLetter->setMsgData("");
 			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
-			{
 				usleep(100000); //no user input provided yet. Wait!	
-				//cout<<"CCI: waiting...\n";
-			}
 			
-			//do
-			//{
-				ioLetter->setOriginPid(gRTX->getCurrentPid());
-				ioLetter = gRTX->K_receive_message(); 
-				assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
-				command = ioLetter->getMsgData();	
-				//cout<<"CCI: Command : "<<command<<"\tcommand length : "<<command.size()<<endl;
-			//}while(command == "");		
-			
+			ioLetter->setOriginPid(gRTX->getCurrentPid());
+			ioLetter = gRTX->K_receive_message(); 
+			assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
+			command = ioLetter->getMsgData();	
+				
 			//check for an empty command!
 			if(command.length() > 0)
 			{
