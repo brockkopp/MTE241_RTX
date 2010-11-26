@@ -90,9 +90,13 @@ MsgEnv* MsgServ::retrieveOAck()
 	ret = tempPCB->retrieveMail( MsgEnv::DISPLAY_ACK );
 	//If no acknowledgements, search for display failure
 	if(ret == NULL)
+	{
 		ret = tempPCB->retrieveMail( MsgEnv::DISPLAY_FAIL );
+	}
 	if(ret == NULL)
+	{
 		ret = tempPCB->retrieveMail( MsgEnv::BUFFER_OVERFLOW );
+	}
 	//return message (or NULL)
 	return ret;
 }

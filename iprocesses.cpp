@@ -52,6 +52,7 @@ void i_timing_process()
  * K_get_console_chars extracts user inputs from the global queue as necessary */
 void i_keyboard_handler()
 {
+	//debugMsg("\nSignal Received: SIGUSR1: KB",0,1);
 	gRTX->atomic(true);
 	MsgEnv* retMsg = NULL;
 	PCB* currPcb = gRTX->getCurrentPcb();
@@ -63,6 +64,7 @@ void i_keyboard_handler()
 		do
 		{				
 			retMsg = gRTX->K_receive_message(); //should never have to loop since ensure that an envelope is in the mailbox
+			//cout<<"IKB 66 - Receiving null message\n";
 		}
 		while( retMsg == NULL);
 		int invoker = retMsg->getOriginPid();
@@ -73,6 +75,10 @@ void i_keyboard_handler()
 	}
 	else //an error occurred
 	{
+		if(currPcb == NULL)
+			cout<<"IKB received null envelope\n";
+		else
+			cout<<"Empty mailbox\n";
 		assure(false,"Input streaming has messed up royally",__FILE__,__LINE__,__func__,true);
 	}
 	gRTX->atomic(false);

@@ -57,21 +57,23 @@ int MsgTrace::getTraces(MsgEnv* msg)
 	if (msg != NULL)
 	{
 		//initialize column headers for table display
-		string tempSendTraceTable = "SEND TRACE BUFFER\nDest PID   Origin PID     Msg Type     Time Stamp\n";
-		string tempRecTraceTable = "RECEIVE TRACE BUFFER\nDest PID   Origin PID     Msg Type     Time Stamp\n";
+		string tempSendTraceTable = "SEND TRACE BUFFER\n\tDest PID   Origin PID     Msg Type     Time Stamp\n";
+		string tempRecTraceTable = "RECEIVE TRACE BUFFER\n\tDest PID   Origin PID     Msg Type     Time Stamp\n";
 		string tempTableRow;
 		
 		for(int i=0; i<16; i++)
 		{
 			//SEND ARRAY
 			//constructing one row of the trace buffer table to be displayed
-			tempTableRow = "   "+intToStr(_sendArray[i]._destPid)+"            "+intToStr(_sendArray[i]._originPid)+"       " +padString(getMsgTypeName(_sendArray[i]._msgType))+"        "+intToStr(_sendArray[i]._timeStamp)+"\n";
+			//tempTableRow = "   "+intToStr(_sendArray[i]._destPid)+"            "+intToStr(_sendArray[i]._originPid)+"       " +padString(getMsgTypeName(_sendArray[i]._msgType))+"        "+intToStr(_sendArray[i]._timeStamp)+"\n";
+			tempTableRow = "\t"+intToStr(_sendArray[i]._destPid)+"          "+intToStr(_sendArray[i]._originPid)+"              " +padString(getMsgTypeName(_sendArray[i]._msgType))+" "+intToStr(_sendArray[i]._timeStamp)+"\n";
 			//adding above row to the trace buffer table
 			tempSendTraceTable = tempSendTraceTable + tempTableRow;
 		
 			// RECEIVE ARRAY			
 			//constructing one row of the trace buffer table to be displayed
-			tempTableRow = "   "+intToStr(_receiveArray[i]._destPid)+"            "+intToStr(_receiveArray[i]._originPid)+"       " +padString(getMsgTypeName(_receiveArray[i]._msgType))+"        "+intToStr(_receiveArray[i]._timeStamp)+"\n";
+			//tempTableRow = "   "+intToStr(_receiveArray[i]._destPid)+"            "+intToStr(_receiveArray[i]._originPid)+"       " +padString(getMsgTypeName(_receiveArray[i]._msgType))+"        "+intToStr(_receiveArray[i]._timeStamp)+"\n";
+			tempTableRow = "\t"+intToStr(_receiveArray[i]._destPid)+"          "+intToStr(_receiveArray[i]._originPid)+"              " +padString(getMsgTypeName(_receiveArray[i]._msgType))+" "+intToStr(_receiveArray[i]._timeStamp)+"\n";
 			//adding above row to the trace buffer table
 			tempRecTraceTable = tempRecTraceTable + tempTableRow;
 		}

@@ -26,7 +26,6 @@ void processCCI()
 			ioLetter->setMsgData(">RTX$ ");
 			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
 			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
-				
 			assure(ioLetter != NULL,"CCI:45 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
 	
 			ioLetter->setMsgData("");
@@ -100,14 +99,16 @@ void processCCI()
 							message = "Too many parameters for 'Display Msg Buffers' command\n";
 						else
 						{
-							message = "get trace buffers\n";
-		//					if( gRTX->K_get_trace_buffers(ioLetter) == EXIT_SUCCESS )
-		//						ioLetter = gRTX->K_receive_message();
-		//					else
-		//						message = "Display Trace Buffers Failed\n";
-
-		//					while(gRTX->K_send_console_chars(ioLetter) != EXIT_SUCCESS);
-		//					ioLetter = gRTX->K_receive_message();
+							int result = gRTX->K_get_trace_buffers(ioLetter);
+							
+							if( gRTX->K_get_trace_buffers(ioLetter) != EXIT_SUCCESS )
+								message = "Display Trace Buffers Failed\n";
+							else
+							{
+								while(gRTX->K_send_console_chars(ioLetter) != EXIT_SUCCESS);
+								ioLetter = gRTX->K_receive_message();
+								message = "";
+							}
 						}
 					}
 					else if(input[0] == "t")
@@ -160,7 +161,6 @@ void processCCI()
 					ioLetter->setMsgData(message);
 					while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);
 					ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
-			
 					assure(ioLetter != NULL,"CCI:182 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
 				}
 				gRTX->K_release_processor();
