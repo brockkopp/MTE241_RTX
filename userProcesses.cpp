@@ -4,13 +4,15 @@ extern RTX* gRTX;
 
 void userProcessA()
 {
-	while(true){
-		cout << "\nuserA real output\n";
-		gRTX->K_release_processor();
-	}	
+//	while(true){
+//		cout << "\nuserA real output\n";
+//		gRTX->K_release_processor();
+//	}	
 	
+	//Recieve a msg
 	MsgEnv* myMsg = gRTX->K_receive_message();
 	gRTX->K_release_msg_env(myMsg);
+	
 	string data;
 	int num = 0;
 	
@@ -28,10 +30,10 @@ void userProcessA()
 
 void userProcessB()
 {
-	while(true){
-		cout << "\nuserB real output\n";
-		gRTX->K_release_processor();
-	}	
+//	while(true){
+//		cout << "\nuserB real output\n";
+//		gRTX->K_release_processor();
+//	}	
 	
 	MsgEnv* myMsg;
 	while(true)
@@ -44,10 +46,10 @@ void userProcessB()
 
 void userProcessC()
 {
-	while(true){
-		cout << "\nuserC real output\n";
-		gRTX->K_release_processor();
-	}	
+//	while(true){
+//		cout << "\nuserC real output\n";
+//		gRTX->K_release_processor();
+//	}	
 	
 	int num = 0;
 	MsgEnv* myMsg;

@@ -117,8 +117,8 @@ string PCB::getStateName()
 	{
 		case EXECUTING: 			state = "EXECUTING"; break;	
 		case READY: 				state = "READY"; break;
-		case BLOCKED_ENV: 			state = "BLK-ENV"; break;
-		case BLOCKED_MSG_RECIEVE: 	state = "BLK-REC"; break;
+		case BLOCKED_ENV: 			state = "BLK-ENVELOPE"; break;
+		case BLOCKED_MSG_RECIEVE: 	state = "BLK-RECIEVE"; break;
 		case SLEEPING: 				state = "SLEEPING"; break;
 	}
 	return state;
