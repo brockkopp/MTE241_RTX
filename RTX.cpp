@@ -102,11 +102,6 @@ int RTX::getCurrentPid()
 	return pid;
 }
 
-MsgEnv* RTX::retrieveOutAcknowledgement()
-{
-	return _mailMan->retrieveOAck();
-}
-
 int RTX::atomic(bool on)
 {
 	int ret = EXIT_SUCCESS;
@@ -297,8 +292,8 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 	if(res != EXIT_ERROR)
 	{
 		kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
-		
-		msg_envelope = retrieveOutAcknowledgement(); //will receive a message with output message
+
+		msg_envelope = getMessage(MsgEnv::DISPLAY_ACK,this);
 	  	
 		if(msg_envelope != NULL)
 		{

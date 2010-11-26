@@ -80,27 +80,6 @@ MsgEnv* MsgServ::recieveMsg()
 	return tempMsg;
 }
 
-MsgEnv* MsgServ::retrieveOAck()
-{
-	PCB* tempPCB;
-	MsgEnv* ret;
-	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
-	
-	//Attempt to retrieve a display acknowledgement
-	ret = tempPCB->retrieveMail( MsgEnv::DISPLAY_ACK );
-	//If no acknowledgements, search for display failure
-	if(ret == NULL)
-	{
-		ret = tempPCB->retrieveMail( MsgEnv::DISPLAY_FAIL );
-	}
-	if(ret == NULL)
-	{
-		ret = tempPCB->retrieveMail( MsgEnv::BUFFER_OVERFLOW );
-	}
-	//return message (or NULL)
-	return ret;
-}
-
 int MsgServ::releaseEnv(MsgEnv* msg)
 {
 	if (msg == NULL)

@@ -19,6 +19,7 @@ class Scheduler;
 class Queue;
 class MsgEnv;
 class MsgTrace;
+class WallClock;
 
 //RTX Global Constants
 
@@ -51,8 +52,8 @@ class RTX
 		int getPcb(int pid, PCB** pcb);
 		PCB* getCurrentPcb();
 		int getCurrentPid();
-		MsgEnv* retrieveOutAcknowledgement();
-		MsgEnv* retrieveInAcknowledgement();
+//		MsgEnv* retrieveOutAcknowledgement();
+//		MsgEnv* retrieveInAcknowledgement();
 		int atomic(bool on);
 
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);

@@ -6,7 +6,6 @@
 #include "../debug.h"
 #include "../RTX.h"
 #include "PcbInfo.h"
-#include "Mailbox.h"
 #include "../tools.h"
 
 class Mailbox;
@@ -65,7 +64,7 @@ class PCB
 		int _processType;
 		char* _stack;
 		int _state;
-		Mailbox* _mailbox;
+		Queue* _mailbox;
 		jmp_buf _localJmpBuf;
 };
 #endif

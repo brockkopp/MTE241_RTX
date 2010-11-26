@@ -31,7 +31,8 @@ void i_timing_process()
 		tempMsg->setOriginPid(PROC_TIMING);
 		tempMsg->setMsgData(gRTX->wallClock->toString() + "\n");
 		gRTX->K_send_console_chars(tempMsg);
-		gRTX->K_release_msg_env( gRTX->retrieveOutAcknowledgement() );
+		gRTX->K_release_msg_env( getMessage(MsgEnv::DISPLAY_ACK,gRTX) );
+//		gRTX->K_release_msg_env( gRTX->retrieveOutAcknowledgement() );
 	}
 }
 

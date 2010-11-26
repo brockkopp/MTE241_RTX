@@ -15,7 +15,7 @@ PCB::PCB(PcbInfo* info)
 	assure(_stack != NULL, "Stack initialization failed", __FILE__, __LINE__, __func__, true);
 	_state = READY;
 
-	_mailbox = new Mailbox();
+	_mailbox = new Queue(Queue::MSG_ENV);
 	
 	jmp_buf tempBuf;
 	
@@ -120,11 +120,11 @@ string PCB::getStateName()
 	string state = "Unknown State";
 	switch(_state)
 	{
-		case EXECUTING: 			state = "EXECUTING"; break;	
-		case READY: 				state = "READY"; break;
-		case BLOCKED_ENV: 			state = "BLK-ENVELOPE"; break;
+		case EXECUTING: 						state = "EXECUTING"; break;	
+		case READY: 								state = "READY"; break;
+		case BLOCKED_ENV: 					state = "BLK-ENVELOPE"; break;
 		case BLOCKED_MSG_RECIEVE: 	state = "BLK-RECIEVE"; break;
-		case SLEEPING: 				state = "SLEEPING"; break;
+		case SLEEPING: 							state = "SLEEPING"; break;
 	}
 	return state;
 }
@@ -133,36 +133,17 @@ string PCB::getStateName()
 //Dequeues oldest message in the mailbox (FIFO)
 MsgEnv* PCB::retrieveMail( )
 {
-	return _mailbox->getMail();
-}
-
-MsgEnv* PCB::retrieveMail( int msgType )
-{
-	return _mailbox->getMail( msgType );
-}
-
-MsgEnv* PCB::retrieveAck()
-{
-	MsgEnv* ret;
-	//Attempt to retrieve a display acknowledgement
-	ret = _mailbox->getMail( MsgEnv::DISPLAY_ACK );
-	//If no acknowledgements, search for display failure
-	if(ret == NULL)
-		ret = _mailbox->getMail( MsgEnv::DISPLAY_FAIL );
-	if(ret == NULL)
-		ret = _mailbox->getMail( MsgEnv::BUFFER_OVERFLOW );
-	//return message (or NULL)
-	return ret;
+	return _mailbox->dequeue_MsgEnv();
 }
 
 //Enqueue message onto mailbox queue
 bool PCB::addMail( MsgEnv* message )
 {
-	return (_mailbox->deliverMail(message));
+	return (_mailbox->enqueue(message));
 }
 
 //Returns the number of messages in the mailbox
 int PCB::checkMail( ) 
 { 
-	return (_mailbox->getSize());
+	return (_mailbox->get_length());
 }
