@@ -65,7 +65,7 @@ class PCB
 		int _processType;
 		char* _stack;
 		int _state;
-		Mailbox* _mailbox;
+		Queue* _mailbox;
 		jmp_buf _localJmpBuf;
 };
 #endif

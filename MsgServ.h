@@ -24,7 +24,7 @@ class MsgServ
 		MsgEnv* retrieveOAck();
 		int releaseEnv(MsgEnv* msg);
 		MsgEnv* requestEnv();
-//	private:
+	private:
 		Queue* _freeEnvQ;
 		MsgTrace* _msgTrace;
 		Scheduler* _scheduler;

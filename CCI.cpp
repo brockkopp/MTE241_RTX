@@ -101,7 +101,6 @@ void processCCI()
 							message = "Too many parameters for 'Display Msg Buffers' command\n";
 						else
 						{
-								message = intToStr(gRTX->_mailMan->_freeEnvQ->get_length()) + "\n";
 //							message = "get trace buffers\n";
 		//					if( gRTX->K_get_trace_buffers(ioLetter) == EXIT_SUCCESS )
 		//						ioLetter = gRTX->K_receive_message();
