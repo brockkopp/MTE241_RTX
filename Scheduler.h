@@ -25,6 +25,7 @@ class Scheduler {
 		int is_blocked( PCB * target );
 		PCB* get_current_process();
 		PCB* get_blocked_on_env();
+		
 			
 //	protected:
 		void release_processor( );   
@@ -47,9 +48,10 @@ class Scheduler {
 		//Members
       	//PCB * _currentProcess; // Executing state
 		PQ* _readyProcs; // Ready to execute state
-     	Queue* _blockedEnv; // Blocked on resource state
-      	Queue* _blockedMsgRecieve;
-
+    Queue* _blockedEnv; // Blocked on resource state
+    Queue* _blockedMsgRecieve;
+		string _cpuTrace;
+		
 		friend class RTX;
 		friend class MsgServ;
 		friend class SignalHandler;

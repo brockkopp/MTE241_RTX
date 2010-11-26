@@ -15,6 +15,7 @@ Scheduler::Scheduler(Queue* readyProcs)
 	_readyProcs = new PQ( 4 );
 	_blockedEnv = new Queue( Queue::PROCCONBLOCK  );
 	_blockedMsgRecieve = new Queue( Queue::PROCCONBLOCK  );
+	_cpuTrace = "CPU trace does not track iniz of procs\n";
 	
 	//Add all readyProcs to the ready queue.
 	//int numProcs =	readyProcs->get_length();
@@ -69,7 +70,8 @@ Switches the currently executing process off the CPU and replaces it
 with the next available ready process.
 */
 int Scheduler::process_switch( ) {
-	context_switch( _readyProcs->pq_dequeue());
+
+	context_switch( _readyProcs->pq_dequeue() );
 
 	return 1;
 }
@@ -91,6 +93,9 @@ int Scheduler::context_switch( PCB * nextProc )
 		gRTX->setCurrentPcb( nextProc );
 		gRTX->getCurrentPcb()->setState( EXECUTING );
 		gRTX->_signalHandler->setSigMasked(nextProc->getAtomicCount() > 0);	//Set appropriate atomic state
+		
+		//Put process on CPU trace (for debugging etc...) and restore its context.
+		_cpuTrace += gRTX->getCurrentPcb()->getName() + "\n";
 		gRTX->getCurrentPcb()->restoreContext();
 	}
 	return 1;
@@ -231,6 +236,10 @@ int Scheduler::block_process (int reason)
 	}	
 	else if (reason == BLOCKED_MSG_RECIEVE){
 		target->setState( BLOCKED_MSG_RECIEVE );
+		return_value = _blockedMsgRecieve->enqueue( target );
+	}
+	else if (reason == SLEEPING){
+		target->setState( SLEEPING );
 		return_value = _blockedMsgRecieve->enqueue( target );
 	}
 

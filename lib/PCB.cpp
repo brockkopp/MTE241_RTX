@@ -26,8 +26,9 @@ PCB::PCB(PcbInfo* info)
 
 		if( setjmp( _localJmpBuf ) == 0 )
 			longjmp(tempBuf ,1 );
-		else //First time the PCB is put on CPU. Function runs here.
+		else {//First time the PCB is put on CPU. Function runs here.
 			gRTX->getCurrentPcb()->_fPtr();
+		}	
 	}
 }
 

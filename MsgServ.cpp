@@ -71,17 +71,15 @@ MsgEnv* MsgServ::recieveMsg()
 	PCB* tempPCB = gRTX->getCurrentPcb();
 	assure(tempPCB != NULL, "Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 
-
 	if (tempPCB->checkMail() == 0)
 	{
 		//i_process cannot be blocked
 		if (tempPCB->getProcessType() == PROCESS_I)
     		return NULL;
   		
-  		//block calling process
+  		//block calling process, this automatically calls a process_switch
 		_scheduler->block_process(BLOCKED_MSG_RECIEVE); 		
 
-		gRTX->K_release_processor();
 	}
 	//get mail
 	MsgEnv* tempMsg = tempPCB->retrieveMail();
