@@ -7,6 +7,17 @@ extern inputBuffer* gTxMemBuf;
 
 void i_timing_process()
 {	
+	MsgEnv* tempMsg;
+
+	if(gRTX->wallClock->increment())
+	{
+		tempMsg = gRTX->K_request_msg_env();
+		tempMsg->setOriginPid(PROC_TIMING);
+		tempMsg->setMsgData(gRTX->wallClock->toString() + "\n");
+		gRTX->K_send_console_chars(tempMsg);
+		gRTX->K_release_msg_env( gRTX->retrieveOutAcknowledgement() );
+	}
+
 	static Queue* waitingProcesses = new Queue(Queue::MSG_ENV); //internal Q
 
 	//overall rtx clock count used for trace buffer time stamp
@@ -17,7 +28,7 @@ void i_timing_process()
 	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	
 	//get new message envelopes from mailbox
-	MsgEnv* tempMsg = tempPCB->retrieveMail();
+	tempMsg = tempPCB->retrieveMail();
 
 	if (tempMsg != NULL)
 	{
@@ -34,13 +45,6 @@ void i_timing_process()
 		int returnAddress = tempMsg->getOriginPid();
 		gRTX->K_send_message(returnAddress, tempMsg);
 	}
-
-			
-	//increment user display wall clock
-	gRTX->wallClock->increment();
-	string time;
-	if((time = gRTX->wallClock->toString()) != "")
-		cout << time << endl;
 }
 
 /* Signal is sent to the i_keyboard_handler from the Keyboard process. 
