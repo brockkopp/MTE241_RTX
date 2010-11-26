@@ -6,9 +6,9 @@ SignalHandler::SignalHandler()
 {
 	debugMsg("Signal Handler Initializing...",0,0);
 	//Initialize default signal set
-	sigset( SIGBUS	,die);
-	sigset( SIGHUP	,die);
-	sigset( SIGILL	,die);
+	sigset( SIGBUS		,die);
+	sigset( SIGHUP		,die);
+	sigset( SIGILL		,die);
 	sigset( SIGQUIT	,die);
 	sigset( SIGABRT	,die);
 	sigset( SIGTERM	,die);

@@ -7,6 +7,12 @@ extern inputBuffer* gTxMemBuf;
 
 void i_timing_process()
 {	
+	//increment user display wall clock
+	gRTX->wallClock->increment();
+	string time;
+	if((time = gRTX->wallClock->toString()) != "")
+		cout << time << endl;
+		
 	static Queue* waitingProcesses = new Queue(Queue::MSG_ENV); //internal Q
 
 	//overall rtx clock count used for trace buffer time stamp
@@ -34,13 +40,6 @@ void i_timing_process()
 		int returnAddress = tempMsg->getOriginPid();
 		gRTX->K_send_message(returnAddress, tempMsg);
 	}
-
-			
-	//increment user display wall clock
-	gRTX->wallClock->increment();
-	string time;
-	if((time = gRTX->wallClock->toString()) != "")
-		cout << time << endl;
 }
 
 /* Signal is sent to the i_keyboard_handler from the Keyboard process. 
