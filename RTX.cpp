@@ -278,7 +278,6 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 	
 	int res = EXIT_SUCCESS;
 	//send message to i_crt_handler to deal with transmission of the message to the console
-	
 	msg_envelope->setMsgType(msg_envelope->TO_CRT);
 	
 	res = K_send_message(PROC_CRT, msg_envelope);
@@ -298,7 +297,6 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 			}
 			else //display_ack
 			{
-				//cout<<"display_ack\n";
 				res = EXIT_SUCCESS;
 			}
 		}

@@ -54,25 +54,20 @@ void i_keyboard_handler()
 	PCB* currPcb = gRTX->getCurrentPcb();
 	if(currPcb != NULL && (currPcb->checkMail() > 0)) //current PCB is valid
 	{
-		//extract information from shared memory
-		//if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
-		//{
-			string* userMsg = new string();
-			*userMsg = gRxMemBuf->data;
-			
-		//	cout<<"IKB: Message :"<<*userMsg<<"\tLength :"<<(*userMsg).size()<<endl;
-			do
-			{				
-				retMsg = gRTX->K_receive_message(); //should never have to loop since ensure that an envelope is in the mailbox
-			}
-			while( retMsg == NULL);
-			
-			int invoker = retMsg->getOriginPid();
-			retMsg->setMsgData(*userMsg);
-			retMsg->setMsgType(retMsg->CONSOLE_INPUT_FIKB);
-			gRTX->K_send_message(invoker, retMsg);
-			gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
-	//	}
+		string* userMsg = new string();
+		*userMsg = gRxMemBuf->data;
+		
+		do
+		{				
+			retMsg = gRTX->K_receive_message(); //should never have to loop since ensure that an envelope is in the mailbox
+		}
+		while( retMsg == NULL);
+		
+		int invoker = retMsg->getOriginPid();
+		retMsg->setMsgData(*userMsg);
+		retMsg->setMsgType(retMsg->CONSOLE_INPUT_FIKB);
+		gRTX->K_send_message(invoker, retMsg);
+		gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
 	}
 	else //an error occurred
 	{
