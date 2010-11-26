@@ -1,5 +1,26 @@
 #include "tools.h"
-#include "debug.h"
+
+MsgEnv* getMessage(int msgType, RTX* rtx)
+{
+	assure(rtx != NULL, "rtx parameter NULL",__FILE__,__LINE__,__func__,true);
+	
+	int myPid = rtx->getCurrentPid();
+	MsgEnv* ret = rtx->K_receive_message();
+	MsgEnv* startEnv = NULL;
+	while(ret != NULL && ret->getMsgType() != msgType)
+	{
+		if(startEnv == NULL)
+			startEnv = ret;
+		else if(ret == startEnv)
+			ret = NULL;
+		else
+		{
+			rtx->K_send_message(myPid,ret);		//Prevent looping on same message
+			ret = rtx->K_receive_message();
+		}
+	}
+	return ret;
+}
 
 string intToStr(int num)
 {

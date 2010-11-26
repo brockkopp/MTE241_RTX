@@ -85,12 +85,9 @@ cout << "PROCESS C in loop!\n";
 				sleep(10);
 
 
-//				gRTX->K_request_delay(100, 20, myMsg);
-				//do
-				//{
-				//	myMsg = K_receive_message();
-				//}
-				//while(myMsg->getMsgData !
+				gRTX->K_request_delay(100, 20, myMsg);
+				myMsg = getMessage(20,gRTX);
+				gRTX->K_release_msg_env(myMsg);
 			}
 		}
 			cout << "READY PROCS : \n" << gRTX->_scheduler->_readyProcs->toString();
