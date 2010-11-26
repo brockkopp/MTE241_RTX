@@ -9,6 +9,18 @@ MsgEnv::MsgEnv()
 	msgFields._msgData = " ";
 }
 
+int MsgEnv::initMsg(int destPid, int originPid, int msgType, string msgData)
+{
+	if(	
+			setDestPid(destPid) == EXIT_SUCCESS 			&&
+			setOriginPid(originPid) == EXIT_SUCCESS   &&
+			setMsgType(msgType) == EXIT_SUCCESS 			&&
+			setMsgData(msgData) == EXIT_SUCCESS
+		 )
+					return EXIT_SUCCESS;
+	return EXIT_ERROR;
+}
+
 int MsgEnv::getDestPid()
 {
 	return msgFields._destPid;
@@ -57,9 +69,10 @@ int MsgEnv::getMsgType()
 	return msgFields._msgType;
 }
 
-void MsgEnv::setMsgType(int newMsgType)
+int MsgEnv::setMsgType(int newMsgType)
 {
 		msgFields._msgType = newMsgType;
+		return EXIT_SUCCESS;
 }
 
 string MsgEnv::getMsgTypeName()

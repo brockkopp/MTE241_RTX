@@ -19,7 +19,6 @@
 //Globals
 RTX* gRTX;
 
-int gRunTime = 0;
 inputBuffer* gRxMemBuf;
 inputBuffer* gTxMemBuf;
 

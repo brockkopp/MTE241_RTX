@@ -29,6 +29,7 @@ class MsgEnv
 		static const int COUNT_REPORT = 			7;
 
 		MsgEnv();
+		int initMsg(int destPid, int originPid, int msgType, string msgData);
 		int getDestPid();
 		int setDestPid(int newDestPid);
 		int getOriginPid();
@@ -36,8 +37,8 @@ class MsgEnv
 		int getTimeStamp();
 		int setTimeStamp(int newTimeStamp);
 		int getMsgType();
+		int setMsgType(int newMsgType);
 		string getMsgTypeName();
-		void setMsgType(int newMsgType);
 		string getMsgData();
 		int setMsgData(string msgInfo);
 };
