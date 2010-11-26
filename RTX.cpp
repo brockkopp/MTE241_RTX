@@ -329,8 +329,12 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 			string message = msg_envelope->getMsgData();
 			msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);	
 			res = K_send_message(invoker, msg_envelope);
-			if(message == "")
-				res = EXIT_ERROR;
+			//cout<<"RTX: Message :"<<message<<"\tLength : "<<message.size()<<endl;
+//			if(message == "")
+//			{
+//				cout<<"RTX: Empty message\n";
+//				res = EXIT_ERROR;
+//			}
 		}
 		else
 		{

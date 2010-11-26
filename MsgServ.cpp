@@ -67,8 +67,10 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 MsgEnv* MsgServ::recieveMsg()
 {
 	//retrieve PCB of currently excecuting process 
+
 	PCB* tempPCB = gRTX->getCurrentPcb();
 	assure(tempPCB != NULL, "Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+
 
 	if (tempPCB->checkMail() == 0)
 	{
@@ -113,7 +115,6 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 	_freeEnvQ->enqueue(msg);
 
 	//check if another process is waiting for an envelope
-	
 	PCB* tempPcb = _scheduler->get_blocked_on_env(); 
 	//unblock waiting process, if one is waiting   
 	bool temp;
@@ -121,7 +122,6 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 		temp = _scheduler->unblock_process(tempPcb);
 	if(!temp)
 		return EXIT_ERROR;
-	 // ERic
 	return EXIT_SUCCESS;
 }
 

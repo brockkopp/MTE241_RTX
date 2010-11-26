@@ -55,10 +55,12 @@ void i_keyboard_handler()
 	if(currPcb != NULL && (currPcb->checkMail() > 0)) //current PCB is valid
 	{
 		//extract information from shared memory
-		if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
-		{
+		//if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
+		//{
 			string* userMsg = new string();
 			*userMsg = gRxMemBuf->data;
+			
+		//	cout<<"IKB: Message :"<<*userMsg<<"\tLength :"<<(*userMsg).size()<<endl;
 			do
 			{				
 				retMsg = gRTX->K_receive_message(); //should never have to loop since ensure that an envelope is in the mailbox
@@ -70,7 +72,7 @@ void i_keyboard_handler()
 			retMsg->setMsgType(retMsg->CONSOLE_INPUT_FIKB);
 			gRTX->K_send_message(invoker, retMsg);
 			gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
-		}
+	//	}
 	}
 	else //an error occurred
 	{
