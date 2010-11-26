@@ -119,8 +119,10 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 
 MsgEnv* MsgServ::requestEnv()
 {
+	cout<< "EnvCnt: "<<_freeEnvQ->get_length()<<endl;
 	if( _freeEnvQ->isEmpty() ) 
 	{
+		debugMsg("Empty Envelope Queue!!!",1,1);
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB;
 		assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);

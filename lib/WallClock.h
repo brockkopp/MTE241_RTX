@@ -9,7 +9,7 @@ class WallClock
 {
 	public:
 		WallClock(unsigned int tickLength);
-		void increment();
+		bool increment();
 		int setTime( int hours, int minutes, int seconds );
 		int setTime(string time[]);
 		void setDisplayed(bool isDisplayed);
