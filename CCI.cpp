@@ -11,24 +11,28 @@ void processCCI()
 		string message;
 		int params;
 		MsgEnv* ioLetter = gRTX->K_request_msg_env();
-		ioLetter->setOriginPid(gRTX->getCurrentPid());
+
 
 		assure(ioLetter != NULL, "CCI ioLetter is NULL",__FILE__,__LINE__,__func__,true);
 		
-//		cout << "test1\n";
+		ualarm(TICK_TIME, TICK_TIME);
+		
+//		cout << "test1 atomic\n";
 //		gRTX->K_request_delay(100,20,ioLetter);
+//	cout << "test mid\n";
 //		ioLetter = gRTX->K_receive_message();
 //		cout << "test2\n";
 		
 		
-		ualarm(TICK_TIME, TICK_TIME);
+		
 		
 		while(true)
 		{
 			command = "";
 			input[0] = input[1] = input[2] = "";
 			message = "";	
-			
+				
+			ioLetter->setOriginPid(gRTX->getCurrentPid());
 			ioLetter->setMsgData(">RTX$ ");
 			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
 			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
