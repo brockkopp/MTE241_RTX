@@ -128,10 +128,8 @@ MsgEnv* MsgServ::requestEnv()
 		if (tempPCB->getProcessType() == PROCESS_I)
     		return NULL;
 	
-		//block process is no envelope is available
+		//block process if no envelope is available. This chains into a context switch.
  		_scheduler->block_process(BLOCKED_ENV); 			
-
-		gRTX->K_release_processor();
 	}
 	MsgEnv* ptrMsg = _freeEnvQ->dequeue_MsgEnv();
 	return ptrMsg;

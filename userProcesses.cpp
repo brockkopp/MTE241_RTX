@@ -86,7 +86,7 @@ cout << "PROCESS C in loop!\n";
 //				myMsg = gRTX->K_receive_message();
 
 				cout << "Process C <-- going to sleep. Needs to use timing services when they are implemented\n";
-				sleep(1000);
+				sleep(10);
 
 
 //				gRTX->K_request_delay(100, 20, myMsg);

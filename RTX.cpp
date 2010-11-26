@@ -363,7 +363,7 @@ int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 extern RTX* gRTX;
 void RTX::null_proc() {
 	while(true)
-	{	
+	{
 		assure(gRTX != NULL, "gRTX pointer NULL",__FILE__,__LINE__,__func__,true);
 		gRTX->K_release_processor();
 	}
