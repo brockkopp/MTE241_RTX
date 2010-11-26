@@ -19,7 +19,6 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 
 	for(int i=0; i < PROCESS_COUNT; i++)
 	{
-		//gPcbList[i] = new PCB(initTable[i]);
 		_pcbList[i] = new PCB(initTable[i]);
 		
 		if ( _pcbList[i]->getProcessType() != PROCESS_I )
@@ -30,6 +29,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	delete pcbTmpList;
 	
 	//_scheduler->setCurrentProcess(_pcbList[0]);	//TESTING ONLY!!!
+
 	setCurrentPcb(PROC_CCI);
 
 	_msgTrace = new MsgTrace();
@@ -55,44 +55,13 @@ RTX::~RTX()
 	//delete _signalHandler;
 }
 
-//int RTX::displayText(MsgEnv* ioLetter)
-//{
-////	int ret = EXIT_ERROR;
-//	if(ioLetter == NULL)
-//		return NULL;
-//	string content = ioLetter->getMsgData();
-//	
-//	int lineCount = countChars(content,'\n');
-//	
-//	if(lineCount == 0)
-//	{
-//		K_send_console_chars(ioLetter);
-//		ioLetter = retrieveOutAcknowledgement();
-//	}
-//	else
-//	{	
-//		string lines[lineCount];
-//		parseString(content,lines,'\n',lineCount);
-//	
-//		for(int i=0; i < lineCount; i++)
-//		{
-//			cout << lines[i] + '\n';
-//			//ioLetter->setMsgData(lines[i]);
-//			//K_send_console_chars(ioLetter);
-//		}
-//		cout.flush();
-//	}
-//		
-//	return -2;
-//}
-
 //assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getPcb(int pid, PCB** pcb)
 {
 	int ret = EXIT_SUCCESS;
 
 	if(pid >= 0 && pid < PROCESS_COUNT)
-		*pcb = _pcbList[pid];
+		*pcb = _pcbList[pid];		
 	else
 		ret = EXIT_ERROR;
 	
@@ -142,7 +111,6 @@ int RTX::getCurrentPid()
 //			ret = EXIT_SUCCESS;
 //	return ret;
 //}
-
 
 MsgEnv* RTX::retrieveOutAcknowledgement()
 {
@@ -279,7 +247,6 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
 int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 {
-	atomic(true);
 	int ret = EXIT_ERROR;
 	if(msg_envelope != NULL) //error check
 	{
@@ -310,25 +277,26 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 			}
 			msg_envelope->setMsgData(content); //reset data to original before breaking it down
 		}	
-		ret = K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
+		K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
 	}
-	atomic(false);
 	return ret;
 }
 
 int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 {
-	atomic(true);
 	int iCRTId = getpid(); //send a signal to the RTX
-	int iCRTPID = PROC_CRT;
 	
 	int res = EXIT_SUCCESS;
 	//send message to i_crt_handler to deal with transmission of the message to the console
+	
 	msg_envelope->setMsgType(msg_envelope->TO_CRT);
-	res = K_send_message(iCRTPID, msg_envelope);
+	
+	res = K_send_message(PROC_CRT, msg_envelope);
+		
 	if(res != EXIT_ERROR)
 	{
 		kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
+		
 		msg_envelope = retrieveOutAcknowledgement(); //will receive a message
 	  	
 		bool transmission_failed = (msg_envelope == NULL);
@@ -349,7 +317,6 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 			res = EXIT_ERROR;
 		}
 	}
-	atomic(false);
 	return res;
 }
 
@@ -360,36 +327,28 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (i.e. no characters waiting) */
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
-/*	int res;
+	int res;
 	if(atomic(true) == EXIT_SUCCESS)
 	{	
-		//int invoker = msg_envelope->getOriginPid();
-		if(gCCI->userInputs->get_length() == 0) //no user input is available
+		int invoker = msg_envelope->getOriginPid();
+		
+		res = K_send_message(PROC_KB, msg_envelope);
+		if(res == EXIT_SUCCESS)
 		{
-		  	msg_envelope->setMsgData("");
-		  	msg_envelope->setMsgType(msg_envelope->NO_INPUT);
-		  	//K_send_message(invoker, msg_envelope);
-		  	res = EXIT_ERROR;
+			msg_envelope = K_receive_message(); //message will be sent by iprocess
+			string message = msg_envelope->getMsgData();
+			msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);	
+			res = K_send_message(invoker, msg_envelope);
+			if(message == "")
+				res = EXIT_ERROR;
 		}
 		else
 		{
-			//CCI current dequeueing because not using messages!
-////			msg_envelope->setMsgData(*(gCCI->userInputs->dequeue_string()));
-//			string* temp = gCCI->userInputs->dequeue_string();
-////			if(temp==NULL)
-////				cout<<"null string! \n";
-////			else
-//				cout<<"Dequeued item : "<<*temp<<"\n";
-//			
-//			cout<<"\tAfter dequeuing: "<<gCCI->userInputs->toString()<<"\n";
-//			
-			//msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);		
-			//res = K_send_message(invoker, msg_envelope);
-			res = EXIT_SUCCESS;
+			debugMsg("RTX:333 Failed to send envelope!\n");
 		}
 	}	
 	atomic(false);
-	return res;*/ return -2;
+	return res;
 }
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)

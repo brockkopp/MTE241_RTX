@@ -16,10 +16,8 @@
 
 #define STACK_SIZE 		16372	//Stack size in bytes
 
-
 //Globals
 RTX* gRTX;
-Queue* gUserInputs;
 
 int gRunTime = 0;
 inputBuffer* gRxMemBuf;
@@ -29,7 +27,7 @@ inputBuffer* gTxMemBuf;
 void doTests();
 int initializeShmem();
 int cleanupShmem();
-int createInitTable(PcbInfo* initTable[]);
+int createInitTable(PcbInfo** initTable);
 
 struct Shmem
 {
@@ -46,11 +44,11 @@ int pidKB = 0,
 	pidCRT = 0, 
 	pidRTX = 0;
 	
-PcbInfo **initTable;
+
 
 int main(void)
 {
-	initTable = new PcbInfo *[7];
+	PcbInfo* initTable[PROCESS_COUNT];
 
 	pidRTX = getpid();
 
@@ -103,7 +101,7 @@ int main(void)
 	//Start scheduler. Put the first process onto the CPU
 	gRTX->start_execution();
 
-//	Signal cci init failed, program should not normally reach this point
+	//	Signal cci init failed, program should not normally reach this point
 
 	//assure(processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
 
@@ -374,16 +372,12 @@ while (true) {
 }
 }
 
-int createInitTable(PcbInfo* initTable[])
+int createInitTable(PcbInfo** initTable)
 {	
 	int ret = EXIT_SUCCESS;
 
 	try	//Assure init table is allocated successfully
 	{
-//		foo **fooPointer;
-//fooPointer = new foo *[10] // memory for an array of 10 pointers
-
-	
 		//Loop through each init table entry and allocate memory
 		for(int i = 0; i <= PROCESS_COUNT; i++){
 			//Do not throw error upon failure, use own validation

@@ -286,7 +286,7 @@ int Scheduler::setProcessState(int pid, int state)
 	if(tmpPcb == NULL)
 		return EXIT_ERROR;
 	else
-		return tmpPcb->setState(state);
+		return tmpPcb->setState(state);		
 }
 
 int Scheduler::is_blocked( PCB * target ) 
