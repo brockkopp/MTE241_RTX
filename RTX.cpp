@@ -184,8 +184,17 @@ int RTX::K_release_processor()
 	return EXIT_SUCCESS;
 }
 
+/*
+arguments:
+	msg must have memory allocaed to it before fxn call;
+*/
 int RTX::K_request_process_status(MsgEnv* msg) 
 {
+	if (msg == NULL) {
+			debugMsg("Called K_request_process_status without first allocating memory to the passed MsgEnv\n");
+		}
+	
+
 	atomic(true);
 	int ret = EXIT_ERROR;
 	if(msg != NULL)
@@ -356,12 +365,12 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
+	int ret = EXIT_ERROR;
 	atomic(true);
 	//call MsgTrace function to format trace buffers into table
-	_msgTrace->getTraces(msg_envelope);
-	cout << msg_envelope->getMsgData();
+	ret = _msgTrace->getTraces(msg_envelope);
+	
 	//send table formated string to user display 
-	int ret = K_send_console_chars(msg_envelope);
 	atomic(true);
 	return ret;
 }
