@@ -51,9 +51,7 @@ void PCB::restoreContext()
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~
  ~*~*~*~* Getters/Setters ~*~*~*~*~~*~*
  *~*~*~*~*~~*~*~*~*~~*~*~*~*~~*~*~*~*~*/
-		
-//int PCB::get_atomicCount() { return _atomicCount; }
-//void PCB::set_atomicCount( int atomCount ) {	_atomicCount = atomCount; }
+
 int PCB::incAtomicCount()
 {
 	return ++_atomicCount;

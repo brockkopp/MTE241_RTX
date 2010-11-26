@@ -61,7 +61,7 @@ itemType Queue::pluck_gen( itemType value )
 				_rear = NULL;
 				_front = NULL;
 			}
-			else //_length >= 2
+			else
 			{
 				if(scanPos == _length - 1) //plucking tail
 					_rear = pluckee->link;
@@ -133,7 +133,6 @@ Queue::~Queue()
 		{
 			currNode = nextNode;
 			nextNode = currNode->link;
-//			delete[] currNode;
 			delete currNode;
 		}
  	}
@@ -290,7 +289,8 @@ MsgEnv* Queue::get_front()
 {
 	if(_queueType == Queue::MSG_ENV)
 		return (MsgEnv*)_front;
-	return NULL;
+	else
+		return NULL;
 }
 
 int Queue::get_length()

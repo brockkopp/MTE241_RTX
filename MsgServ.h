@@ -10,7 +10,8 @@
 #define BLOCKED_MSG_RECIEVE 2
 #define SLEEPING 3							
 
-class Scheduler; // what's this for? - eric
+class Scheduler;
+class MsgTrace;
 
 class MsgServ
 {

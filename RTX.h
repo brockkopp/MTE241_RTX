@@ -17,6 +17,8 @@ class SignalHandler;
 class MsgServ;
 class Scheduler;
 class Queue;
+class MsgEnv;
+class MsgTrace;
 
 //RTX Global Constants
 

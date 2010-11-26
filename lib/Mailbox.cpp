@@ -61,6 +61,6 @@ MsgEnv* Mailbox::getMail(int msgType)
 		prev = curr;
 		curr = curr->link;
 	}
-//	assure(retMsg != NULL,"No ack in mailbox(" + intToStr(msgType) + ")",__FILE__,__LINE__,__func__,false);
-	return retMsg; //if value wasn't in queue, pluckee is NULL
+
+	return retMsg; 	//if value wasn't in queue, retMsg is NULL
 }
