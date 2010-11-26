@@ -22,15 +22,6 @@ void processCCI()
 			input[0] = input[1] = input[2] = "";
 			message = "";	
 			
-//			string temp = "";
-//			cout<<"temp : "<<temp<<"\ttemp length : "<<temp.size()<<endl;
-//			temp = "\0";
-//			cout<<"temp : "<<temp<<"\ttemp length : "<<temp.size()<<endl;
-//			temp = "\n";
-//			cout<<"temp : "<<temp<<"\ttemp length : "<<temp.size()<<endl;
-//			cout<<("\0" == "")?"EQUAL\n":"NOT equal\n";
-//			
-			
 			ioLetter->setMsgData(">RTX$ ");
 			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
 			ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
@@ -139,9 +130,11 @@ void processCCI()
 					else if(input[0] == "n")
 					{
 						int pid,priority;
-						PCB* pcb = NULL;					
-						if(strToInt(input[1],&priority) != EXIT_SUCCESS || strToInt(input[2],&pid) != EXIT_SUCCESS)
-							message = "invalid parameters\n";
+						PCB* pcb = NULL;			
+						if(params < 3)
+							message = "Not enough parameters for 'Change Priority' Command\n";		
+						else if(strToInt(input[1],&priority) != EXIT_SUCCESS || strToInt(input[2],&pid) != EXIT_SUCCESS)
+							message = "Invalid parameters\n";
 						else if(gRTX->getPcb(pid,&pcb) != EXIT_SUCCESS)
 							message = "Invalid process id\n";
 						else if(pcb->setPriority(priority) != EXIT_SUCCESS)
