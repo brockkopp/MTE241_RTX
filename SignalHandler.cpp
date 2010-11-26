@@ -60,7 +60,6 @@ void SignalHandler::handler( int sigNum )
 {
 
 	int prevProc = gRTX->getCurrentPid();
-	
 	//-1 Fatal since no process's stack to run on
 	assure(prevProc >= 0, "No Process on CPU during i_process call. Sig(" + intToStr(sigNum) + ")",__FILE__,__LINE__,__func__,true);
 	gRTX->_scheduler->setProcessState(prevProc,READY);
@@ -84,7 +83,7 @@ void SignalHandler::handler( int sigNum )
 			gRTX->_scheduler->setProcessState(PROC_KB,READY);
 			break;
 
-		case SIGUSR2:	//Crt
+		case SIGUSR2:	//Crt		
 			gRTX->_scheduler->setProcessState(PROC_CRT,EXECUTING);
 			gRTX->setCurrentPcb(PROC_CRT);
 			i_crt_handler();

@@ -19,6 +19,7 @@ class Scheduler;
 class Queue;
 class MsgEnv;
 class MsgTrace;
+class WallClock;
 
 //RTX Global Constants
 
@@ -51,8 +52,8 @@ class RTX
 		int getPcb(int pid, PCB** pcb);
 		PCB* getCurrentPcb();
 		int getCurrentPid();
-		MsgEnv* retrieveOutAcknowledgement();
-		MsgEnv* retrieveInAcknowledgement();
+//		MsgEnv* retrieveOutAcknowledgement();
+//		MsgEnv* retrieveInAcknowledgement();
 		int atomic(bool on);
 
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
@@ -65,7 +66,6 @@ class RTX
 		int K_change_priority(int new_priority, int target_process_id);
 		int K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope);
 		int K_send_console_chars(MsgEnv* msg_envelope);
-		int send_chars_to_screen(MsgEnv* msg_envelope);
 		int K_get_console_chars(MsgEnv* msg_envelope);
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
 		
@@ -93,6 +93,8 @@ class RTX
 		MsgTrace*			_msgTrace;
 		MsgServ* 			_mailMan;
 		bool					_started;
+				
+		int send_chars_to_screen(MsgEnv* msg_envelope);
 		
 		friend class SignalHandler;
 		friend class Scheduler;

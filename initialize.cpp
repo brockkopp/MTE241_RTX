@@ -4,7 +4,6 @@
 #include "SignalHandler.h"
 #include "tests.h"
 #include "Shmem.h"
-#include "lib/Mailbox.h"
 
 /* Not sure it'salright to include .cpp's need to review this --Karl */
 #include "iprocesses.h"

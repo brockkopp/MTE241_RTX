@@ -39,11 +39,8 @@ int main(int arg1, char* arg[])
 	do
 	{
 		userInput = getchar();
-		//if(userInput == ^[[A)
-		//	cout<<"hit Up\n";
 		if (userInput == '\n') //indicates end of message. Keyboard process must add information to the shared memory and send a signal to the RTX
 		{
-//			cout << "newLine\n";
 			rx_mem_buf->data[indexInBuf] = '\0';
 			rx_mem_buf->busyFlag = 1; //set flag that keyboard is "busy" i.e. trying to transmit something from shared memory to parent process
 			

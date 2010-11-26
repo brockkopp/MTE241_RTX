@@ -93,7 +93,7 @@ void userProcessC()
 
 				myMsg->setMsgData("Process C");
 				while(gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS);
-				gRTX->retrieveOutAcknowledgement();
+				getMessage(MsgEnv::DISPLAY_ACK,gRTX);
 //				cout << "Process C <-- This is a cout. Needs to be send_console_chars when CCI is implemented.\n";
 //			strToInt( myMsg->getMsgData(), &num );
 //				myMsg = gRTX->K_receive_message();
@@ -101,13 +101,9 @@ void userProcessC()
 //				cout << "Process C <-- going to sleep. Needs to use timing services when they are implemented\n";
 //				sleep(10);
 
-
-//				gRTX->K_request_delay(100, 10, myMsg);
-//				do
-//				{
-//					myMsg = gRTX->K_receive_message();
-//				}
-//				while(myMsg->getMsgType() != 10);
+				gRTX->K_request_delay(100, 20, myMsg);
+				myMsg = getMessage(20,gRTX);
+				gRTX->K_release_msg_env(myMsg);
 			}
 		}
 //			cout << "READY PROCS : \n" << gRTX->_scheduler->_readyProcs->toString();
