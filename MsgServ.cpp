@@ -119,7 +119,6 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 
 MsgEnv* MsgServ::requestEnv()
 {
-	cout<< "EnvCnt: "<<_freeEnvQ->get_length()<<endl;
 	if( _freeEnvQ->isEmpty() ) 
 	{
 		debugMsg("Empty Envelope Queue!!!",1,1);
