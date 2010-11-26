@@ -8,6 +8,7 @@ void userProcessA()
 //		cout << "\nuserA real output\n";
 //		gRTX->K_release_processor();
 //	}	
+
 	
 	//Recieve a msg
 	MsgEnv* myMsg = gRTX->K_receive_message();
@@ -30,11 +31,12 @@ void userProcessA()
 
 void userProcessB()
 {
+
 //	while(true){
 //		cout << "\nuserB real output\n";
 //		gRTX->K_release_processor();
 //	}	
-	
+
 	MsgEnv* myMsg;
 	while(true)
 	{
@@ -50,6 +52,7 @@ void userProcessC()
 //		cout << "\nuserC real output\n";
 //		gRTX->K_release_processor();
 //	}	
+
 	
 	int num = 0;
 	MsgEnv* myMsg;

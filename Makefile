@@ -33,7 +33,7 @@ clean_all:
 	@rm -f *.o *.out #Delete everything!!!!
 	
 memcheck: all
-	@valgrind --leak-check=yes --track-origins=yes ./RTX.out
+	@valgrind --leak-check=yes --track-origins=yes --trace-children=yes ./RTX.out
 
 execute:
 	@./$(TITLE)				#Run main executable after build

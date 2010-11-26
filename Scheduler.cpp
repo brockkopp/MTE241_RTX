@@ -86,10 +86,11 @@ int Scheduler::context_switch( PCB * nextProc )
 //		//Put current proc onto ready queue
 //		gRTX->getCurrentPcb()->setState( READY );
 //		_readyProcs->pq_enqueue( gRTX->getCurrentPcb(), gRTX->getCurrentPcb()->getPriority());
-	
+		
 		//Put the new pcb on the cpu
 		gRTX->setCurrentPcb( nextProc );
 		gRTX->getCurrentPcb()->setState( EXECUTING );
+		gRTX->_signalHandler->setSigMasked(nextProc->getAtomicCount() > 0);	//Set appropriate atomic state
 		gRTX->getCurrentPcb()->restoreContext();
 	}
 	return 1;

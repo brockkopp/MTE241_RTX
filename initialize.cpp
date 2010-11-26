@@ -92,12 +92,12 @@ int main(void)
 	
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
-#if TESTS_MODE == 1
-	//doTests();
-#endif
 	gRTX = new RTX(initTable, sigHandler);
 	//processCCI();		//TESTING ONLY -- SHOULD BE PROCESS
 
+#if TESTS_MODE == 1
+	doTests();
+#endif
 	//Start scheduler. Put the first process onto the CPU
 	gRTX->start_execution();
 
@@ -134,47 +134,46 @@ void doTests()
 	  */ 
 //*******************************************************ERIC TEST****************************************************************	
 	
-	debugMsg("ERIC TEST\n---------\n");
-	
-	PCB* tempPCB;
-	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
-	
-	MsgEnv* msg = gRTX->K_request_msg_env();
-	debugMsg("msg allocated\n");
-	msg->setMsgData("test 1");
-	debugMsg("msg data added\n");
-	msg->setMsgType(5);
-	debugMsg("msg type added\n");
-	msg->setTimeStamp(10);
-	debugMsg("msg time stamp added\n");
-	gRTX->K_send_message(6,msg);
-	debugMsg("msg sent\n");
-	msg = NULL;
+//	debugMsg("ERIC TEST\n---------\n make/get PCB\n");
+//	
+//	PCB* tempPCB;
+//	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
+//	debugMsg("get msg\n");
+//	MsgEnv* msg = gRTX->K_request_msg_env();
+//	debugMsg("msg allocated\n");
+//	msg->setMsgData("test 1");
+//	debugMsg("msg data added\n");
+//	msg->setMsgType(5);
+//	debugMsg("msg type added\n");
+//	msg->setTimeStamp(10);
+//	debugMsg("msg time stamp added\n");
+//	gRTX->K_send_message(6,msg);
+//	debugMsg("msg sent\n");
+//	msg = NULL;
 
-	PCB* testPtr;
-	gRTX->getPcb(6,&testPtr);
-	debugMsg("receiver PCB retrieved\n");
-	msg = gRTX->K_receive_message();
-	debugMsg("mail retrieved\n");
-	if (msg != NULL)
-	{
-	debugMsg("origin PID: "+intToStr(msg->getOriginPid())+"\n");
-	debugMsg("dest PID: "+intToStr(msg->getDestPid())+"\n");
-	debugMsg("Msg Type: "+intToStr(msg->getMsgType())+"\n");
-	debugMsg("Time Stamp: "+intToStr(msg->getTimeStamp())+"\n");
-	debugMsg("MsgData: "+msg->getMsgData()+"\n");
-	}
-	debugMsg("releasing env..\n");
-	debugMsg("Successful?: "+intToStr(gRTX->K_release_msg_env(msg))+"\n");
-	
-	msg = gRTX->K_request_msg_env();
-	debugMsg("msg allocated\n");
-	debugMsg("printing trace buffers...\n");
-	gRTX->K_get_trace_buffers(msg);
-	gRTX->K_send_console_chars(msg);
-//	gRTX->atomic(true);
-	
-	debugMsg("ERIC TEST END\n-------------\n");	
+//	PCB* testPtr;
+//	gRTX->getPcb(6,&testPtr);
+//	debugMsg("receiver PCB retrieved\n");
+//	msg = gRTX->K_receive_message();
+//	debugMsg("mail retrieved\n");
+//	if (msg != NULL)
+//	{
+//	debugMsg("origin PID: "+intToStr(msg->getOriginPid())+"\n");
+//	debugMsg("dest PID: "+intToStr(msg->getDestPid())+"\n");
+//	debugMsg("Msg Type: "+intToStr(msg->getMsgType())+"\n");
+//	debugMsg("Time Stamp: "+intToStr(msg->getTimeStamp())+"\n");
+//	debugMsg("MsgData: "+msg->getMsgData()+"\n");
+//	debugMsg("releasing env..\n");
+//	debugMsg("Successful?: "+intToStr(gRTX->K_release_msg_env(msg))+"\n");
+//	}
+//	msg = gRTX->K_request_msg_env();
+//	debugMsg("msg allocated\n");
+//	debugMsg("printing trace buffers...\n");
+//	gRTX->K_get_trace_buffers(msg);
+//	gRTX->K_send_console_chars(msg);
+
+//	
+//	debugMsg("ERIC TEST END\n-------------\n");	
 //********************************************************ERIC TEST END**********************************************************	 
 
 

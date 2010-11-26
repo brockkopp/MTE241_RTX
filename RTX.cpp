@@ -42,7 +42,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 
 	_started = false;
 
-	debugMsg("RTX Init Done",0,1);
+	debugMsg("RTX Init Done",0,2);
 }
 
 RTX::~RTX()
@@ -102,16 +102,6 @@ int RTX::getCurrentPid()
 	return pid;
 }
 
-//int RTX::setProcessState(int pid, int state)
-//{
-//	int ret = EXIT_ERROR;
-//	PCB* tmpPcb;
-//	if(getPcb(pid, &tmpPcb) == EXIT_SUCCESS)
-//		if(tmpPcb->setState(state) == EXIT_SUCCESS)
-//			ret = EXIT_SUCCESS;
-//	return ret;
-//}
-
 MsgEnv* RTX::retrieveOutAcknowledgement()
 {
 	return _mailMan->retrieveOAck();
@@ -168,11 +158,11 @@ MsgEnv* RTX::K_request_msg_env()
 }
 
 //Call MsgServ class function releaseEnv
-int RTX::K_release_msg_env(MsgEnv* memory_block)
+int RTX::K_release_msg_env(MsgEnv* usedEnv)
 {
-//	atomic(true);
-	int ret = _mailMan->releaseEnv(memory_block);
-//	atomic(false);
+	atomic(true);
+	int ret = _mailMan->releaseEnv(usedEnv);
+	atomic(false);
 	return ret;
 }
 
@@ -288,7 +278,7 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 			}
 			msg_envelope->setMsgData(content); //reset data to original before breaking it down
 		}	
-		ret = K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
+		K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
 	}
 	return ret;
 }
@@ -296,14 +286,13 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 {
 	int iCRTId = getpid(); //send a signal to the RTX
-	int iCRTPID = PROC_CRT;
 	
 	int res = EXIT_SUCCESS;
 	//send message to i_crt_handler to deal with transmission of the message to the console
 	
-		msg_envelope->setMsgType(msg_envelope->TO_CRT);
-		
-		res = K_send_message(iCRTPID, msg_envelope);
+	msg_envelope->setMsgType(msg_envelope->TO_CRT);
+	
+	res = K_send_message(PROC_CRT, msg_envelope);
 		
 	if(res != EXIT_ERROR)
 	{
@@ -339,7 +328,7 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (i.e. no characters waiting) */
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
-/*	int res;
+	int res;
 	if(atomic(true) == EXIT_SUCCESS)
 	{	
 		int invoker = msg_envelope->getOriginPid();
@@ -351,8 +340,12 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 			string message = msg_envelope->getMsgData();
 			msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);	
 			res = K_send_message(invoker, msg_envelope);
-			if(message == "")
-				res = EXIT_ERROR;
+			//cout<<"RTX: Message :"<<message<<"\tLength : "<<message.size()<<endl;
+//			if(message == "")
+//			{
+//				cout<<"RTX: Empty message\n";
+//				res = EXIT_ERROR;
+//			}
 		}
 		else
 		{
@@ -360,7 +353,7 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 		}
 	}	
 	atomic(false);
-	return res;*/ return -2;
+	return res;
 }
 
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)

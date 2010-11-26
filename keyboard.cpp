@@ -38,12 +38,16 @@ int main(int arg1, char* arg[])
 	char userInput;
 	do
 	{
+		//cout<<"KB Getting char...\n";
 		userInput = getchar();
+		//cout<<"KB Got input!\n";
 		//cin>>userInput;
 		if (userInput == '\n') //indicates end of message. Keyboard process must add information to the shared memory and send a signal to the RTX
 		{
+			//cout<<"KB - input is null terminating char!\n";
 			rx_mem_buf->data[indexInBuf] = '\0';
 			rx_mem_buf->busyFlag = 1; //set flag that keyboard is "busy" i.e. trying to transmit something from shared memory to parent process
+			
 			kill(parentPid, SIGUSR1); //send a signal to the RTX indicating that data has been provided by the user -> COMPLETE MESSAGE SENT
 			//do not reset indexInBuf until the i_keyboard_handler resets the busyFlag after extracting all information from shmem
 			while(rx_mem_buf->busyFlag == 1) //wait for i_keyboard_handler to process signal
@@ -56,6 +60,7 @@ int main(int arg1, char* arg[])
 		}	
 		else //user is still inputting data...
 		{
+			//cout<<"KB - input is not null terminating char. Keep getting..\n";
 			rx_mem_buf->data[indexInBuf] = userInput;
 			indexInBuf++;
 			//check if memory is full!

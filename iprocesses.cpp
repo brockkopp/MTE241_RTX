@@ -51,27 +51,28 @@ void i_keyboard_handler()
 	//debugMsg("\nSignal Received: SIGUSR1: KB", 0, 1);
 	gRTX->atomic(true);
 	MsgEnv* retMsg = NULL;
-	PCB* currPcb = NULL;
-	if((currPcb = gRTX->getCurrentPcb()) != NULL && ((*currPcb).checkMail() > 0)) //current PCB is valid
+	PCB* currPcb = gRTX->getCurrentPcb();
+	if(currPcb != NULL && (currPcb->checkMail() > 0)) //current PCB is valid
 	{
 		//extract information from shared memory
-		if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
-		{
+		//if(gRxMemBuf->data[0] != '\0') //ensure first character isn't a null, i.e. empty command
+		//{
 			string* userMsg = new string();
 			*userMsg = gRxMemBuf->data;
+			
+		//	cout<<"IKB: Message :"<<*userMsg<<"\tLength :"<<(*userMsg).size()<<endl;
 			do
-			{
+			{				
 				retMsg = gRTX->K_receive_message(); //should never have to loop since ensure that an envelope is in the mailbox
 			}
 			while( retMsg == NULL);
 			
-			int invoker = retMsg->getOriginPid();	
+			int invoker = retMsg->getOriginPid();
 			retMsg->setMsgData(*userMsg);
 			retMsg->setMsgType(retMsg->CONSOLE_INPUT_FIKB);
 			gRTX->K_send_message(invoker, retMsg);
-//			gCCI->userInputs->enqueue(userMsg); 
 			gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
-		}
+	//	}
 	}
 	else //an error occurred
 	{
@@ -89,13 +90,12 @@ void i_keyboard_handler()
  * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
-//	debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
+	//debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
 	gRTX->atomic(true);
 	
 	MsgEnv* retMsg = NULL;
 	int invoker;
 	PCB* currPcb;
-
 	if((currPcb = gRTX->getCurrentPcb()) != NULL && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 		retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
@@ -103,9 +103,10 @@ void i_crt_handler()
 		if(retMsg == NULL || retMsg->getMsgData() == "") //make the check anyways
 		{		
 			retMsg = NULL;
-	   		gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error
+	   		gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error	   		
 			return;
 		}
+
 		invoker = retMsg->getOriginPid();	
 		string msgToConsole = retMsg->getMsgData();			
 	

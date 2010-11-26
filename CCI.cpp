@@ -10,14 +10,26 @@ void processCCI()
 		string message;
 		int params;
 		MsgEnv* ioLetter = gRTX->K_request_msg_env();
+		ioLetter->setOriginPid(gRTX->getCurrentPid());
 
 		assure(ioLetter != NULL, "CCI ioLetter is NULL",__FILE__,__LINE__,__func__,true);
-	
+		
+		ualarm(TICK_TIME, TICK_TIME);
+		
 		while(true)
 		{
 			command = "";
 			input[0] = input[1] = input[2] = "";
 			message = "";	
+			
+//			string temp = "";
+//			cout<<"temp : "<<temp<<"\ttemp length : "<<temp.size()<<endl;
+//			temp = "\0";
+//			cout<<"temp : "<<temp<<"\ttemp length : "<<temp.size()<<endl;
+//			temp = "\n";
+//			cout<<"temp : "<<temp<<"\ttemp length : "<<temp.size()<<endl;
+//			cout<<("\0" == "")?"EQUAL\n":"NOT equal\n";
+//			
 			
 			ioLetter->setMsgData(">RTX$ ");
 			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
@@ -27,12 +39,21 @@ void processCCI()
 
 			ioLetter->setMsgData("");
 			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
-				usleep(100000); //no user input provided yet. Wait!			
-			ioLetter = gRTX->K_receive_message();		
-			command = ioLetter->getMsgData();
-		
-			assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
-	
+			{
+				usleep(100000); //no user input provided yet. Wait!	
+				//cout<<"CCI: waiting...\n";
+			}
+			
+			//do
+			//{
+				ioLetter->setOriginPid(gRTX->getCurrentPid());
+				ioLetter = gRTX->K_receive_message(); 
+				assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
+				command = ioLetter->getMsgData();	
+				//cout<<"CCI: Command : "<<command<<"\tcommand length : "<<command.size()<<endl;
+			//}while(command == "");		
+			
+			//check for an empty command!
 			if(command.length() > 0)
 			{
 				params = parseString( command, input, ' ', 3);
