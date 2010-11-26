@@ -51,8 +51,7 @@ void i_keyboard_handler()
 		
 		do
 		{				
-			retMsg = gRTX->K_receive_message(); //should never have to loop since ensure that an envelope is in the mailbox
-			//cout<<"IKB 66 - Receiving null message\n";
+			retMsg = gRTX->K_receive_message(); //should never have to loop since already ensured that an envelope is in the mailbox
 		}
 		while( retMsg == NULL);
 		int invoker = retMsg->getOriginPid();
@@ -61,13 +60,16 @@ void i_keyboard_handler()
 		gRTX->K_send_message(invoker, retMsg);
 		gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
 	}
-	else //an error occurred
+	else
 	{
-		if(currPcb == NULL)
-			cout<<"IKB received null envelope\n";
-		else
-			cout<<"Empty mailbox\n";
-		assure(false,"Input streaming has messed up royally",__FILE__,__LINE__,__func__,true);
+		if(currPcb->checkMail() == 0)
+		{
+			//do nothing, but dont send anything to CCI, it'll block
+		} 	
+		else //currPcb == NULL --> an error occurred
+		{
+			assure(false,"Input streaming has messed up royally",__FILE__,__LINE__,__func__,true);
+		}
 	}
 	gRTX->atomic(false);
 	return;
