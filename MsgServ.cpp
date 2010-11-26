@@ -10,7 +10,7 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 	//allocate space for msg envelopes
 	int msgTotal = 0;
 	_freeEnvQ = new Queue(Queue::MSG_ENV);
-	while(msgTotal < 20)
+	while(msgTotal < ENV_NUMBER)
 	{
 		MsgEnv* msg = new MsgEnv();
 		_freeEnvQ->enqueue(msg);

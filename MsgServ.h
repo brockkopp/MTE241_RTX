@@ -9,6 +9,7 @@
 
 #define BLOCKED_MSG_RECIEVE 2
 #define SLEEPING 3							
+#define ENV_NUMBER 2 //How many msg envelopes are available.
 
 class Scheduler; // what's this for? - eric
 
