@@ -66,6 +66,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 
 MsgEnv* MsgServ::recieveMsg()
 {
+
 	//retrieve PCB of currently excecuting process 
 
 	PCB* tempPCB = gRTX->getCurrentPcb();

@@ -348,27 +348,20 @@ void test_CCI()
 
 //Note that this is a great place to place scheduler-specific fxns to test them.
 while (true) {
-	gRTX->atomic( 1 );
-	cout << "_readyProcs: " << gRTX->getScheduler()->_readyProcs->toString() << "\n";
-	
-	cout << "_blockedEnv: " << gRTX->getScheduler()->_blockedEnv->toString() << "\n";
-//	cout << "Blocking a process : "<< "\n";
-//	gRTX->getScheduler()->block_process( 1 );
-	
-	cout << "_blockedEnv: " << gRTX->getScheduler()->_blockedEnv->toString() << "\n";
-	cout << "_readyProcs: " << gRTX->getScheduler()->_readyProcs->toString() << "\n";
-	
-	cout << "My prioirty is: " << gRTX->_pcbList[7]->getPriority() << "\n";
+//	gRTX->atomic( 1 );
 	cout << "\nTestCCI asks you for input: \n-->";
+	
 	cin.get();
-	cout << "\nTest CCI acts on your input and releases CPU...\n";
+	cout << "Sending a msg to proc A\n";
+	MsgEnv* tmp;
+	gRTX->K_send_message( gRTX->_pcbList[4]->getId(), tmp);
 	
 	
-	gRTX->atomic( 0 );
+	cout << "READY: " << gRTX->_scheduler->_readyProcs->toString();
+	cout << "About to send a msg to processA\n";
+cout << "\nTest CCI acts on your input and releases CPU...\n";
+//	gRTX->atomic( 0 );
 	gRTX->K_release_processor();
-	
-	
-	
 }
 }
 
