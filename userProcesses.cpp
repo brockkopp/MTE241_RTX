@@ -20,7 +20,7 @@ void userProcessA()
 	
 	while(true)
 	{
-cout << "PROCESS A in loop!\n";	
+//cout << "PROCESS A in loop!\n";	
 		myMsg = gRTX->K_request_msg_env();
 		myMsg->setMsgType(MsgEnv::COUNT_REPORT);
 		data = intToStr(num);
@@ -44,7 +44,20 @@ void userProcessB()
 	MsgEnv* myMsg;
 	while(true)
 	{
-cout << "PROCESS B in loop!\n";	
+//cout << "PROCESS B in loop!\n";	
+/* DELETE BLOCK */
+//		MsgEnv* ioLetter= gRTX->K_request_msg_env(  );	
+//		if ( ioLetter == NULL )
+//			cout << "LETTER IS NULL\n";
+//		else {
+//				cout << "test1 atomic\n";
+//				gRTX->K_request_delay(1,20,ioLetter);
+//				cout << "test mid\n";
+//				ioLetter = gRTX->K_receive_message();
+//				cout << "test2\n";	
+//		}
+/* END BLCOK */		
+		
 		myMsg = gRTX->K_receive_message();
 
 		gRTX->K_send_message(PROC_USER_C, myMsg);
@@ -66,7 +79,7 @@ void userProcessC()
 
 	while(true)
 	{
-cout << "PROCESS C in loop!\n";		
+//cout << "PROCESS C in loop!\n";		
 		myMsg = gRTX->K_receive_message();
 	
 		if( myMsg!= NULL && 
@@ -85,16 +98,16 @@ cout << "PROCESS C in loop!\n";
 //			strToInt( myMsg->getMsgData(), &num );
 //				myMsg = gRTX->K_receive_message();
 
-				cout << "Process C <-- going to sleep. Needs to use timing services when they are implemented\n";
-				sleep(10);
+//				cout << "Process C <-- going to sleep. Needs to use timing services when they are implemented\n";
+//				sleep(10);
 
 
-//				gRTX->K_request_delay(100, 20, myMsg);
-				//do
-				//{
-				//	myMsg = K_receive_message();
-				//}
-				//while(myMsg->getMsgData !
+//				gRTX->K_request_delay(100, 10, myMsg);
+//				do
+//				{
+//					myMsg = gRTX->K_receive_message();
+//				}
+//				while(myMsg->getMsgType() != 10);
 			}
 		}
 //			cout << "READY PROCS : \n" << gRTX->_scheduler->_readyProcs->toString();

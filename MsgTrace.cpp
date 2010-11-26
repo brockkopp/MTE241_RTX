@@ -95,7 +95,6 @@ string MsgTrace::getMsgTypeName(int msgType)
 		case MsgEnv::CONSOLE_INPUT_FIKB : ret = "FRM_FIKB"; break;
 		case MsgEnv::CONSOLE_INPUT : ret = "FRM_KB"; break;
 		case MsgEnv::COUNT_REPORT : ret = "CNT_RPT"; break;
-		case 99 : ret = "TEST_MSG"; break;
 		default: ret = "UNKNOWN"; break;
 	}
 	return ret;
