@@ -41,6 +41,7 @@ class PCB
 
 		int incAtomicCount( );
 		int decAtomicCount( );
+		int getAtomicCount( );
 		
 		int saveContext();
 		void restoreContext();

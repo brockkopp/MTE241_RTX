@@ -63,9 +63,13 @@ int PCB::decAtomicCount()
 	assure(_atomicCount > 0,"Atomic count attempting to go out of bounds",__FILE__,__LINE__,__func__,false);
 	if(_atomicCount > 0)
 		return --_atomicCount;
+	else
+		return _atomicCount;
+}
+int PCB::getAtomicCount()
+{
 	return _atomicCount;
 }
-	
 int PCB::getId() 
 { 
 	return _id; 

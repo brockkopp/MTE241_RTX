@@ -14,6 +14,6 @@ class SignalHandler
 	public:
 		SignalHandler();
 		static void handler(int sigNum );
-		int setSigMasked(bool masked );
+		int setSigMasked( bool masked );
 };
 #endif

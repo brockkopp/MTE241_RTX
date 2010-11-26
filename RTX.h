@@ -30,7 +30,7 @@ class Queue;
 #define PROCESS_N		3
 
 #define PROC_TIMING 	0
-#define PROC_KB			1
+#define PROC_KB		1
 #define PROC_CRT 		2
 #define PROC_NULL	 	3
 #define PROC_USER_A 	4
@@ -51,9 +51,7 @@ class RTX
 		MsgEnv* retrieveOutAcknowledgement();
 		MsgEnv* retrieveInAcknowledgement();
 		int atomic(bool on);
-		//int setCurrentProcess(int pid);
-		//int setProcessState(int pid, int state);
-		
+
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
 		MsgEnv* K_receive_message();
 		MsgEnv* K_request_msg_env();

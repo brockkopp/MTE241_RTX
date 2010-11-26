@@ -78,8 +78,7 @@ MsgEnv* MsgServ::recieveMsg()
   		
   		//block calling process
 		_scheduler->block_process(BLOCKED_MSG_RECIEVE); 		
- 	
-		gRTX->atomic(false);		//atomic ERIC	
+
 		gRTX->K_release_processor();
 	}
 	//get mail
@@ -135,12 +134,10 @@ MsgEnv* MsgServ::requestEnv()
 		assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 		//i_process cannot be blocked
 		if (tempPCB->getProcessType() == PROCESS_I)
-    	return NULL;
+    		return NULL;
+	
 		//block process is no envelope is available
-
  		_scheduler->block_process(BLOCKED_ENV); 			
-
- 		gRTX->atomic(false);   //atomic ERIC 			
 
 		gRTX->K_release_processor();
 	}

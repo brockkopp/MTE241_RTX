@@ -42,7 +42,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 
 	_started = false;
 
-	debugMsg("RTX Init Done",0,1);
+	debugMsg("RTX Init Done",0,2);
 }
 
 RTX::~RTX()
@@ -102,16 +102,6 @@ int RTX::getCurrentPid()
 	return pid;
 }
 
-//int RTX::setProcessState(int pid, int state)
-//{
-//	int ret = EXIT_ERROR;
-//	PCB* tmpPcb;
-//	if(getPcb(pid, &tmpPcb) == EXIT_SUCCESS)
-//		if(tmpPcb->setState(state) == EXIT_SUCCESS)
-//			ret = EXIT_SUCCESS;
-//	return ret;
-//}
-
 MsgEnv* RTX::retrieveOutAcknowledgement()
 {
 	return _mailMan->retrieveOAck();
@@ -168,11 +158,11 @@ MsgEnv* RTX::K_request_msg_env()
 }
 
 //Call MsgServ class function releaseEnv
-int RTX::K_release_msg_env(MsgEnv* memory_block)
+int RTX::K_release_msg_env(MsgEnv* usedEnv)
 {
-//	atomic(true);
-	int ret = _mailMan->releaseEnv(memory_block);
-//	atomic(false);
+	atomic(true);
+	int ret = _mailMan->releaseEnv(usedEnv);
+	atomic(false);
 	return ret;
 }
 
