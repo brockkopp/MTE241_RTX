@@ -1,6 +1,7 @@
 #ifndef H_MSG_TRACE
 #define H_MSG_TRACE
 
+#include "RTX.h"
 #include "lib/MsgEnv.h"
 #include "tools.h"
 #include <stdlib.h>

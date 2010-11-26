@@ -1,14 +1,30 @@
 #include "iprocesses.h"
 extern RTX* gRTX;
-//extern Queue* gUserInputs;
-extern int gRunTime;
 extern inputBuffer* gRxMemBuf;
 extern inputBuffer* gTxMemBuf;
 
 void i_timing_process()
 {	
+	//overall rtx clock count used for trace buffer time stamp
+	gRTX->runTime ++;
+	
+	PCB* tempPCB;
+	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+	//get new message envelopes from mailbox
 	MsgEnv* tempMsg;
+	
+	while((tempMsg = tempPCB->retrieveMail()) != NULL)
+		//set expire time, total RTX run time plus the requested delay time
+		gRTX->waitingProcesses->sortedEnqueue(tempMsg, gRTX->runTime + tempMsg->getTimeStamp());
 
+	//check if first envelope in waiting Q has expired, send wake up msg if true
+ 	while(gRTX->waitingProcesses->get_front() != NULL && gRTX->waitingProcesses->get_front()->getTimeStamp() == gRTX->runTime) 
+	{
+		tempMsg = gRTX->waitingProcesses->dequeue_MsgEnv();
+		tempMsg->setDestPid(tempMsg->getOriginPid());
+		gRTX->K_send_message(tempMsg->getDestPid(), tempMsg);
+	}
+	
 	if(gRTX->wallClock->increment())
 	{
 		tempMsg = gRTX->K_request_msg_env();
@@ -16,34 +32,6 @@ void i_timing_process()
 		tempMsg->setMsgData(gRTX->wallClock->toString() + "\n");
 		gRTX->K_send_console_chars(tempMsg);
 		gRTX->K_release_msg_env( gRTX->retrieveOutAcknowledgement() );
-	}
-
-	static Queue* waitingProcesses = new Queue(Queue::MSG_ENV); //internal Q
-
-	//overall rtx clock count used for trace buffer time stamp
-	gRunTime ++;
-
-	//retrieve PCB of currently excecuting process (i_timing_process) 
-	PCB* tempPCB;
-	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
-	
-	//get new message envelopes from mailbox
-	tempMsg = tempPCB->retrieveMail();
-
-	if (tempMsg != NULL)
-	{
-		//set expire time, total RTX run time plus the requested delay time
-		int expire = gRunTime + tempMsg->getTimeStamp();
-		waitingProcesses->sortedEnqueue(tempMsg, expire);
-		tempMsg = NULL;//so that the pointer can be used again later
-	}
-
-	//check if first envelope in waiting Q has expired, send wake up msg if true
- 	while(waitingProcesses->get_front() != NULL && waitingProcesses->get_front()->getTimeStamp() == gRunTime) 
-	{
-		tempMsg = waitingProcesses->dequeue_MsgEnv();
-		int returnAddress = tempMsg->getOriginPid();
-		gRTX->K_send_message(returnAddress, tempMsg);
 	}
 }
 

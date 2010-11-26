@@ -12,6 +12,8 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_signalHandler = signalHandler;
 
 	Queue* pcbTmpList = new Queue(Queue::PROCCONBLOCK); //Init queue of PCBs
+	waitingProcesses = new Queue(Queue::MSG_ENV);
+	runTime = 0;
 
 	//Put all processes from the intialize table into the queue to be passed
 	//to the scheduler to put on the ready queue. Do not allow i_processes onto
@@ -27,8 +29,6 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	
 	_scheduler = new Scheduler(pcbTmpList);
 	delete pcbTmpList;
-	
-	//_scheduler->setCurrentProcess(_pcbList[0]);	//TESTING ONLY!!!
 
 	setCurrentPcb(PROC_CCI);
 
@@ -234,7 +234,7 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 		msg_envelope->setTimeStamp(time_delay); 
 		msg_envelope->setMsgType(wakeup_code);
 		//call Kernal send message to send to timing iProcess
-		ret = K_send_message(0, msg_envelope); //i_timing_process PID is 0
+		ret = K_send_message(PROC_TIMING, msg_envelope);
 	}
 	atomic(false);	
 	return ret;

@@ -76,6 +76,9 @@ class RTX
 		Scheduler* getScheduler(); //Used only for scheduler's test cases.
 #endif
 
+		Queue* waitingProcesses;
+		int runTime;
+
 //	protected:
 		int setCurrentPcb(PCB* pcb);
 		int setCurrentPcb(int pid);
