@@ -15,6 +15,12 @@ void processCCI()
 
 		assure(ioLetter != NULL, "CCI ioLetter is NULL",__FILE__,__LINE__,__func__,true);
 		
+//		cout << "test1\n";
+//		gRTX->K_request_delay(100,20,ioLetter);
+//		ioLetter = gRTX->K_receive_message();
+//		cout << "test2\n";
+		
+		
 		ualarm(TICK_TIME, TICK_TIME);
 		
 		while(true)

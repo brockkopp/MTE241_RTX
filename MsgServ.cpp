@@ -109,20 +109,20 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 	//return envelope to _freeEnvQ
 	_freeEnvQ->enqueue(msg);
 
-	//check if another process is waiting for an envelope
-	PCB* tempPcb = _scheduler->get_blocked_on_env(); 
+ 
+ 
 	//unblock waiting process, if one is waiting   
-	bool temp;
-	if(tempPcb != NULL)
-		temp = _scheduler->unblock_process(tempPcb);
+	int temp;
+	temp = _scheduler->unblock_process( BLOCKED_ENV );
 	if(!temp)
 		return EXIT_ERROR;
+		
 	return EXIT_SUCCESS;
 }
 
 MsgEnv* MsgServ::requestEnv()
 {
-	if( _freeEnvQ->isEmpty() ) 
+	while( _freeEnvQ->isEmpty() ) 
 	{
 		debugMsg("Empty Envelope Queue!!!",1,1);
 		//retrieve PCB of currently excecuting process 
@@ -132,10 +132,8 @@ MsgEnv* MsgServ::requestEnv()
 		if (tempPCB->getProcessType() == PROCESS_I)
     		return NULL;
 	
-		//block process is no envelope is available
+		//block process if no envelope is available. This chains into a context switch.
  		_scheduler->block_process(BLOCKED_ENV); 			
-
-		gRTX->K_release_processor();
 	}
 	MsgEnv* ptrMsg = _freeEnvQ->dequeue_MsgEnv();
 	return ptrMsg;

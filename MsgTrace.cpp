@@ -1,6 +1,6 @@
 #include "MsgTrace.h"
 
-extern int gRunTime;
+extern RTX* gRTX;
 
 MsgTrace::MsgTrace()
 {
@@ -29,7 +29,7 @@ int MsgTrace::addTrace(MsgEnv* msg, int callingFunction)
 			//transfer of data from msg env to trace element circular array
 			_sendArray[_sendArrayPosition]._destPid = msg->getDestPid();  
 			_sendArray[_sendArrayPosition]._originPid = msg->getOriginPid();
-			_sendArray[_sendArrayPosition]._timeStamp = gRunTime;
+			_sendArray[_sendArrayPosition]._timeStamp = gRTX->runTime;
 			_sendArray[_sendArrayPosition]._msgType = msg->getMsgType();
 			_sendArrayPosition ++;
 		}
@@ -40,7 +40,7 @@ int MsgTrace::addTrace(MsgEnv* msg, int callingFunction)
 			//transfer of data from msg env to trace element circular array
 			_receiveArray[_receiveArrayPosition]._destPid = msg->getDestPid();
 			_receiveArray[_receiveArrayPosition]._originPid = msg->getOriginPid();
-			_receiveArray[_receiveArrayPosition]._timeStamp = gRunTime;
+			_receiveArray[_receiveArrayPosition]._timeStamp = gRTX->runTime;
 			_receiveArray[_receiveArrayPosition]._msgType = msg->getMsgType();     
 			_receiveArrayPosition ++; 
 		}

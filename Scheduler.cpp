@@ -263,21 +263,59 @@ int Scheduler::unblock_process( PCB * target )
 	if (target->getState() == BLOCKED_MSG_RECIEVE) {
 			//Remove process from the blocked queue
 			_blockedMsgRecieve->pluck(target);
-			target->setState( READY );
+			
 
-			//Re-enqueue on ready queue
-			return _readyProcs->pq_enqueue( target , target->getPriority());
+			if (target) {
+				target->setState( READY );
+				//Re-enqueue on ready queue
+				return _readyProcs->pq_enqueue( target , target->getPriority());
+			}
 		}
 	
 	//If process is blocked on envelope
 	else if (target->getState() == BLOCKED_ENV) {
 		_blockedEnv->pluck(target);
-		target->setState( READY );
-
-		return _readyProcs->pq_enqueue( target , target->getPriority());
+		
+		if (target) {
+			target->setState( READY );
+			return _readyProcs->pq_enqueue( target , target->getPriority());
+		}
 	}
-	else //Process was not blocked in the first place...
+	
+	//Process was not blocked in the first place...
 		return EXIT_ERROR;
+}
+
+/*
+Unblock a procesee off th apropriate queue. Use the state constants as reasons
+*/
+
+int Scheduler::unblock_process( int reason )
+{
+	//If process is blocked on msg recieve
+	if (reason == BLOCKED_MSG_RECIEVE) {
+			//Remove process from the blocked queue
+			PCB* target = _blockedMsgRecieve->dequeue_PCB();
+			
+			if (target) {
+				target->setState( READY );
+				//Re-enqueue on ready queue
+				return _readyProcs->pq_enqueue( target , target->getPriority());
+			}
+		}
+	
+	//If process is blocked on envelope
+	else if (reason == BLOCKED_ENV) {
+		PCB* target = _blockedEnv->dequeue_PCB();
+		
+		if (target) {
+			target->setState( READY );cout << "HERE 1\n queue length: " << _blockedEnv->get_length();
+			return _readyProcs->pq_enqueue( target , target->getPriority());
+		}
+	}
+	//Process was not blocked in the first place...
+	//Or the queue was empty.
+	return EXIT_ERROR;
 }
 
 
@@ -289,7 +327,7 @@ See declarations in header of PCB class.
 
 int Scheduler::setProcessState(int pid, int state)
 {
-	PCB* tmpPcb;
+PCB* tmpPcb;
 	gRTX->getPcb(pid,&tmpPcb);
 	
 	// Ensure that PCB exists. State validation is done in PCB set fxn.
