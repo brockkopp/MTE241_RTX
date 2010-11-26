@@ -32,7 +32,6 @@ void processCCI()
 			ioLetter->setMsgData("");
 			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
 				usleep(100000); //no user input provided yet. Wait!	
-			
 			ioLetter->setOriginPid(gRTX->getCurrentPid());
 			ioLetter = gRTX->K_receive_message(); 
 			assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
@@ -159,8 +158,7 @@ void processCCI()
 				if(message.length() > 0)
 				{
 					ioLetter->setMsgData(message);
-					while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);//; //if exiting while loop, sure that message type is display_ack
-			
+					while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);
 					ioLetter = gRTX->retrieveOutAcknowledgement(); //will receive a message
 			
 					assure(ioLetter != NULL,"CCI:182 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);

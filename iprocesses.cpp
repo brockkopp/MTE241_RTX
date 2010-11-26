@@ -52,7 +52,6 @@ void i_timing_process()
  * K_get_console_chars extracts user inputs from the global queue as necessary */
 void i_keyboard_handler()
 {
-	//debugMsg("\nSignal Received: SIGUSR1: KB", 0, 1);
 	gRTX->atomic(true);
 	MsgEnv* retMsg = NULL;
 	PCB* currPcb = gRTX->getCurrentPcb();
@@ -66,7 +65,6 @@ void i_keyboard_handler()
 			retMsg = gRTX->K_receive_message(); //should never have to loop since ensure that an envelope is in the mailbox
 		}
 		while( retMsg == NULL);
-		
 		int invoker = retMsg->getOriginPid();
 		retMsg->setMsgData(*userMsg);
 		retMsg->setMsgType(retMsg->CONSOLE_INPUT_FIKB);

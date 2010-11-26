@@ -1,0 +1,8 @@
+./keyboard.cpp:	rx_mem_buf->busyFlag = 0;
+./keyboard.cpp:	rx_mem_buf->busyFlag = 0; 
+./keyboard.cpp:			rx_mem_buf->data[indexInBuf] = '\0';
+./keyboard.cpp:			rx_mem_buf->busyFlag = 1; //set flag that keyboard is "busy" i.e. trying to transmit something from shared memory to parent process
+./keyboard.cpp:			while(rx_mem_buf->busyFlag == 1) //wait for i_keyboard_handler to process signal
+./keyboard.cpp:			rx_mem_buf->data[indexInBuf] = userInput;
+./keyboard.cpp:				rx_mem_buf->busyFlag = 1; //set flag that keyboard is "busy" i.e. trying to transmit something from shared memory to parent process
+./keyboard.cpp:				while(rx_mem_buf->busyFlag == 1) //wait for i_keyboard_handler to process signal and resets the busyFlag after extracting all information from shmem

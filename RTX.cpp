@@ -326,29 +326,19 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
 	int res;
-	if(atomic(true) == EXIT_SUCCESS)
-	{	
-		int invoker = msg_envelope->getOriginPid();
-		
-		res = K_send_message(PROC_KB, msg_envelope);
-		if(res == EXIT_SUCCESS)
-		{
-			msg_envelope = K_receive_message(); //message will be sent by iprocess
-			string message = msg_envelope->getMsgData();
-			msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);	
-			res = K_send_message(invoker, msg_envelope);
-			//cout<<"RTX: Message :"<<message<<"\tLength : "<<message.size()<<endl;
-//			if(message == "")
-//			{
-//				cout<<"RTX: Empty message\n";
-//				res = EXIT_ERROR;
-//			}
-		}
-		else
-		{
-			debugMsg("RTX:333 Failed to send envelope!\n");
-		}
-	}	
+	atomic(true);
+	int invoker = msg_envelope->getOriginPid();
+	res = K_send_message(PROC_KB, msg_envelope);
+	if(res == EXIT_SUCCESS)
+	{
+		msg_envelope = K_receive_message(); //message will be sent by iprocess
+		string message = msg_envelope->getMsgData();
+		msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);	
+		res = K_send_message(invoker, msg_envelope);
+	}
+	else
+		debugMsg("RTX:333 Failed to send envelope!\n");
+
 	atomic(false);
 	return res;
 }

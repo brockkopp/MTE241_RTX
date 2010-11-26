@@ -353,7 +353,7 @@ while (true) {
 	
 	cin.get();
 	cout << "Sending a msg to proc A\n";
-	MsgEnv* tmp;
+	MsgEnv* tmp = new MsgEnv();
 	gRTX->K_send_message( gRTX->_pcbList[4]->getId(), tmp);
 	
 	

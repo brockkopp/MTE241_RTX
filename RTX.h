@@ -22,24 +22,24 @@ class MsgTrace;
 
 //RTX Global Constants
 
-#define PROCESS_COUNT 	8			//Total number of processes existing in the RTX
+#define PROCESS_COUNT 8			//Total number of processes existing in the RTX
 #define MSG_COUNT			20
-#define TICK_TIME			100000 	//100mSec / 0.1s
+#define TICK_TIME			100000 	// = 100mSec
 
 //Constants used to denote process types
-#define PROCESS_I		0	
-#define PROCESS_K		2
-#define PROCESS_U		2
-#define PROCESS_N		3
+#define PROCESS_I			0	
+#define PROCESS_K			2
+#define PROCESS_U			2
+#define PROCESS_N			3
 
 #define PROC_TIMING 	0
-#define PROC_KB		1
-#define PROC_CRT 		2
-#define PROC_NULL	 	3
+#define PROC_KB				1
+#define PROC_CRT 			2
+#define PROC_NULL	 		3
 #define PROC_USER_A 	4
 #define PROC_USER_B 	5
 #define PROC_USER_C 	6
-#define PROC_CCI	 	7
+#define PROC_CCI	 		7
 
 class RTX
 {
@@ -76,12 +76,10 @@ class RTX
 		Scheduler* getScheduler(); //Used only for scheduler's test cases.
 #endif
 
-	
 //	protected:
 		int setCurrentPcb(PCB* pcb);
 		int setCurrentPcb(int pid);
 
-	
 //	private:
 
 		PCB**					_pcbList;		//Should be private, prevent invalid pid

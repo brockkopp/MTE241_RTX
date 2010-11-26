@@ -39,12 +39,12 @@ int SignalHandler::setSigMasked(bool masked)
 	{
 		if(masked)
 		{
-			//debugMsg("Atomic(on)",0,1);
+//			debugMsg("\t\t\tAtomic(on)",0,1);
 			sigprocmask(SIG_BLOCK, &_sigSetBlocked, NULL);
 		}
 		else
 		{
-			//Atomic(off)",0,1);
+//			debugMsg("\t\t\tAtomic(off)",0,1);
 			sigprocmask(SIG_SETMASK, &_sigSetHandled, NULL);
 		}
 	}
