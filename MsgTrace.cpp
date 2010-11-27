@@ -14,8 +14,8 @@ MsgTrace::MsgTrace()
 MsgTrace::~MsgTrace()
 {
 	//free circular arrays
-	free(_sendArray);
-	free(_receiveArray);
+	free _sendArray;
+	free _receiveArray;
 }
 
 int MsgTrace::addTrace(MsgEnv* msg, int callingFunction)
