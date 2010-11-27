@@ -109,7 +109,6 @@ void processCCI()
 								ioLetter = gRTX->K_receive_message();
 								message = "";
 							}
-						}
 					}
 					else if(input[0] == "t")
 					{
@@ -156,6 +155,7 @@ void processCCI()
 				}
 				else
 					message = "Invalid Command String\n";
+					
 				if(message.length() > 0)
 				{
 					ioLetter->setMsgData(message);
