@@ -158,6 +158,10 @@ bool Queue::enqueue( itemType value )
 		Temp->item = (PCB*)value;	
 	else if(_queueType == MSG_ENV)
 		Temp->item = (MsgEnv*)value;
+	#if DEBUG_MODE
+		else if(_queueType == TRACKER)
+			Temp->item = (envTrack*)value;
+	#endif
 
 	if(_front == NULL) //adding first node
 	{ 
@@ -347,6 +351,44 @@ PCB* Queue::pluck(PCB* value)
 	return (PCB*)pluck_gen(value);
 }
 
+#if DEBUG_MODE
+envTrack* Queue::pluck_Track(MsgEnv* value)
+{
+	QueueNode* pluckee = _rear;
+	QueueNode* prePluckee = _rear;
+	int scanPos = _length - 1;
+	while(pluckee != NULL)
+	{
+		if( ((envTrack*)(pluckee->item))->address == value ) //remove pluckee from queue
+		{
+			if(_length == 1) //special case
+			{
+				_rear = NULL;
+				_front = NULL;
+			}
+			else
+			{
+				if(scanPos == _length - 1) //plucking tail
+					_rear = pluckee->link;
+					
+				else if(scanPos == 0) //plucking head
+					_front = prePluckee;
+					
+				prePluckee->link = pluckee->link; //cut pluckee out
+			}
+			_length--;
+			break;
+		}
+		prePluckee = pluckee;
+		pluckee = pluckee->link;
+		scanPos--;
+	}	
+	if(pluckee == NULL)
+		return NULL;
+	return (envTrack*)pluckee->item; 
+}
+#endif
+
 /*~*~*~*~*~*~*	  REPLACE   *~*~*~*~*~*~*~*~*/
 //Find the currValue object in the queue and replace its item with newValue
 //Return true if currValue does not exist in the queue; return false otherwise (if change is successful)
@@ -438,10 +480,32 @@ string Queue::toString()
 	return output + " }";
 }
 
-
 void Queue::printIntQueue() //assume _typeCastType == INT
 {
 	if(_queueType == INT)
 		debugMsg("Queue: " + toString());
 }
 
+#if DEBUG_MODE
+void Queue::printTracker() 
+{
+	QueueNode* Temp = _rear;
+	int position = _length - 1;
+	
+	cout<<" {\n";
+	
+	while(Temp != NULL)
+	{
+		cout<<"\t<-["
+				<<intToStr(position) 
+				<<": A_ID "			<<((envTrack*)(Temp->item))->allocatorID
+				<<": D_ID "			<<((envTrack*)(Temp->item))->receiverID
+				<<": EnvAddr "	<<((envTrack*)(Temp->item))->address
+				<<"]\n";
+
+		Temp = Temp->link;
+		position--;
+	}
+	cout<<" }\n";
+}
+#endif

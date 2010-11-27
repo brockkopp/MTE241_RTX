@@ -16,11 +16,15 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 		_freeEnvQ->enqueue(msg);
 		msgTotal++;
 	}
+	
+	_envelopeTracker = new Queue(Queue::TRACKER);
 }
 
 MsgServ::~MsgServ()
 {
 	delete _freeEnvQ;
+	
+	delete _envelopeTracker;
 }
 
 int MsgServ::sendMsg(int destPid, MsgEnv* msg)
@@ -35,7 +39,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		msg->setDestPid(destPid);
 		msg->setOriginPid(tempPCB->getId());
 		_msgTrace->addTrace(msg, SEND); 
- 
+		 
 		//retrieve destination process PCB
 		PCB* tempDestPCB;
 		assure(gRTX->getPcb(destPid, &tempDestPCB) == EXIT_SUCCESS,"Failed to retrieve dest. PCB",__FILE__,__LINE__,__func__,false);
@@ -55,10 +59,9 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 	}
 	return EXIT_ERROR;
 }
-
+		
 MsgEnv* MsgServ::recieveMsg()
 {
-
 	//retrieve PCB of currently excecuting process 
 
 	PCB* tempPCB = gRTX->getCurrentPcb();
@@ -76,6 +79,7 @@ MsgEnv* MsgServ::recieveMsg()
 	}
 	//get mail
 	MsgEnv* tempMsg = tempPCB->retrieveMail();
+		
 	_msgTrace->addTrace(tempMsg, RECEIVE);
 	return tempMsg;
 }
@@ -85,10 +89,12 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 	if (msg == NULL)
 		return EXIT_ERROR;
 		
+	#if DEBUG_MODE
+		_envelopeTracker->pluck_Track(msg);
+	#endif
+		
 	//return envelope to _freeEnvQ
 	_freeEnvQ->enqueue(msg);
-
- 
  
 	//unblock waiting process, if one is waiting   
 	int temp;
@@ -105,8 +111,8 @@ MsgEnv* MsgServ::requestEnv()
 	{
 		debugMsg("Empty Envelope Queue!!!",1,1);
 		//retrieve PCB of currently excecuting process 
-		PCB* tempPCB;
-		assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+		PCB* tempPCB = gRTX->getCurrentPcb();
+		assure(tempPCB != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 		//i_process cannot be blocked
 		if (tempPCB->getProcessType() == PROCESS_I)
     		return NULL;
@@ -114,6 +120,24 @@ MsgEnv* MsgServ::requestEnv()
 		//block process if no envelope is available. This chains into a context switch.
  		_scheduler->block_process(BLOCKED_ENV); 			
 	}
+			
 	MsgEnv* ptrMsg = _freeEnvQ->dequeue_MsgEnv();
+	
+	#if DEBUG_MODE
+		envTrack* eT = new envTrack();
+		eT->allocatorID = gRTX->getCurrentPid();
+		eT->receiverID = -1;
+		MsgEnv* tMsg = ptrMsg;
+		eT->address = tMsg;
+		_envelopeTracker->enqueue(eT);
+	#endif
+		
 	return ptrMsg;
+}
+
+#if DEBUG_MODE
+void MsgServ::readTracker()
+{
+	_envelopeTracker->printTracker();
+#endif
 }

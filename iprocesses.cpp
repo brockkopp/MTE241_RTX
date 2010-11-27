@@ -32,7 +32,6 @@ void i_timing_process()
 		tempMsg->setMsgData(gRTX->wallClock->toString() + "\n");
 		gRTX->K_send_console_chars(tempMsg);
 		gRTX->K_release_msg_env( getMessage(MsgEnv::DISPLAY_ACK,gRTX) );
-//		gRTX->K_release_msg_env( gRTX->retrieveOutAcknowledgement() );
 	}
 }
 
@@ -45,32 +44,28 @@ void i_keyboard_handler()
 	gRTX->atomic(true);
 	MsgEnv* retMsg = NULL;
 	PCB* currPcb = gRTX->getCurrentPcb();
-	if(currPcb != NULL && (currPcb->checkMail() > 0)) //current PCB is valid
+	if(currPcb != NULL) // && (currPcb->checkMail() > 0)) //current PCB is valid
 	{
 		string* userMsg = new string();
 		*userMsg = gRxMemBuf->data;
 		
-		do
-		{				
-			retMsg = gRTX->K_receive_message(); //should never have to loop since already ensured that an envelope is in the mailbox
+		if(currPcb->checkMail() > 0)
+		{
+			do
+			{				
+				retMsg = gRTX->K_receive_message(); //should never have to loop since already ensured that an envelope is in the mailbox
+			}
+			while( retMsg == NULL);
+			int invoker = retMsg->getOriginPid();
+			retMsg->setMsgData(*userMsg);
+			retMsg->setMsgType(retMsg->CONSOLE_INPUT_FIKB);
+			gRTX->K_send_message(invoker, retMsg);
 		}
-		while( retMsg == NULL);
-		int invoker = retMsg->getOriginPid();
-		retMsg->setMsgData(*userMsg);
-		retMsg->setMsgType(retMsg->CONSOLE_INPUT_FIKB);
-		gRTX->K_send_message(invoker, retMsg);
 		gRxMemBuf->busyFlag = 0; //indicate that contents of buffer have been copied, data array may be overwritten
 	}
 	else
 	{
-		if(currPcb->checkMail() == 0)
-		{
-			//do nothing, but dont send anything to CCI, it'll block
-		} 	
-		else //currPcb == NULL --> an error occurred
-		{
 			assure(false,"Input streaming has messed up royally",__FILE__,__LINE__,__func__,true);
-		}
 	}
 	gRTX->atomic(false);
 	return;

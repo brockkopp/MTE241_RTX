@@ -384,3 +384,9 @@ Scheduler* RTX::getScheduler()
 	return _scheduler; 
 #endif
 }
+
+
+void RTX::K_print_enveloper_tracker()
+{
+	_mailMan->readTracker();
+}

@@ -24,6 +24,13 @@ typedef struct QueueNodeTag
 	int priority;				//Not used in FIFO queues
 }QueueNode;
 
+typedef struct 
+{
+	MsgEnv* 	address;
+	int 			allocatorID;
+	int 			receiverID;
+}envTrack;
+
 /*~*~*~*~*~*~*~*~*~*~*~*~*~*~
  *~*~* Class Definition *~*~*
  ~*~*~*~*~*~*~*~*~*~*~*~*~*~*/
@@ -36,6 +43,9 @@ class Queue
 		static const	int STRING = 				2;
 		static const	int MSG_ENV = 			3;
 		static const	int PROCCONBLOCK = 	4; //PCB type
+		#if DEBUG_MODE
+			static const 	int TRACKER =				5;
+		#endif
 	
 		Queue( );
 		Queue( int qtype ); //qtype should be one of the constants declared above
@@ -49,7 +59,7 @@ class Queue
 		std::string* 		dequeue_string();
 		MsgEnv* 				dequeue_MsgEnv();
 		PCB*						dequeue_PCB();
-
+		
 		bool 						contains( itemType value );	
 		MsgEnv*					get_front(); 
 		int 						get_length();
@@ -62,7 +72,11 @@ class Queue
 		std::string* 		pluck ( std::string* value );
 		MsgEnv* 				pluck ( MsgEnv* value );
 		PCB* 						pluck ( PCB* value );
-
+		
+		#if DEBUG_MODE 
+			envTrack*				pluck_Track ( MsgEnv* value );
+		#endif
+		
 		bool 						replace( itemType currValue, itemType newValue );
 
 		itemType 				select( itemType value );
@@ -72,6 +86,9 @@ class Queue
 		PCB* 						select( PCB* value );
 
 		void 						printIntQueue(); //for testing purposes
+		#if DEBUG_MODE 
+			void					printTracker(); 
+		#endif		
 		string 					toString();
 		
 	protected:

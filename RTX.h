@@ -69,6 +69,10 @@ class RTX
 		int K_get_console_chars(MsgEnv* msg_envelope);
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
 		
+		#if DEBUG_MODE
+		void K_print_enveloper_tracker();
+		#endif
+		
 		static void null_proc();
 		
 		void start_execution();//Starts execution of processes on the CPU

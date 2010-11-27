@@ -24,10 +24,17 @@ class MsgServ
 		MsgEnv* retrieveOAck();
 		int releaseEnv(MsgEnv* msg);
 		MsgEnv* requestEnv();
+		#if DEBUG_MODE
+			void readTracker();
+		#endif
 	private:
 		Queue* _freeEnvQ;
 		MsgTrace* _msgTrace;
 		Scheduler* _scheduler;
+		
+		#if DEBUG_MODE
+			Queue* _envelopeTracker;
+		#endif
 };
 
 #endif

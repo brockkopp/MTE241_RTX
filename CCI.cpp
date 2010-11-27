@@ -30,9 +30,10 @@ void processCCI()
 
 			assure(ioLetter != NULL,"CCI:45 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
 	
-			ioLetter->setMsgData("");
+			ioLetter->setMsgData("");			
 			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
 				usleep(100000); //no user input provided yet. Wait!	
+			
 			ioLetter->setOriginPid(gRTX->getCurrentPid());
 			ioLetter = gRTX->K_receive_message(); 
 			assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
@@ -134,6 +135,16 @@ void processCCI()
 						else if(pcb->setPriority(priority) != EXIT_SUCCESS)
 							message = "Invalid priority\n";
 					}
+					#if DEBUG_MODE
+					else if (input[0] == "p")
+					{
+						gRTX->K_print_enveloper_tracker();
+					}
+					else if (input[0] == "r")
+					{
+						MsgEnv* breaker = gRTX->K_request_msg_env();
+					}
+					#endif
 					else if(input[0] == "help")	//remove for demo
 					{
 						if(params > 1)
@@ -149,6 +160,10 @@ void processCCI()
 							message += "\tDisplay Message Trace   b\n";
 							message += "\tTerminate               t\n";
 							message += "\tChange Priority         n pri pid\n\n";
+							#if DEBUG_MODE
+								message += "\n\tRequest random message 	r\n";
+								message += "\tPrint Env Tracker	p\n\n";
+							#endif
 						}
 					}			
 					else
