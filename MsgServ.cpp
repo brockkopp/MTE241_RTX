@@ -2,6 +2,8 @@
 
 extern RTX* gRTX;
 
+//CONSTRUCTOR
+//Initializes queue of free envelopes and passes scheduler and msgTrace to the MsgServ class 
 MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 {
 	_scheduler = scheduler;
@@ -18,6 +20,8 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 		_freeEnvQ->enqueue( new MsgEnv() );
 }
 
+//DECONSTRUCTOR
+//Frees memory allocated to msg envelopes 
 MsgServ::~MsgServ()
 {
 	delete _freeEnvQ;
@@ -25,6 +29,8 @@ MsgServ::~MsgServ()
 	delete _envelopeTracker;
 }
 
+//Facilitates the sending of messages between processes
+// This function is non-blocking 
 int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 {
 	if(destPid >= 0 && destPid <= PROCESS_COUNT)
@@ -47,7 +53,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		if(tempStatus == BLOCKED_MSG_RECIEVE)
 			temp = _scheduler->unblock_process(tempDestPCB);
 		else if(tempStatus == SLEEPING)
-			if(msg->getMsgType() == 20)																		//wake_up
+			if(msg->getMsgType() == MsgEnv::WAKEUP_CODE)																		//wake_up
 				temp = _scheduler->unblock_process(tempDestPCB);				
 
 		//add msg to process mailbox
@@ -58,6 +64,8 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 	return EXIT_ERROR;
 }
 		
+//Facilitates the retrieval of messages from the process PCB mailbox 
+//This Function is blocking if there are no messages waiting to be recieved
 MsgEnv* MsgServ::recieveMsg()
 {
 	//retrieve PCB of currently excecuting process 
@@ -82,6 +90,8 @@ MsgEnv* MsgServ::recieveMsg()
 	return tempMsg;
 }
 
+//Returns an unneeded message envelope to the free envelope queue
+//This function also checks if another process is waiting for a message envelope and unblocks if necessary
 int MsgServ::releaseEnv(MsgEnv* msg)
 {
 	if (msg == NULL)
@@ -92,7 +102,6 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 	#endif
 		
 	//return envelope to _freeEnvQ
-	msg->initMsg(-1,-1,-1,"");
 	_freeEnvQ->enqueue(msg);
  
 	//unblock waiting process, if one is waiting   
@@ -104,6 +113,8 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 	return EXIT_SUCCESS;
 }
 
+//Provides the calling process with a message envelope from the free envelope queue 
+//If the queue is empty, the process is blocked
 MsgEnv* MsgServ::requestEnv()
 {
 	while( _freeEnvQ->isEmpty() ) 

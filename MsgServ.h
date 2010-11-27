@@ -7,8 +7,10 @@
 #include "MsgTrace.h"
 #include "lib/PCB.h"
 
-#define BLOCKED_MSG_RECIEVE 2
-#define SLEEPING 3							
+
+//taken out since these are defined in the PCB class, just want to make sure it fully works before deleting
+//#define BLOCKED_MSG_RECIEVE 2
+//#define SLEEPING 3							
 
 class Scheduler;
 class MsgTrace;

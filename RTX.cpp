@@ -156,8 +156,9 @@ MsgEnv* RTX::K_request_msg_env()
 int RTX::K_release_msg_env(MsgEnv* usedEnv)
 {
 	assure(usedEnv != NULL,"Releasing NULL Env",__FILE__,__LINE__,__func__,false);
+	int ret;
 	atomic(true);
-	int ret = _mailMan->releaseEnv(usedEnv);
+	ret = _mailMan->releaseEnv(usedEnv);
 	atomic(false);
 	return ret;
 }
@@ -339,14 +340,13 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 	return res;
 }
 
+//calls getTraces, a function of the MsgTrace class
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
 	int ret = EXIT_ERROR;
 	atomic(true);
 	//call MsgTrace function to format trace buffers into table
-	ret = _msgTrace->getTraces(msg_envelope);
-	
-	//send table formated string to user display 
+	ret = _msgTrace->getTraces(msg_envelope); 
 	atomic(false);
 	return ret;
 }

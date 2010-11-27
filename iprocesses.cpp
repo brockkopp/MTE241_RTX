@@ -9,8 +9,8 @@ void i_timing_process()
 	//overall rtx clock count used for trace buffer time stamp
 	gRTX->runTime ++;
 	
-	PCB* tempPCB;
-	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
+	PCB* tempPCB = gRTX->getCurrentPcb();
+	assure((tempPCB) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	//get new message envelopes from mailbox
 	MsgEnv* tempMsg;
 
@@ -25,10 +25,10 @@ void i_timing_process()
  			 ) 
 	{
 		tempMsg = gRTX->waitingProcesses->dequeue_MsgEnv();
-		tempMsg->setDestPid(tempMsg->getOriginPid());
-		gRTX->K_send_message(tempMsg->getDestPid(), tempMsg);
+		gRTX->K_send_message(tempMsg->getOriginPid(), tempMsg);//send back to requester
 	}
 
+	//increment and display user wall clock
 	if(gRTX->wallClock->increment())
 	{
 		tempMsg = gRTX->K_request_msg_env();

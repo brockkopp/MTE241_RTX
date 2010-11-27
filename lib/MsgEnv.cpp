@@ -1,5 +1,7 @@
 #include "MsgEnv.h"
 
+//CONSTRUCTOR
+//initializes message envelope fields 
 MsgEnv::MsgEnv()
 {
 	msgFields._destPid = 		-1;
@@ -9,23 +11,13 @@ MsgEnv::MsgEnv()
 	msgFields._msgData = 		"";
 }
 
-int MsgEnv::initMsg(int destPid, int originPid, int msgType, string msgData)
-{
-	if(	
-			setDestPid(destPid) == EXIT_SUCCESS 			&&
-			setOriginPid(originPid) == EXIT_SUCCESS   &&
-			setMsgType(msgType) == EXIT_SUCCESS 			&&
-			setMsgData(msgData) == EXIT_SUCCESS
-		 )
-					return EXIT_SUCCESS;
-	return EXIT_ERROR;
-}
-
+//returns desitination PID of the message this function is called on 
 int MsgEnv::getDestPid()
 {
 	return msgFields._destPid;
 }
 
+//sets desitination PID of the message this function is called on 
 int MsgEnv::setDestPid(int newDestPid)
 {
 	//check if a valid destPID was passed
@@ -37,11 +29,13 @@ int MsgEnv::setDestPid(int newDestPid)
 	return EXIT_ERROR;
 }
 
+//returns origin PID of the message this function is called on 
 int MsgEnv::getOriginPid()
 {
 	return msgFields._originPid;
 }
 
+//sets origin PID of the message this function is called on 
 int MsgEnv::setOriginPid(int newOriginPid)
 {
 	//check if passed PID is valid
@@ -53,51 +47,39 @@ int MsgEnv::setOriginPid(int newOriginPid)
 	return EXIT_ERROR;
 }	
 
+//returns time stamp of the message this function is called on 
 int MsgEnv::getTimeStamp()
 {
 	return msgFields._timeStamp;
 }
 
+//sets time stamp of the message this function is called on 
 int MsgEnv::setTimeStamp(int newTimeStamp)
 {
 	msgFields._timeStamp = newTimeStamp;
 	return EXIT_SUCCESS;
 }
 
+//returns message type of the message this function is called on 
 int MsgEnv::getMsgType()
 {
 	return msgFields._msgType;
 }
 
+//sets message type of the message this function is called on 
 int MsgEnv::setMsgType(int newMsgType)
 {
 		msgFields._msgType = newMsgType;
 		return EXIT_SUCCESS;
 }
 
-string MsgEnv::getMsgTypeName()
-{
-   string ret;
-	switch(msgFields._msgType)
-	{
-		case TO_CRT : ret = 						"TO_CRT"; break;
-		case BUFFER_OVERFLOW : ret = 		"BUF_OVFLW"; break;
-		case DISPLAY_ACK : ret = 				"D_ACK"; break;
-		case DISPLAY_FAIL : ret = 			"D_FAIL"; break;
-		case DELAY_REQUEST : ret = 			"D_RQST"; break;
-		case CONSOLE_INPUT_FIKB : ret = "CONSOLE_INPUT_FIKB"; break;
-		case CONSOLE_INPUT : ret = 			"FRM_KB"; break;
-		case COUNT_REPORT : ret = 			"CNT_RPT"; break;
-		default: ret = 									"UNKNOWN"; break;
-	}
-	return ret;
-}
-
+//returns message data of the message this function is called on 
 string MsgEnv::getMsgData()
 {
 	return msgFields._msgData;
 }
 
+//sets message data of the message this function is called on 
 int MsgEnv::setMsgData(string msgInfo)
 {
 	msgFields._msgData = msgInfo;

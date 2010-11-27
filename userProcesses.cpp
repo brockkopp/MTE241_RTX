@@ -96,7 +96,7 @@ void userProcessC()
 				getMessage(MsgEnv::DISPLAY_ACK,gRTX);
 
 				cout << "Sleep -- run time: " << gRTX->runTime << "  Num: "<<num << "\n";
-				gRTX->K_request_delay(100, 10, myMsg);
+				gRTX->K_request_delay(100, MsgEnv::WAKEUP_CODE, myMsg);
 
 //DEBUGGING LEAD
 // We may be stuckk on this next loop (inifitiely)

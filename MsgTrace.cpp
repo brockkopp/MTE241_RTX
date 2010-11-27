@@ -2,6 +2,8 @@
 
 extern RTX* gRTX;
 
+//CONSTRUCTOR
+//Initializes circular trace arrays
 MsgTrace::MsgTrace()
 {
 	//initialize circular arrays to store trace buffers
@@ -11,6 +13,8 @@ MsgTrace::MsgTrace()
 	_receiveArrayPosition = 0;
 }
 
+//DECONSTRUCTOR
+//Free tracce buffer arrays
 MsgTrace::~MsgTrace()
 {
 	//free circular arrays
@@ -18,6 +22,7 @@ MsgTrace::~MsgTrace()
 	free(_receiveArray);
 }
 
+//Adds a trace to the buffer based on if it was sent or recieved
 int MsgTrace::addTrace(MsgEnv* msg, int callingFunction)
 {
 	if(msg != NULL)
@@ -52,6 +57,7 @@ int MsgTrace::addTrace(MsgEnv* msg, int callingFunction)
 	return EXIT_ERROR;
 }
 
+//Prepares trace buffers to be printed to the screen in table format
 int MsgTrace::getTraces(MsgEnv* msg)
 {
 	if (msg != NULL)
@@ -85,6 +91,7 @@ int MsgTrace::getTraces(MsgEnv* msg)
 	return EXIT_ERROR;
 }
 
+//returns message type string for use in printing message trace buffers 
 string MsgTrace::getMsgTypeName(int msgType)
 {
   string ret;
@@ -103,6 +110,7 @@ string MsgTrace::getMsgTypeName(int msgType)
 	return ret;
 }
 
+//Ensures equal spacing around a string. Used for the insertion of msg types into trace buffer table
 string MsgTrace::padString(string msgType, unsigned int size)
 {
 	const char* s = "            ";
