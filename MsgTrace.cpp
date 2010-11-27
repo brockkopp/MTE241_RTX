@@ -57,28 +57,29 @@ int MsgTrace::getTraces(MsgEnv* msg)
 	if (msg != NULL)
 	{
 		//initialize column headers for table display
-		string tempSendTraceTable = "SEND TRACE BUFFER\n\tDest PID   Origin PID     Msg Type     Time Stamp\n";
-		string tempRecTraceTable = "RECEIVE TRACE BUFFER\n\tDest PID   Origin PID     Msg Type     Time Stamp\n";
-		string tempTableRow;
+		string txTable = "SEND TRACE BUFFER\nINDEX\tDest\tOrigin\tType\t\tTime Sent\n";
+		string rxTable = "RECEIVE TRACE BUFFER\nINDEX\tDest\tOrigin\tType\t\tTime Sent\n";
+		int rxPos, txPos;
 		
-		for(int i=0; i<16; i++)
+		for(int i=15; i >= 0; i--)
 		{
-			//SEND ARRAY
-			//constructing one row of the trace buffer table to be displayed
-			//tempTableRow = "   "+intToStr(_sendArray[i]._destPid)+"            "+intToStr(_sendArray[i]._originPid)+"       " +padString(getMsgTypeName(_sendArray[i]._msgType))+"        "+intToStr(_sendArray[i]._timeStamp)+"\n";
-			tempTableRow = "\t"+intToStr(_sendArray[i]._destPid)+"          "+intToStr(_sendArray[i]._originPid)+"              " +padString(getMsgTypeName(_sendArray[i]._msgType))+" "+intToStr(_sendArray[i]._timeStamp)+"\n";
-			//adding above row to the trace buffer table
-			tempSendTraceTable = tempSendTraceTable + tempTableRow;
-		
-			// RECEIVE ARRAY			
-			//constructing one row of the trace buffer table to be displayed
-			//tempTableRow = "   "+intToStr(_receiveArray[i]._destPid)+"            "+intToStr(_receiveArray[i]._originPid)+"       " +padString(getMsgTypeName(_receiveArray[i]._msgType))+"        "+intToStr(_receiveArray[i]._timeStamp)+"\n";
-			tempTableRow = "\t"+intToStr(_receiveArray[i]._destPid)+"          "+intToStr(_receiveArray[i]._originPid)+"              " +padString(getMsgTypeName(_receiveArray[i]._msgType))+" "+intToStr(_receiveArray[i]._timeStamp)+"\n";
-			//adding above row to the trace buffer table
-			tempRecTraceTable = tempRecTraceTable + tempTableRow;
+			rxPos = (i + _receiveArrayPosition)%16;
+			txPos = (i + _sendArrayPosition)%16;
+
+			txTable += " " + intToStr(txPos) + \
+								 "\t" + intToStr(_sendArray[txPos]._destPid) + \
+								 "\t" + intToStr(_sendArray[txPos]._originPid) + \
+								 "\t" + padString(getMsgTypeName(_sendArray[txPos]._msgType),12) + \
+								 "\t" + intToStr(_sendArray[txPos]._timeStamp) + "\n";
+				 
+			rxTable += " " + intToStr(rxPos) + \
+								 "\t" + intToStr(_receiveArray[rxPos]._destPid) + \
+								 "\t" + intToStr(_receiveArray[rxPos]._originPid) + \
+								 "\t" + padString(getMsgTypeName(_receiveArray[rxPos]._msgType),12) + \
+								 "\t" + intToStr(_receiveArray[rxPos]._timeStamp) + "\n";
 		}
 		//place table in msg data field
-		msg->setMsgData(tempSendTraceTable+tempRecTraceTable);
+		msg->setMsgData( txTable + rxTable );
 		return EXIT_SUCCESS;
 	}	
 	return EXIT_ERROR;
@@ -89,23 +90,21 @@ string MsgTrace::getMsgTypeName(int msgType)
   string ret;
 	switch(msgType)
 	{
-		case MsgEnv::TO_CRT : ret = "TO_CRT"; break;
-		case MsgEnv::BUFFER_OVERFLOW : ret = "BUF_OVFLW"; break;
-		case MsgEnv::DISPLAY_ACK : ret = "D_ACK"; break;
-		case MsgEnv::DISPLAY_FAIL : ret = "D_FAIL"; break;
-		case MsgEnv::DELAY_REQUEST : ret = "D_RQST"; break;
+		case MsgEnv::TO_CRT : ret = 						"TO_CRT"; break;
+		case MsgEnv::BUFFER_OVERFLOW : ret = 		"BUF_OVFLW"; break;
+		case MsgEnv::DISPLAY_ACK : ret = 				"D_ACK"; break;
+		case MsgEnv::DISPLAY_FAIL : ret = 			"D_FAIL"; break;
+		case MsgEnv::DELAY_REQUEST : ret = 			"D_RQST"; break;
 		case MsgEnv::CONSOLE_INPUT_FIKB : ret = "FRM_FIKB"; break;
-		case MsgEnv::CONSOLE_INPUT : ret = "FRM_KB"; break;
-		case MsgEnv::COUNT_REPORT : ret = "CNT_RPT"; break;
-		case 99 : ret = "TEST_MSG"; break;
-		default: ret = "UNKNOWN"; break;
+		case MsgEnv::CONSOLE_INPUT : ret = 			"FRM_KB"; break;
+		case MsgEnv::COUNT_REPORT : ret = 			"CNT_RPT"; break;
+		default: ret = 													"UNKNOWN"; break;
 	}
 	return ret;
 }
 
-string MsgTrace::padString(string msgType)
+string MsgTrace::padString(string msgType, unsigned int size)
 {
-	unsigned int size = 12;
 	const char* s = "            ";
 	if(msgType.size() < size)
 			return msgType.append(s,size-msgType.size());

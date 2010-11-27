@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#define STACK_SIZE 		16372	//Stack size in bytes
+#define STACK_SIZE 		16384	//Stack size in bytes
 
 //Globals
 RTX* gRTX;
@@ -292,75 +292,6 @@ int cleanupShmem()
 	}
 
 	return ret;
-}
-
-void a()
-{
-	cout << "\nA\n\n";
-//	gRTX->_jmpList[1]->restore_context();
-	gRTX->K_release_processor();
-}
-void b()
-{
-	cout << "\nB\n\n";
-//	longjmp(gRTX->_jmpList[2]->_buffer,1);
-	gRTX->K_release_processor();
-}
-void c()
-{
-	cout << "\nC\n\n";
-//	longjmp(gRTX->_jmpList[3]->_buffer,1);
-	gRTX->K_release_processor();
-}
-void d()
-{
-	cout << "\ntest Null proc!\n\n";
-	sleep(2);
-	gRTX->K_release_processor();
-}
-void e()
-{
-while (true) {
-	cout << "\nuserA output\n";
-	gRTX->K_release_processor();
-}
-}
-void f()
-{
-while (true) {	
-	cout << "\nuserB output\n";
-	gRTX->K_release_processor();
-}
-}
-void g()
-{
-while (true) {
-	cout << "\nuserC output\n";
-	gRTX->K_release_processor();
-}
-}
-void test_CCI()
-{
-
-/* Acts as a tst cci process */
-
-//Note that this is a great place to place scheduler-specific fxns to test them.
-while (true) {
-//	gRTX->atomic( 1 );
-	cout << "\nTestCCI asks you for input: \n-->";
-	
-	cin.get();
-	cout << "Sending a msg to proc A\n";
-	MsgEnv* tmp = new MsgEnv();
-	gRTX->K_send_message( gRTX->_pcbList[4]->getId(), tmp);
-	
-	
-	cout << "READY: " << gRTX->_scheduler->_readyProcs->toString();
-	cout << "About to send a msg to processA\n";
-cout << "\nTest CCI acts on your input and releases CPU...\n";
-//	gRTX->atomic( 0 );
-	gRTX->K_release_processor();
-}
 }
 
 int createInitTable(PcbInfo** initTable)

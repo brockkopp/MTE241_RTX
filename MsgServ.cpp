@@ -7,17 +7,15 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 	_scheduler = scheduler;
 	_msgTrace = msgTrace;
 
-	//allocate space for msg envelopes
-	int msgTotal = 0;
 	_freeEnvQ = new Queue(Queue::MSG_ENV);
-	while(msgTotal < ENV_NUMBER)
-	{
-		MsgEnv* msg = new MsgEnv();
-		_freeEnvQ->enqueue(msg);
-		msgTotal++;
-	}
+	
+	for(int i=0; i < MSG_COUNT; i++)
+		_freeEnvQ->enqueue(new MsgEnv());
 	
 	_envelopeTracker = new Queue(Queue::TRACKER);
+	
+	for(int i=0; i < MSG_COUNT; i++)
+		_freeEnvQ->enqueue( new MsgEnv() );
 }
 
 MsgServ::~MsgServ()
@@ -94,6 +92,7 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 	#endif
 		
 	//return envelope to _freeEnvQ
+	msg->initMsg(-1,-1,-1,"");
 	_freeEnvQ->enqueue(msg);
  
 	//unblock waiting process, if one is waiting   

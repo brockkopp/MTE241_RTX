@@ -361,9 +361,6 @@ void RTX::null_proc() {
 	while(true)
 	{
 		assure(gRTX != NULL, "gRTX pointer NULL",__FILE__,__LINE__,__func__,true);
-#if DEBUG_MODE == 1
-		usleep(100000);
-#endif
 		gRTX->K_release_processor();
 	}
 }

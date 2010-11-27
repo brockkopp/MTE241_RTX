@@ -5,6 +5,7 @@ extern inputBuffer* gTxMemBuf;
 
 void i_timing_process()
 {	
+
 	//overall rtx clock count used for trace buffer time stamp
 	gRTX->runTime ++;
 	
@@ -12,19 +13,22 @@ void i_timing_process()
 	assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 	//get new message envelopes from mailbox
 	MsgEnv* tempMsg;
-	
-	while((tempMsg = tempPCB->retrieveMail()) != NULL)
+
+	while((tempMsg = tempPCB->retrieveMail()) != NULL) {
 		//set expire time, total RTX run time plus the requested delay time
 		gRTX->waitingProcesses->sortedEnqueue(tempMsg, gRTX->runTime + tempMsg->getTimeStamp());
+	}
 
 	//check if first envelope in waiting Q has expired, send wake up msg if true
- 	while(gRTX->waitingProcesses->get_front() != NULL && gRTX->waitingProcesses->get_front()->getTimeStamp() == gRTX->runTime) 
+ 	while(gRTX->waitingProcesses->get_front() != NULL &&
+ 			  gRTX->waitingProcesses->get_front()->getTimeStamp() <= gRTX->runTime
+ 			 ) 
 	{
 		tempMsg = gRTX->waitingProcesses->dequeue_MsgEnv();
 		tempMsg->setDestPid(tempMsg->getOriginPid());
 		gRTX->K_send_message(tempMsg->getDestPid(), tempMsg);
 	}
-	
+
 	if(gRTX->wallClock->increment())
 	{
 		tempMsg = gRTX->K_request_msg_env();

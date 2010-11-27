@@ -11,18 +11,19 @@ void processCCI()
 		string message;
 		int params;
 		MsgEnv* ioLetter = gRTX->K_request_msg_env();
-		ioLetter->setOriginPid(gRTX->getCurrentPid());
+
 
 		assure(ioLetter != NULL, "CCI ioLetter is NULL",__FILE__,__LINE__,__func__,true);
 
 		ualarm(TICK_TIME, TICK_TIME);
-		
+	
 		while(true)
 		{
 			command = "";
 			input[0] = input[1] = input[2] = "";
 			message = "";	
-			
+				
+				ioLetter->setOriginPid(gRTX->getCurrentPid());
 			ioLetter->setMsgData(">RTX$ ");
 			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
 
@@ -101,7 +102,6 @@ void processCCI()
 						if(params > 1)
 							message = "Too many parameters for 'Display Msg Buffers' command\n";
 						else
-						{	
 							if( gRTX->K_get_trace_buffers(ioLetter) != EXIT_SUCCESS )
 								message = "Display Trace Buffers Failed\n";
 							else
@@ -110,7 +110,6 @@ void processCCI()
 								ioLetter = gRTX->K_receive_message();
 								message = "";
 							}
-						}
 					}
 					else if(input[0] == "t")
 					{
@@ -171,6 +170,7 @@ void processCCI()
 				}
 				else
 					message = "Invalid Command String\n";
+					
 				if(message.length() > 0)
 				{
 					ioLetter->setMsgData(message);

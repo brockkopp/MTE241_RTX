@@ -2,11 +2,11 @@
 
 MsgEnv::MsgEnv()
 {
-	msgFields._destPid = -1;
-	msgFields._originPid = -1;
-	msgFields._timeStamp = -1;
-	msgFields._msgType = -1;
-	msgFields._msgData = " ";
+	msgFields._destPid = 		-1;
+	msgFields._originPid = 	-1;
+	msgFields._timeStamp = 	-1;
+	msgFields._msgType = 		-1;
+	msgFields._msgData = 		"";
 }
 
 int MsgEnv::initMsg(int destPid, int originPid, int msgType, string msgData)
