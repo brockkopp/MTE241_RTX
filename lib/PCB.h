@@ -57,7 +57,7 @@ class PCB
 
 		/*~*~*~*~*~* Members *~*~*~*~*~*/
 		int _atomicCount; 
-		void (*_fPtr)(); 
+		void (*_fPtr)();
 		int _id;
 		string _name;
 		int _priority;   

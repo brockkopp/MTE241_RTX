@@ -17,7 +17,7 @@ class MsgTrace
 		int addTrace(MsgEnv* msg, int callingFunction);
 		int getTraces(MsgEnv* msg);
 		string getMsgTypeName(int msgType);
-		string padString(string msgType);
+		string padString(string msgType, unsigned int size);
 		
 	private:
 		struct TraceElement

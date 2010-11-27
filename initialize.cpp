@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#define STACK_SIZE 		16372	//Stack size in bytes
+#define STACK_SIZE 		16384	//Stack size in bytes
 
 //Globals
 RTX* gRTX;

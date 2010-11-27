@@ -101,8 +101,6 @@ void processCCI()
 							message = "Too many parameters for 'Display Msg Buffers' command\n";
 						else
 						{
-//							int result = gRTX->K_get_trace_buffers(ioLetter);
-							
 							if( gRTX->K_get_trace_buffers(ioLetter) != EXIT_SUCCESS )
 								message = "Display Trace Buffers Failed\n";
 							else
