@@ -251,34 +251,51 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 	int ret = EXIT_ERROR;
 	if(msg_envelope != NULL) //error check
 	{
+		//cout<<__FILE__<<" : "<<__LINE__<<" Msg is GOOD!\n";
 		//validated that message is in correct format
 		//int invoker = msg_envelope->getOriginPid();
 		int invoker = getCurrentPid();
+		//cout<<__FILE__<<" : "<<__LINE__<<endl;
 		string content = msg_envelope->getMsgData();
 		//implement multi-line display	
+	//	cout<<__FILE__<<" : "<<__LINE__<<endl;
 		int lineCount = countChars(content,'\n');
 		if(lineCount == 0)
 		{
+			//cout<<__FILE__<<" : "<<__LINE__<<endl;
 			msg_envelope->setMsgData(content);
 			ret = send_chars_to_screen(msg_envelope);
 		}
 		else
 		{	
+			//cout<<__FILE__<<" : "<<__LINE__<<endl;
 			string lines[lineCount];
 			string thisLine = "";
 			parseString(content, lines, '\n', lineCount);
 	
 			for(int i = 0; i < lineCount; i++)
 			{
+				//cout<<__FILE__<<" : "<<__LINE__<<endl;
 				thisLine = (lines[i] + '\n');
 				msg_envelope->setMsgData(thisLine);
 				//ret = send_chars_to_screen(msg_envelope);
-				do { ret = send_chars_to_screen(msg_envelope); } while(ret == EXIT_ERROR);
+				//cout<<__FILE__<<" : "<<__LINE__<<endl;
+				do { 
+				ret = send_chars_to_screen(msg_envelope); 
+				//cout<<__FILE__<<" : "<<__LINE__<<endl;
+			 } while(ret == EXIT_ERROR);
+			//	cout<<__FILE__<<" : "<<__LINE__<<endl;
 				usleep(100000);
 			}
 			msg_envelope->setMsgData(content); //reset data to original before breaking it down
 		}	
+		//cout<<__FILE__<<" : "<<__LINE__<<endl;
 		K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
+		//cout<<__FILE__<<" : "<<__LINE__<<endl;
+	}
+	else
+	{
+	//	cout<<__FILE__<<" : "<<__LINE__<<" NULL message!\n";
 	}
 	return ret;
 }

@@ -40,33 +40,46 @@ void userProcessB()
 
 void userProcessC()
 {
-	int num = 0;
 	MsgEnv* myMsg;
 
 	while(true)
 	{
 		myMsg = gRTX->K_receive_message();
-	
+		
 		if( myMsg!= NULL && 
 				myMsg->getMsgType() == MsgEnv::COUNT_REPORT
 			)
 		{
+			int num = 0;
 			strToInt( myMsg->getMsgData(), &num );
+			//cout<<__FILE__<<" : "<<__LINE__<<" Num = "<<num<<endl;
 			if(num%20 == 0 && num != 0)
 			{
-				
+				cout<<"Process C!"<<endl;
 				myMsg->setMsgData("Process C\n");
-				while(gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS);
-				getMessage(MsgEnv::DISPLAY_ACK,gRTX);
+				
+				
+				int goOn = gRTX->K_send_console_chars(myMsg);
+				cout<<(goOn == EXIT_SUCCESS? "Successful Send\n":"Failed send\n");
+				while(goOn != EXIT_SUCCESS)
+				{
+					cout<<"Stuck in while loop...\n";
+					getMessage(MsgEnv::DISPLAY_ACK,gRTX);
+				}
 
+				//cout<<__FILE__<<" : "<<__LINE__<<endl;
 				gRTX->K_request_delay(100, num, myMsg);
-
-				while((myMsg = getMessage(num,gRTX)) == NULL)
+				//cout<<__FILE__<<" : "<<__LINE__<<endl;
+						
+				while((myMsg = getMessage(num,gRTX)) == NULL)				
+				{
 					gRTX->K_release_processor();				
+				}
 			}
 		}
 	
 		gRTX->K_release_msg_env(myMsg);
 		gRTX->K_release_processor();
 	}
+	cout<<"See ya, SUCKERS!\n";
 }

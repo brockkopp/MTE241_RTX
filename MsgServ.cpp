@@ -36,7 +36,7 @@ MsgServ::~MsgServ()
 // This function is non-blocking 
 int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 {
-	if(destPid >= 0 && destPid < PROCESS_COUNT)
+	if(msg != NULL && destPid >= 0 && destPid < PROCESS_COUNT)
 	{
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB;		
