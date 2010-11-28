@@ -373,16 +373,9 @@ void RTX::start_execution()
 		_scheduler->start(); 
 	}
 }
-
-Scheduler* RTX::getScheduler() 
-{ 
-#if TESTS_MODE == 1
-	return _scheduler; 
-#endif
-}
-
-
+#if DEBUG_MODE
 void RTX::K_print_enveloper_tracker()
 {
 	_mailMan->readTracker();
 }
+#endif

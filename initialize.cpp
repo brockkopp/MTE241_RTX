@@ -50,8 +50,6 @@ int main(void)
 
 	pidRTX = getpid();
 
-	debugMsg("------------------------------------\n           RTX INITIALIZED\n------------------------------------",1,2);	
-
 	//Create and initialize signal handler
 	//Signals are masked by default
 	SignalHandler* sigHandler = new SignalHandler();
