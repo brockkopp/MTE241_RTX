@@ -4,17 +4,17 @@
 //initializes message envelope fields 
 MsgEnv::MsgEnv()
 {
-	msgFields._destPid = 		-1;
-	msgFields._originPid = 	-1;
-	msgFields._timeStamp = 	-1;
-	msgFields._msgType = 		-1;
-	msgFields._msgData = 		"";
+	_destPid = 		-1;
+	_originPid = 	-1;
+	_timeStamp = 	-1;
+	_msgType = 		-1;
+	_msgData = 		"";
 }
 
 //returns desitination PID of the message this function is called on 
 int MsgEnv::getDestPid()
 {
-	return msgFields._destPid;
+	return _destPid;
 }
 
 //sets desitination PID of the message this function is called on 
@@ -23,7 +23,7 @@ int MsgEnv::setDestPid(int newDestPid)
 	//check if a valid destPID was passed
 	if(newDestPid >=0 && newDestPid <= PROCESS_COUNT)
 	{
-		msgFields._destPid = newDestPid;
+		_destPid = newDestPid;
 		return EXIT_SUCCESS;
 	}
 	return EXIT_ERROR;
@@ -32,7 +32,7 @@ int MsgEnv::setDestPid(int newDestPid)
 //returns origin PID of the message this function is called on 
 int MsgEnv::getOriginPid()
 {
-	return msgFields._originPid;
+	return _originPid;
 }
 
 //sets origin PID of the message this function is called on 
@@ -41,7 +41,7 @@ int MsgEnv::setOriginPid(int newOriginPid)
 	//check if passed PID is valid
 	if(newOriginPid >=0 && newOriginPid <= PROCESS_COUNT)
 	{
-		msgFields._originPid = newOriginPid;
+		_originPid = newOriginPid;
 		return EXIT_SUCCESS;
 	}
 	return EXIT_ERROR;
@@ -50,38 +50,62 @@ int MsgEnv::setOriginPid(int newOriginPid)
 //returns time stamp of the message this function is called on 
 int MsgEnv::getTimeStamp()
 {
-	return msgFields._timeStamp;
+	return _timeStamp;
 }
 
 //sets time stamp of the message this function is called on 
 int MsgEnv::setTimeStamp(int newTimeStamp)
 {
-	msgFields._timeStamp = newTimeStamp;
+	_timeStamp = newTimeStamp;
 	return EXIT_SUCCESS;
 }
 
 //returns message type of the message this function is called on 
 int MsgEnv::getMsgType()
 {
-	return msgFields._msgType;
+	return _msgType;
 }
 
 //sets message type of the message this function is called on 
 int MsgEnv::setMsgType(int newMsgType)
 {
-		msgFields._msgType = newMsgType;
+		_msgType = newMsgType;
 		return EXIT_SUCCESS;
 }
 
-//returns message data of the message this function is called on 
+string MsgEnv::getMsgTypeName()
+{
+	return getMsgTypeName(_msgType);
+}
+
+string MsgEnv::getMsgTypeName(int msgType)
+{
+  string ret;
+	switch(msgType)
+	{
+		case -1 : ret = 								"UN_INIT"; break;
+		case TO_CRT : ret = 						"TO_CRT"; break;
+		case BUFFER_OVERFLOW : ret = 		"BUF_OVFLW"; break;
+		case DISPLAY_ACK : ret = 				"D_ACK"; break;
+		case DISPLAY_FAIL : ret = 			"D_FAIL"; break;
+		case CONSOLE_INPUT_FIKB : ret = "KB_IN_IPROC"; break;
+		case CONSOLE_INPUT : ret = 			"KB_IN"; break;
+		case COUNT_REPORT : ret = 			"CNT_RPT"; break;
+		case REQ_DELAY : ret = 					"RQ_DELAY"; break;
+		case START_PROC : ret = 				"START_PROC"; break;
+		default: ret = 									"USER_DEF:" + intToStr(msgType); break;
+	}
+	return ret;
+}
+
 string MsgEnv::getMsgData()
 {
-	return msgFields._msgData;
+	return _msgData;
 }
 
 //sets message data of the message this function is called on 
 int MsgEnv::setMsgData(string msgInfo)
 {
-	msgFields._msgData = msgInfo;
+	_msgData = msgInfo;
 	return EXIT_SUCCESS;
 }

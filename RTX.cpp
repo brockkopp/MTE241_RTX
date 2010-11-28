@@ -22,7 +22,6 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	for(int i=0; i < PROCESS_COUNT; i++)
 	{
 		_pcbList[i] = new PCB(initTable[i]);
-		
 		if ( _pcbList[i]->getProcessType() != PROCESS_I )
 			pcbTmpList->enqueue(_pcbList[i]);
 	}
@@ -123,11 +122,11 @@ int RTX::atomic(bool on)
 }
 
 //Call MsgServ class function sendMsg
-int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
+int RTX::K_send_message(int dest_process_id, MsgEnv* msgEnv)
 {
 	int ret;
 	atomic(true);
-	ret = _mailMan->sendMsg(dest_process_id, msg_envelope);
+	ret = _mailMan->sendMsg(dest_process_id, msgEnv);
 	atomic(false);
 	return ret;
 }
@@ -177,11 +176,9 @@ arguments:
 */
 int RTX::K_request_process_status(MsgEnv* msg) 
 {
-	if (msg == NULL) {
+	if (msg == NULL)
 			debugMsg("Called K_request_process_status without first allocating memory to the passed MsgEnv\n");
-		}
 	
-
 	atomic(true);
 	int ret = EXIT_ERROR;
 	if(msg != NULL)
@@ -227,10 +224,12 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 	if(msg_envelope != NULL)
 	{
 		//populate msg env Fields
-		msg_envelope->setTimeStamp(time_delay); 
-		msg_envelope->setMsgType(wakeup_code);
+		msg_envelope->setTimeStamp(time_delay);
+		msg_envelope->setMsgType(MsgEnv::REQ_DELAY);
+		msg_envelope->setMsgData(intToStr(wakeup_code));
 		//call Kernal send message to send to timing iProcess
 		ret = K_send_message(PROC_TIMING, msg_envelope);
+		_scheduler->block_process(SLEEPING);
 	}
 	atomic(false);	
 	return ret;
@@ -374,16 +373,9 @@ void RTX::start_execution()
 		_scheduler->start(); 
 	}
 }
-
-Scheduler* RTX::getScheduler() 
-{ 
-#if TESTS_MODE == 1
-	return _scheduler; 
-#endif
-}
-
-
+#if DEBUG_MODE
 void RTX::K_print_enveloper_tracker()
 {
 	_mailMan->readTracker();
 }
+#endif

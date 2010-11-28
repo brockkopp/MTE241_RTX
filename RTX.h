@@ -76,9 +76,6 @@ class RTX
 		static void null_proc();
 		
 		void start_execution();//Starts execution of processes on the CPU
-#if TESTS_MODE == 1
-		Scheduler* getScheduler(); //Used only for scheduler's test cases.
-#endif
 
 		Queue* waitingProcesses;
 		int runTime;

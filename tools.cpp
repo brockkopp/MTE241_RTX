@@ -5,6 +5,9 @@ MsgEnv* getMessage(int msgType, RTX* rtx)
 	assure(rtx != NULL, "rtx parameter NULL",__FILE__,__LINE__,__func__,true);
 	
 	int myPid = rtx->getCurrentPid();
+	
+	//PRINT OUT CURRENT MAILBOX QUEUE
+	
 	MsgEnv* ret = rtx->K_receive_message();
 	MsgEnv* startEnv = NULL;
 	if(ret != NULL && ret->getMsgType() != msgType)
@@ -14,10 +17,12 @@ MsgEnv* getMessage(int msgType, RTX* rtx)
 
 		while(ret != NULL && ret->getMsgType() != msgType)
 		{
+//			cout<<"loopy:" << ret->getMsgType() << "\n";
 			if(ret == startEnv)
 				ret = NULL;
 			else
 			{
+//				cout<<__FILE__<<":"<<__LINE__<<endl<<flush;
 				rtx->K_send_message(myPid,ret);		//Prevent looping on same message
 				ret = rtx->K_receive_message();
 			}

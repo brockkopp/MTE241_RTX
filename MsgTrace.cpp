@@ -63,8 +63,8 @@ int MsgTrace::getTraces(MsgEnv* msg)
 	if (msg != NULL)
 	{
 		//initialize column headers for table display
-		string txTable = "SEND TRACE BUFFER\nINDEX\tDest\tOrigin\tType\t\tTime Sent\n";
-		string rxTable = "RECEIVE TRACE BUFFER\nINDEX\tDest\tOrigin\tType\t\tTime Sent\n";
+		string txTable = "SEND TRACE BUFFER\nINDEX\tDest\tOrigin\tTime\tType\n";
+		string rxTable = "RECEIVE TRACE BUFFER\nINDEX\tDest\tOrigin\tTime\tType\n";
 		int rxPos, txPos;
 		
 		for(int i=15; i >= 0; i--)
@@ -75,14 +75,15 @@ int MsgTrace::getTraces(MsgEnv* msg)
 			txTable += " " + intToStr(txPos) + \
 								 "\t" + intToStr(_sendArray[txPos]._destPid) + \
 								 "\t" + intToStr(_sendArray[txPos]._originPid) + \
-								 "\t" + padString(getMsgTypeName(_sendArray[txPos]._msgType),12) + \
-								 "\t" + intToStr(_sendArray[txPos]._timeStamp) + "\n";
+								 "\t" + intToStr(_sendArray[txPos]._timeStamp) + \
+								 "\t" + padString(MsgEnv::getMsgTypeName(_sendArray[txPos]._msgType),12) + "\n";
+								 
 				 
 			rxTable += " " + intToStr(rxPos) + \
-								 "\t" + intToStr(_receiveArray[rxPos]._destPid) + \
-								 "\t" + intToStr(_receiveArray[rxPos]._originPid) + \
-								 "\t" + padString(getMsgTypeName(_receiveArray[rxPos]._msgType),12) + \
-								 "\t" + intToStr(_receiveArray[rxPos]._timeStamp) + "\n";
+								 "\t" + intToStr(_sendArray[rxPos]._destPid) + \
+								 "\t" + intToStr(_sendArray[rxPos]._originPid) + \
+								 "\t" + intToStr(_sendArray[rxPos]._timeStamp) + \
+								 "\t" + padString(MsgEnv::getMsgTypeName(_sendArray[rxPos]._msgType),12) + "\n";
 		}
 		//place table in msg data field
 		msg->setMsgData( txTable + rxTable );
@@ -91,26 +92,6 @@ int MsgTrace::getTraces(MsgEnv* msg)
 	return EXIT_ERROR;
 }
 
-//returns message type string for use in printing message trace buffers 
-string MsgTrace::getMsgTypeName(int msgType)
-{
-  string ret;
-	switch(msgType)
-	{
-		case MsgEnv::TO_CRT : ret = 						"TO_CRT"; break;
-		case MsgEnv::BUFFER_OVERFLOW : ret = 		"BUF_OVFLW"; break;
-		case MsgEnv::DISPLAY_ACK : ret = 				"D_ACK"; break;
-		case MsgEnv::DISPLAY_FAIL : ret = 			"D_FAIL"; break;
-		case MsgEnv::DELAY_REQUEST : ret = 			"D_RQST"; break;
-		case MsgEnv::CONSOLE_INPUT_FIKB : ret = "FRM_FIKB"; break;
-		case MsgEnv::CONSOLE_INPUT : ret = 			"FRM_KB"; break;
-		case MsgEnv::COUNT_REPORT : ret = 			"CNT_RPT"; break;
-		default: ret = 													"UNKNOWN"; break;
-	}
-	return ret;
-}
-
-//Ensures equal spacing around a string. Used for the insertion of msg types into trace buffer table
 string MsgTrace::padString(string msgType, unsigned int size)
 {
 	const char* s = "            ";
