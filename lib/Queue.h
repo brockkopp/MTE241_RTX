@@ -44,7 +44,7 @@ class Queue
 		~Queue();
 
 		bool 						enqueue( QueueNode* value ); 
-		bool 						sortedEnqueue( MsgEnv** newMsg, int timeStamp );
+		bool 						sortedEnqueue( MsgEnv** newMsg);
 
 		MsgEnv* 				dequeue_MsgEnv();
 		PCB*						dequeue_PCB();

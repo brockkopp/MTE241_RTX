@@ -15,7 +15,8 @@ void i_timing_process()
 
 	while((tempMsg = gRTX->K_receive_message()) != NULL) {
 		//set expire time, total RTX run time plus the requested delay time
-		gRTX->waitingProcesses->sortedEnqueue(&tempMsg, gRTX->runTime + tempMsg->getTimeStamp());
+		tempMsg->setTimeStamp( gRTX->runTime + tempMsg->getTimeStamp() );
+		gRTX->waitingProcesses->sortedEnqueue(&tempMsg);
 	}
 
 /* DELETE BLOCK */

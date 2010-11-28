@@ -99,8 +99,11 @@ bool Queue::enqueue( QueueNode* value )
 	 return true;
 }
 
-bool Queue::sortedEnqueue( MsgEnv** newMsg, int timeStamp )
+bool Queue::sortedEnqueue( MsgEnv** newMsg )
 {
+
+	int timeStamp = (*newMsg)->_timeStamp;
+
 	if(newMsg == NULL)
 		return false;
 		
