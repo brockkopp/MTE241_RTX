@@ -103,7 +103,7 @@ bool Queue::sortedEnqueue( MsgEnv** newMsg )
 {
 
 	int timeStamp = (*newMsg)->_timeStamp;
-	cout<<"In SortedEnqueue... timeStamp = "<<timeStamp<<endl;
+//	cout<<"In SortedEnqueue... timeStamp = "<<timeStamp<<endl;
 
 	if(newMsg == NULL)
 		return false;

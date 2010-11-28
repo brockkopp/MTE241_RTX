@@ -68,12 +68,9 @@ void processCCI()
 								MsgEnv* myEnv = gRTX->K_request_msg_env();
 								myEnv->setDestPid(PROC_USER_A);
 								myEnv->setMsgType(MsgEnv::START_PROC);
-
 					
 								if(gRTX->K_send_message(PROC_USER_A, myEnv) != EXIT_SUCCESS)
 									message = "Message failed to send\n";	
-								else
-									message = "Sent message!\n";
 							}
 							else
 								message = "User Process A already started\n";
@@ -114,7 +111,7 @@ void processCCI()
 						else
 							gRTX->wallClock->setDisplayed(false);
 					}
-					else if(input[0] == "b")	//to complete
+					else if(input[0] == "b")
 					{
 						if(params > 1)
 							message = "Too many parameters for 'Display Msg Buffers' command\n";
@@ -134,11 +131,10 @@ void processCCI()
 							message = "Too many parameters for 'Terminate' command\n";
 						else
 						{
-//							ioLetter->setMsgData("\nShutting Down...\n");
-//							if( gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR )
-//								cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<<"GetConsoleCharsFailed"<<endl;
-//							while( (ioLetter = getAck(gRTX)) == NULL )
-//								cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<< "OHH, MY, GOD... Ohh no she didn't\n";
+							ioLetter->setMsgData("\nShutting Down...\n");
+							assure(gRTX->K_send_console_chars(ioLetter) != EXIT_ERROR,"Send console chars failed",__FILE__,__LINE__,__func__,true);
+							while( (ioLetter = getAck(gRTX)) == NULL )
+								debugMsg("CCI Looping on shutdown message\n");
 							
 							gRTX->K_release_msg_env(ioLetter);
 							kill(getpid(),SIGINT);
@@ -157,18 +153,7 @@ void processCCI()
 						else if(pcb->setPriority(priority) != EXIT_SUCCESS)
 							message = "Invalid priority\n";
 					}
-					#if DEBUG_MODE
-					else if (input[0] == "p")
-					{
-						gRTX->K_print_enveloper_tracker();
-					}
-					else if (input[0] == "r")
-					{
-						MsgEnv* breaker = gRTX->K_request_msg_env();
-						breaker = NULL;
-					}
-					#endif
-					else if(input[0] == "help")	//remove for demo
+					else if(input[0] == "help")
 					{
 						if(params > 1)
 							message = "Too many parameters for 'Help' command\n";
@@ -183,10 +168,6 @@ void processCCI()
 							message += "\tDisplay Message Trace   b\n";
 							message += "\tTerminate               t\n";
 							message += "\tChange Priority         n pri pid\n\n";
-							#if DEBUG_MODE
-								message += "\n\tRequest random message 	r\n";
-								message += "\tPrint Env Tracker	p\n\n";
-							#endif
 						}
 					}			
 					else

@@ -21,10 +21,10 @@ void i_timing_process()
 
 /* DELETE BLOCK */
 if (gRTX->waitingProcesses->get_front() != NULL) {
-	cout << "Waiting msg stamp: " << gRTX->waitingProcesses->get_front()->getTimeStamp() << "\n";
-	cout << "RTX time					: " << gRTX->runTime << "\n";
-	cout << "Waiting msg data : " << gRTX->waitingProcesses->get_front()->getMsgData() << "\n";
-	cout << "Waiting msg type : " << gRTX->waitingProcesses->get_front()->getMsgType() << "\n";
+//	cout << "Waiting msg stamp: " << gRTX->waitingProcesses->get_front()->getTimeStamp() << "\n";
+//	cout << "RTX time					: " << gRTX->runTime << "\n";
+//	cout << "Waiting msg data : " << gRTX->waitingProcesses->get_front()->getMsgData() << "\n";
+//	cout << "Waiting msg type : " << gRTX->waitingProcesses->get_front()->getMsgType() << "\n";
 	gRTX->waitingProcesses->toString();
 
 }
@@ -46,12 +46,13 @@ if (gRTX->waitingProcesses->get_front() != NULL) {
 		tempMsg = gRTX->K_request_msg_env();
 		if(tempMsg != NULL)
 		{
-			tempMsg->setOriginPid(PROC_TIMING);
 			tempMsg->setMsgData(gRTX->wallClock->toString() + "\n");
-		
-			while(gRTX->K_send_console_chars(tempMsg) == EXIT_ERROR);
-			tempMsg = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
-			gRTX->K_release_msg_env(tempMsg);
+			assure(gRTX->K_send_console_chars(tempMsg) != EXIT_ERROR,"Send console chars failed",__FILE__,__LINE__,__func__,true);
+			while( (tempMsg = getAck(gRTX)) == NULL )
+				debugMsg("ClockDisplay looping on Ack\n");		
+//			while(gRTX->K_send_console_chars(tempMsg) == EXIT_ERROR);
+//			tempMsg = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
+//			gRTX->K_release_msg_env(tempMsg);
 		}
 		
 	}

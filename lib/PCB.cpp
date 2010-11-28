@@ -141,6 +141,8 @@ MsgEnv* PCB::retrieveMail( )
 //Enqueue message onto mailbox queue
 bool PCB::addMail( MsgEnv* message )
 {
+//	if(_id == PROC_USER_C)
+//		cout << message << "::" << message->getMsgTypeName() << ">>" << message->getMsgData() << endl;
 	return (_mailbox->enqueue((void**)(&message)));
 }
 

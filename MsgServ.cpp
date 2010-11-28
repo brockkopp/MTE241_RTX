@@ -15,10 +15,6 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 		MsgEnv* temp = new MsgEnv();
 		_freeEnvQ->enqueue( (void**)(&temp) );
 	}
-#if DEBUG_MODE
-	_envelopeTracker = new Queue(Queue::TRACKER);
-#endif
-
 }
 
 //DECONSTRUCTOR
@@ -26,10 +22,6 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 MsgServ::~MsgServ()
 {
 	delete _freeEnvQ;
-
-#if DEBUG_MODE
-	delete _envelopeTracker;
-#endif
 }
 
 //Facilitates the sending of messages between processes
@@ -85,7 +77,7 @@ MsgEnv* MsgServ::recieveMsg()
 	PCB* tempPCB = gRTX->getCurrentPcb();
 	assure(tempPCB != NULL, "Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 
-	if (tempPCB->checkMail() == 0)
+	while (tempPCB->checkMail() == 0)
 	{
 		//i_process cannot be blocked
 		if (tempPCB->getProcessType() == PROCESS_I)
@@ -106,7 +98,7 @@ MsgEnv* MsgServ::recieveMsg()
 //This function also checks if another process is waiting for a message envelope and unblocks if necessary
 int MsgServ::releaseEnv(MsgEnv* msg)
 {
-cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length before release: " << _freeEnvQ->get_length() << "\n";
+//cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length before release: " << _freeEnvQ->get_length() << "\n";
 	if (msg == NULL)
 		return EXIT_ERROR;
 		
@@ -121,7 +113,7 @@ cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length be
 	int temp;
 	temp = _scheduler->unblock_process( BLOCKED_ENV );
 	
-cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length after release: " << _freeEnvQ->get_length() << "\n";
+//cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length after release: " << _freeEnvQ->get_length() << "\n";
 	
 	
 	if(!temp)
@@ -135,11 +127,10 @@ cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length af
 MsgEnv* MsgServ::requestEnv()
 {
 
-cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length before request: " << _freeEnvQ->get_length() << "\n";
+//cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length before request: " << _freeEnvQ->get_length() << "\n";
 	while( _freeEnvQ->isEmpty() ) 
 	{
-cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << "   Queue is empty!\n";
-		debugMsg("Empty Envelope Queue!!!",1,1);
+//cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << "   Queue is empty!\n";
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB = gRTX->getCurrentPcb();
 		assure(tempPCB != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
@@ -152,25 +143,6 @@ cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << "   Queue is empty!\
 	}
 			
 	MsgEnv* ptrMsg = _freeEnvQ->dequeue_MsgEnv();
-	
-	#if DEBUG_MODE
-//		envTrack* eT = new envTrack();
-//		eT->allocatorID = gRTX->getCurrentPid();
-//		eT->receiverID = -1;
-//		MsgEnv* tMsg = ptrMsg;
-//		eT->address = tMsg;
-//		_envelopeTracker->enqueue(eT);
-	#endif
-		
-cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << "freeEnvQ length after request: " << _freeEnvQ->get_length() << "\n";
-		
-		
+
 	return ptrMsg;
 }
-
-#if DEBUG_MODE
-void MsgServ::readTracker()
-{
-	_envelopeTracker->printTracker();
-}
-#endif

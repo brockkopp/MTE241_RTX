@@ -24,7 +24,7 @@ class WallClock;
 //RTX Global Constants
 
 #define PROCESS_COUNT 8			//Total number of processes existing in the RTX
-#define MSG_COUNT			20
+#define MSG_COUNT			50
 #define TICK_TIME			100000 	// = 100mSec
 
 //Constants used to denote process types
@@ -45,15 +45,11 @@ class WallClock;
 class RTX
 {
 	public:
-		WallClock* 			wallClock;
-		
 		RTX(PcbInfo* initTable[], SignalHandler* signalHandler);
 		~RTX();
 		int getPcb(int pid, PCB** pcb);
 		PCB* getCurrentPcb();
 		int getCurrentPid();
-//		MsgEnv* retrieveOutAcknowledgement();
-//		MsgEnv* retrieveInAcknowledgement();
 		int atomic(bool on);
 
 		int K_send_message(int dest_process_id, MsgEnv* msg_envelope);
@@ -68,33 +64,30 @@ class RTX
 		int K_send_console_chars(MsgEnv* msg_envelope);
 		int K_get_console_chars(MsgEnv* msg_envelope);
 		int K_get_trace_buffers(MsgEnv* msg_envelope);
-		
-		#if DEBUG_MODE
-		void K_print_enveloper_tracker();
-		#endif
-		
+
 		static void null_proc();
 		
 		void start_execution();//Starts execution of processes on the CPU
 
-		Queue* waitingProcesses;
-		int runTime;
-
-//	protected:
+		Queue* 			waitingProcesses;
+		int 				runTime;
+		bool				_semSend;
+		WallClock* 	wallClock;
+		
+	protected:
 		int setCurrentPcb(PCB* pcb);
 		int setCurrentPcb(int pid);
 
-//	private:
+	private:
 
-		PCB**					_pcbList;		//Should be private, prevent invalid pid
-		PCB*					_currentProcess;		
+		PCB**						_pcbList;		//Should be private, prevent invalid pid
+		PCB*						_currentProcess;		
 		Scheduler* 			_scheduler;
 		SignalHandler* 	_signalHandler;
 
 		MsgTrace*			_msgTrace;
 		MsgServ* 			_mailMan;
 		bool					_started;
-		bool					_semSend;
 				
 		int send_chars_to_screen(MsgEnv* msg_envelope);
 		
