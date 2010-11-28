@@ -154,11 +154,13 @@ MsgEnv* RTX::K_request_msg_env()
 //Call MsgServ class function releaseEnv
 int RTX::K_release_msg_env(MsgEnv* usedEnv)
 {
-	assure(usedEnv != NULL,"Releasing NULL Env",__FILE__,__LINE__,__func__,false);
-	int ret;
-	atomic(true);
-	ret = _mailMan->releaseEnv(usedEnv);
-	atomic(false);
+	int ret = EXIT_SUCCESS;
+	if(assure(usedEnv != NULL,"Releasing NULL Env",__FILE__,__LINE__,__func__,false))
+	{
+		atomic(true);
+		ret = _mailMan->releaseEnv(usedEnv);
+		atomic(false);
+	}
 	return ret;
 }
 
@@ -176,13 +178,10 @@ arguments:
 */
 int RTX::K_request_process_status(MsgEnv* msg) 
 {
-	if (msg == NULL)
-			debugMsg("Called K_request_process_status without first allocating memory to the passed MsgEnv\n");
-	
-	atomic(true);
 	int ret = EXIT_ERROR;
 	if(msg != NULL)
 	{
+		atomic(true);
 		string output = "\tPID\tPRIORITY  STATUS\n\t---\t------\t  --------\n";
 		
 		PCB* curr;
@@ -192,8 +191,11 @@ int RTX::K_request_process_status(MsgEnv* msg)
 		msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
 		msg->setMsgData(output);
 		ret = EXIT_SUCCESS;
+		atomic(false);
 	}
-	atomic(false);
+	else
+		debugMsg("Called K_request_process_status without first allocating memory to the passed MsgEnv\n");
+	
 	return ret;
 }
 
@@ -207,22 +209,24 @@ int RTX::K_terminate()
 int RTX::K_change_priority(int new_priority, int target_process_id)
 {
 	int return_val;
-	atomic(true);	
-	PCB* tmpPcb;
-	getPcb(target_process_id, &tmpPcb);
-	return_val = _scheduler->change_priority( tmpPcb , new_priority);
-	atomic(false);	
 	
+	PCB* tmpPcb;
+	if(	(return_val = getPcb(target_process_id, &tmpPcb)) == EXIT_SUCCESS )
+	{
+		atomic(true);	
+		return_val = _scheduler->change_priority( tmpPcb , new_priority);
+		atomic(false);
+	}
 	return return_val;
 }
 
 //sends a msg to the i_timing_process with a sleep time
 int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
-	atomic(true);
 	int ret = EXIT_ERROR;
 	if(msg_envelope != NULL)
 	{
+		atomic(true);
 		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay);
 		msg_envelope->setMsgType(MsgEnv::REQ_DELAY);
@@ -230,8 +234,8 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 		//call Kernal send message to send to timing iProcess
 		ret = K_send_message(PROC_TIMING, msg_envelope);
 		_scheduler->block_process(SLEEPING);
+		atomic(false);	
 	}
-	atomic(false);	
 	return ret;
 }
 
@@ -281,35 +285,40 @@ int RTX::K_send_console_chars(MsgEnv* msg_envelope)
 
 int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 {
-	int iCRTId = getpid(); //send a signal to the RTX
-	
-	int res = EXIT_SUCCESS;
-	//send message to i_crt_handler to deal with transmission of the message to the console
-	msg_envelope->setMsgType(msg_envelope->TO_CRT);
-	
-	res = K_send_message(PROC_CRT, msg_envelope);
-		
-	if(res != EXIT_ERROR)
-	{
-		kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
+	int res = EXIT_ERROR;
 
-		msg_envelope = getMessage(MsgEnv::DISPLAY_ACK,this);
-	  	
-		if(msg_envelope != NULL)
+	if(msg_envelope != NULL)
+	{
+		int iCRTId = getpid(); //send a signal to the RTX
+		//send message to i_crt_handler to deal with transmission of the message to the console
+		msg_envelope->setMsgType(msg_envelope->TO_CRT);
+
+		if(K_send_message(PROC_CRT, msg_envelope) != EXIT_ERROR)
 		{
-			if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+			kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
+
+			msg_envelope = getMessage(MsgEnv::DISPLAY_ACK,this);
+			
+			if(msg_envelope != NULL)
 			{
+				if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
+				{
+					cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<<"I donno"<<endl<<flush;
+					res = EXIT_ERROR;
+				}
+				else //display_ack
+				{
+					res = EXIT_SUCCESS;
+				}
+			}
+			else //could be sending a null message
+			{
+				cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<<"Send Message Failed"<<endl<<flush;
 				res = EXIT_ERROR;
 			}
-			else //display_ack
-			{
-				res = EXIT_SUCCESS;
-			}
 		}
-		else //could be sending a null message
-		{
-			res = EXIT_ERROR;
-		}
+		else
+			cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<<"Send Message Fails"<<endl<<flush;
 	}
 	return res;
 }
@@ -321,21 +330,24 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (i.e. no characters waiting) */
 int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 {
-	atomic(true);
-	int res;
-	int invoker = msg_envelope->getOriginPid();
-	res = K_send_message(PROC_KB, msg_envelope);
-	if(res == EXIT_SUCCESS)
+	int res = EXIT_ERROR;
+	if(msg_envelope != NULL)
 	{
-		msg_envelope = K_receive_message(); //message will be sent by iprocess
-		string message = msg_envelope->getMsgData();
-		msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);	
-		res = K_send_message(invoker, msg_envelope);
-	}
-	else
-		debugMsg("RTX:333 Failed to send envelope!\n");
+		atomic(true);
+		int invoker = msg_envelope->getOriginPid();
+		res = K_send_message(PROC_KB, msg_envelope);
+		if(res == EXIT_SUCCESS)
+		{
+			msg_envelope = K_receive_message(); //message will be sent by iprocess
+			string message = msg_envelope->getMsgData();
+			msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);	
+			res = K_send_message(invoker, msg_envelope);
+		}
+		else
+			debugMsg("RTX:333 Failed to send envelope!\n");
 
-	atomic(false);
+		atomic(false);
+	}
 	return res;
 }
 
@@ -343,10 +355,13 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 int RTX::K_get_trace_buffers(MsgEnv* msg_envelope)
 {
 	int ret = EXIT_ERROR;
-	atomic(true);
-	//call MsgTrace function to format trace buffers into table
-	ret = _msgTrace->getTraces(msg_envelope); 
-	atomic(false);
+	if(msg_envelope != NULL)
+	{
+		atomic(true);
+		//call MsgTrace function to format trace buffers into table
+		ret = _msgTrace->getTraces(msg_envelope); 
+		atomic(false);
+	}
 	return ret;
 }
 
@@ -359,7 +374,7 @@ extern RTX* gRTX;
 void RTX::null_proc() {
 	while(true)
 	{
-		assure(gRTX != NULL, "gRTX pointer NULL",__FILE__,__LINE__,__func__,true);
+		assure(gRTX != NULL, "gRTX NULL pointer",__FILE__,__LINE__,__func__,true);
 		gRTX->K_release_processor();
 	}
 }
