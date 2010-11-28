@@ -58,8 +58,6 @@ int main(int arg1, char* arg[])
 			tx_mem_buf->busyFlag = 0; //indicate that the entire message has been transmitted and the crt process is no longer busy
 //			cout << "done printing" << endl << flush;
 		}
-		else
-			usleep(1);
 	}
 	while(true); //infinite loop
 	
