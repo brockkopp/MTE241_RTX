@@ -5,7 +5,6 @@ extern inputBuffer* gTxMemBuf;
 
 void i_timing_process()
 {	
-
 	//overall rtx clock count used for trace buffer time stamp
 	gRTX->runTime ++;
 	
@@ -16,8 +15,21 @@ void i_timing_process()
 
 	while((tempMsg = gRTX->K_receive_message()) != NULL) {
 		//set expire time, total RTX run time plus the requested delay time
-		gRTX->waitingProcesses->sortedEnqueue(&tempMsg, gRTX->runTime + tempMsg->getTimeStamp());
+		tempMsg->setTimeStamp( gRTX->runTime + tempMsg->getTimeStamp() );
+		gRTX->waitingProcesses->sortedEnqueue(&tempMsg);
 	}
+
+/* DELETE BLOCK */
+if (gRTX->waitingProcesses->get_front() != NULL) {
+	cout << "Waiting msg stamp: " << gRTX->waitingProcesses->get_front()->getTimeStamp() << "\n";
+	cout << "RTX time					: " << gRTX->runTime << "\n";
+	cout << "Waiting msg data : " << gRTX->waitingProcesses->get_front()->getMsgData() << "\n";
+	cout << "Waiting msg type : " << gRTX->waitingProcesses->get_front()->getMsgType() << "\n";
+	gRTX->waitingProcesses->toString();
+
+}
+/* END BLOCK */
+
 
 	//check if first envelope in waiting Q has expired, send wake up msg if true
  	while(gRTX->waitingProcesses->get_front() != NULL &&

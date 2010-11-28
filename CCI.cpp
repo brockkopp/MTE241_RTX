@@ -39,7 +39,7 @@ void processCCI()
 				cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<< "OHH, MY, GOD... Ohh no she didn't\n";
 
 			assure(ioLetter != NULL,"Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
-	
+			
 			ioLetter->setMsgData("");			
 			assure(gRTX->K_get_console_chars(ioLetter) == EXIT_SUCCESS,"Get console chars failed",__FILE__,__LINE__,__func__,true);
 			

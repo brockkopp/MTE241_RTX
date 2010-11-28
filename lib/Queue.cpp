@@ -99,8 +99,12 @@ bool Queue::enqueue( QueueNode* value )
 	 return true;
 }
 
-bool Queue::sortedEnqueue( MsgEnv** newMsg, int timeStamp )
+bool Queue::sortedEnqueue( MsgEnv** newMsg )
 {
+
+	int timeStamp = (*newMsg)->_timeStamp;
+	cout<<"In SortedEnqueue... timeStamp = "<<timeStamp<<endl;
+
 	if(newMsg == NULL)
 		return false;
 		
@@ -109,8 +113,8 @@ bool Queue::sortedEnqueue( MsgEnv** newMsg, int timeStamp )
 		if(_front == NULL)			//Empty Queue
 		{
 			(*newMsg)->_link = NULL;
-			_front = (void*)(&newMsg);	
-			_rear  = (void*)(&newMsg);
+			_front = (void*)(*newMsg);	
+			_rear  = (void*)(*newMsg);
 		}
 		else
 		{
@@ -121,18 +125,18 @@ bool Queue::sortedEnqueue( MsgEnv** newMsg, int timeStamp )
 				if(curr->_timeStamp > timeStamp)
 				{
 					curr->_link = *newMsg;
-					_front = (void*)(&newMsg);
+					_front = (void*)(*newMsg);
 				}
 				else
 				{
 					(*newMsg)->_link = curr;
-					_rear = (void*)(&newMsg);
+					_rear = (void*)(*newMsg);
 				}
 			}
 			else if(timeStamp < ((MsgEnv*)(_front))->_timeStamp)		//Last Item
 			{
 				((MsgEnv*)(_front))->_link = *newMsg;
-				_front = (void*)(&newMsg);
+				_front = (void*)(*newMsg);
 			}
 			else
 			{
@@ -144,7 +148,7 @@ bool Queue::sortedEnqueue( MsgEnv** newMsg, int timeStamp )
 					{
 						(*newMsg)->_link = curr;
 						if(_rear == (void*)(curr))
-							_rear = (void*)(&newMsg);
+							_rear = (void*)(*newMsg);
 						else
 							prev->_link = *newMsg;
 						done = true;				
@@ -155,6 +159,7 @@ bool Queue::sortedEnqueue( MsgEnv** newMsg, int timeStamp )
 				while(!done && curr != NULL);					//2+ items
 			}
 		}		
+		_length++;
 		return true;
 	}
 
