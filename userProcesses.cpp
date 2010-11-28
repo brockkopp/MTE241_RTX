@@ -33,6 +33,11 @@ void userProcessB()
 	{
 		myMsg = gRTX->K_receive_message();
 
+/* DELETE BLOCK */
+		if( myMsg== NULL )
+			cout << "THIS IS A NULL ENV being passed to B\n";
+/* END DELETE */
+
 		gRTX->K_send_message(PROC_USER_C, myMsg);
 		gRTX->K_release_processor();
 	}
@@ -45,6 +50,9 @@ void userProcessC()
 	while(true)
 	{
 		myMsg = gRTX->K_receive_message();
+		if( myMsg== NULL )
+			cout << "THIS IS A NULL ENV being passed to C\n";
+		
 		
 		if( myMsg!= NULL && 
 				myMsg->getMsgType() == MsgEnv::COUNT_REPORT
@@ -56,12 +64,9 @@ void userProcessC()
 			if(num%20 == 0 && num != 0)
 			{
 				myMsg->setMsgData("Process C\n");
-
-				int goOn = gRTX->K_send_console_chars(myMsg);
-				cout<<(goOn == EXIT_SUCCESS? "Successful Send\n":"Failed send\n");
-				while(goOn != EXIT_SUCCESS)
+				
+				while( gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS)
 				{
-					cout<<"Stuck in while loop...\n";
 					getMessage(MsgEnv::DISPLAY_ACK,gRTX);
 				}
 int i = rand();

@@ -1,0 +1,798 @@
+Signal Handler Initializing...Done
+Signals Masked(init)
+Shared Memory Initialization Successful
+KB child initialized
+CRT child initialized
+
+Type help at any time to list possible CCI commands
+RTX Initializing...
+RTX Init Done
+
+
+RTX Initializing...
+
+
+Type 'help' at any point for a list of possible commands
+
+>RTX$ Sent message!
+CurrProc: CCI freeEnvQ length before request: 20
+CurrProc: CCIfreeEnvQ length after request: 19
+CurrProc: CCI freeEnvQ length before request: 19
+CurrProc: CCIfreeEnvQ length after request: 18
+Process userA is releseing the empty env
+CurrProc: userA freeEnvQ length before release: 18
+CurrProc: userA freeEnvQ length after release: 19
+CurrProc: userA freeEnvQ length before request: 19
+CurrProc: userAfreeEnvQ length after request: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length >RTX$ Process C
+before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 17
+CurrProc: userC freeEnvQ length after release: 18
+CurrProc: userA freeEnvQ length before request: 18
+CurrProc: userAfreeEnvQ length after request: 17
+Proc C going to sleep i: 1804289383 
+Time Delay : 100
+Set stamp  : 100
+Set data   : 20
+Set Type   : 7
+CurrProc: userA freeEnvQ length before request: 17
+CurrProc: userAfreeEnvQ length after request: 16
+CurrProc: userA freeEnvQ length before request: 16
+CurrProc: userAfreeEnvQ length after request: 15
+CurrProc: userA freeEnvQ length before request: 15
+CurrProc: userAfreeEnvQ length after request: 14
+CurrProc: userA freeEnvQ length before request: 14
+CurrProc: userAfreeEnvQ length after request: 13
+CurrProc: userA freeEnvQ length before request: 13
+CurrProc: userAfreeEnvQ length after request: 12
+CurrProc: userA freeEnvQ length before request: 12
+CurrProc: userAfreeEnvQ length after request: 11
+CurrProc: userA freeEnvQ length before request: 11
+CurrProc: userAfreeEnvQ length after request: 10
+CurrProc: userA freeEnvQ length before request: 10
+CurrProc: userAfreeEnvQ length after request: 9
+CurrProc: userA freeEnvQ length before request: 9
+CurrProc: userAfreeEnvQ length after request: 8
+CurrProc: userA freeEnvQ length before request: 8
+CurrProc: userAfreeEnvQ length after request: 7
+CurrProc: userA freeEnvQ length before request: 7
+CurrProc: userAfreeEnvQ length after request: 6
+CurrProc: userA freeEnvQ length before request: 6
+CurrProc: userAfreeEnvQ length after request: 5
+CurrProc: userA freeEnvQ length before request: 5
+CurrProc: userAfreeEnvQ length after request: 4
+CurrProc: userA freeEnvQ length before request: 4
+CurrProc: userAfreeEnvQ length after request: 3
+CurrProc: userA freeEnvQ length before request: 3
+CurrProc: userAfreeEnvQ length after request: 2
+CurrProc: userA freeEnvQ length before request: 2
+CurrProc: userAfreeEnvQ length after request: 1
+CurrProc: userA freeEnvQ length before request: 1
+CurrProc: userAfreeEnvQ length after request: 0
+CurrProc: userA freeEnvQ length before request: 0
+CurrProc: userA   Queue is empty!
+
+Empty Envelope Queue!!!
+In SortedEnqueue... timeStamp = 117
+Waiting msg stamp: 117
+RTX time					: 17
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 18
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 19
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 20
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 21
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 22
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 23
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 24
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 25
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 26
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 27
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 28
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 29
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 30
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 31
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 32
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 33
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 34
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 35
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 36
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 37
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 38
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 39
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 40
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 41
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 42
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 43
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 44
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 45
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 46
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 47
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 48
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 49
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 50
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 51
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 52
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 53
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 54
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 55
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 56
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 57
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 58
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 59
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 60
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 61
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 62
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 63
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 64
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 65
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 66
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 67
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 68
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 69
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 70
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 71
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 72
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 73
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 74
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 75
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 76
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 77
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 78
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 79
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 80
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 81
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 82
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 83
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 84
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 85
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 86
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 87
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 88
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 89
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 90
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 91
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 92
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 93
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 94
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 95
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 96
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 97
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 98
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 99
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 100
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 101
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 102
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 103
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 104
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 105
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 106
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 107
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 108
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 109
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 110
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 111
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 112
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 113
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 114
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 115
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 116
+Waiting msg data : 20
+Waiting msg type : 7
+Waiting msg stamp: 117
+RTX time					: 117
+Waiting msg data : 20
+Waiting msg type : 7
+Proc C waking up i: 1804289383 
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 0
+CurrProc: userC freeEnvQ length after release: 1
+CurrProc: userAfreeEnvQ length after request: 0
+THIS IS A NULL ENV being passed to C
+ERROR: RTX.cpp:158(K_release_msg_env():Releasing NULL Env)
+CurrProc: userA freeEnvQ length before request: 0
+CurrProc: userA   Queue is empty!
+
+Empty Envelope Queue!!!
+Process userC is releseing the empty env
+CurrProc: userC freeEnvQ length before release: 0
+CurrProc: userC freeEnvQ length after release: 1
+CurrProc: userAfreeEnvQ length after request: 0
+THIS IS A NULL ENV being passed to C
+ERROR: RTX.cpp:158(K_release_msg_env():Releasing NULL Env)
+CurrProc: userA freeEnvQ length before request: 0
+CurrProc: userA   Queue is empty!
+
+Empty Envelope Queue!!!
+Process C
+Proc C going to sleep i: 846930886 
+Time Delay : 100
+Set stamp  : 100
+Set data   : 40
+Set Type   : 7
+In SortedEnqueue... timeStamp = 219
+Waiting msg stamp: 219
+RTX time					: 119
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 120
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 121
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 122
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 123
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 124
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 125
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 126
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 127
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 128
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 129
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 130
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 131
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 132
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 133
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 134
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 135
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 136
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 137
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 138
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 139
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 140
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 141
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 142
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 143
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 144
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 145
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 146
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 147
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 148
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 149
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 150
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 151
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 152
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 153
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 154
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 155
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 156
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 157
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 158
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 159
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 160
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 161
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 162
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 163
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 164
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 165
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stamp: 219
+RTX time					: 166
+Waiting msg data : 40
+Waiting msg type : 7
+Waiting msg stam

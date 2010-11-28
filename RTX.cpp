@@ -158,6 +158,7 @@ int RTX::K_release_msg_env(MsgEnv* usedEnv)
 	int ret = EXIT_SUCCESS;
 	if(assure(usedEnv != NULL,"Releasing NULL Env",__FILE__,__LINE__,__func__,false))
 	{
+cout << "Process " << getCurrentPcb()->getName() << " is releseing the empty env\n";
 		atomic(true);
 		ret = _mailMan->releaseEnv(usedEnv);
 		atomic(false);

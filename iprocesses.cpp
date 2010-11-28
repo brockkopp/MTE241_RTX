@@ -53,6 +53,7 @@ if (gRTX->waitingProcesses->get_front() != NULL) {
 			tempMsg = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
 			gRTX->K_release_msg_env(tempMsg);
 		}
+		
 	}
 }
 
