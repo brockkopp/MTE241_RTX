@@ -156,12 +156,43 @@ int testQueues()
 	
 	
 	
-	debugMsg("Sorted Enqueues\n");
+	debugMsg("Sorted Enqueue 190\n");
 	MsgEnv* newMsg = new MsgEnv();
 	newMsg->setMsgData( "TEST ENV" );
 	newMsg->setTimeStamp( 190 );
-	q->sortedEnqueue( (&newMsg));
-
+	q->sortedEnqueue((&newMsg));
+	cout << q->toString();
+	
+		
+	debugMsg("Sorted Enqueue 175\n");
+	MsgEnv* newMsg1 = new MsgEnv();
+	newMsg1->setMsgData( "TEST ENV" );
+	newMsg1->setTimeStamp( 175 );
+	q->sortedEnqueue((&newMsg1));
+	cout << q->toString();
+	
+		
+	debugMsg("Sorted Enqueue 200\n");
+	MsgEnv* newMsg2 = new MsgEnv();
+	newMsg2->setMsgData( "TEST ENV" );
+	newMsg2->setTimeStamp( 200 );
+	q->sortedEnqueue((&newMsg2));
+	cout << q->toString();
+	
+		
+	debugMsg("Sorted Enqueue 195\n");
+	MsgEnv* newMsg3 = new MsgEnv();
+	newMsg3->setMsgData( "TEST ENV" );
+	newMsg3->setTimeStamp( 195 );
+	q->sortedEnqueue((&newMsg3));
+	cout << q->toString();
+	
+		
+	debugMsg("Sorted Enqueue 30\n");
+	MsgEnv* newMsg4 = new MsgEnv();
+	newMsg4->setMsgData( "TEST ENV" );
+	newMsg4->setTimeStamp( 30 );
+	q->sortedEnqueue((&newMsg4));
 	cout << q->toString();
 	
 	}
