@@ -7,7 +7,7 @@ void userProcessA()
 	//Recieve a msg
 	MsgEnv* myMsg = gRTX->K_receive_message();
 	gRTX->K_release_msg_env(myMsg);
-	
+
 	string data;
 	int num = 0;
 	
@@ -55,7 +55,6 @@ void userProcessC()
 			//cout<<__FILE__<<" : "<<__LINE__<<" Num = "<<num<<endl;
 			if(num%20 == 0 && num != 0)
 			{
-				cout<<"Process C!"<<endl;
 				myMsg->setMsgData("Process C\n");
 				
 				
@@ -66,20 +65,17 @@ void userProcessC()
 					cout<<"Stuck in while loop...\n";
 					getMessage(MsgEnv::DISPLAY_ACK,gRTX);
 				}
-
-				//cout<<__FILE__<<" : "<<__LINE__<<endl;
+int i = rand();
+cout << "Proc C going to sleep i: "<< i <<" \n";
 				gRTX->K_request_delay(100, num, myMsg);
 				//cout<<__FILE__<<" : "<<__LINE__<<endl;
 						
 				while((myMsg = getMessage(num,gRTX)) == NULL)				
-				{
 					gRTX->K_release_processor();				
-				}
+cout << "Proc C waking up i: "<< i <<" \n";
 			}
 		}
-	
 		gRTX->K_release_msg_env(myMsg);
 		gRTX->K_release_processor();
 	}
-	cout<<"See ya, SUCKERS!\n";
 }

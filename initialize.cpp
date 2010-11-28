@@ -112,8 +112,10 @@ void doTests()
 	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
 	debugMsg("\tSignal Test:\t");    
 	   debugMsg((testSignals() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	*/
 	debugMsg("\tQueue Test: \t");    
 	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
+	/*
 	debugMsg("\tMessaging Test:\t"); 
 	   debugMsg("Not Implemented\n");
 //	debugMsg("\tScheduler Test:\t");   
