@@ -39,7 +39,7 @@ void processCCI()
 			ioLetter = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
 
 			assure(ioLetter != NULL,"CCI:45 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
-	
+
 			ioLetter->setMsgData("");			
 			if(gRTX->K_get_console_chars(ioLetter) != EXIT_SUCCESS)	
 				cout << "CCI.cpp:Ang Wins!\n\n\n!";
