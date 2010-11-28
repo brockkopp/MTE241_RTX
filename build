@@ -1,6 +1,0 @@
-#!/bin/sh
-echo
-echo THIS FILE HAS BEEN DEPRECATED. PLEASE USE THE MAKE FILE BY TYPING:    '$ make'
-echo
-echo
-make
