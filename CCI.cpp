@@ -15,13 +15,17 @@ void processCCI()
 
 		assure(ioLetter != NULL, "CCI ioLetter is NULL",__FILE__,__LINE__,__func__,true);
 
-		ioLetter->setMsgData("\n------------------------------------\n           RTX INITIALIZED\n------------------------------------\n\n");
+		ioLetter->setMsgData("\nRTX Initializing...\n\n");
 		while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);
 		ioLetter = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
 		
 
 		ualarm(TICK_TIME, TICK_TIME);
 	
+		ioLetter->setMsgData("\nType 'help' at any point for a list of possible commands\n\n");
+		while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);
+		ioLetter = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
+		
 		while(true)
 		{
 			command = "";
@@ -129,6 +133,10 @@ void processCCI()
 							message = "Too many parameters for 'Terminate' command\n";
 						else
 						{
+							ioLetter->setMsgData("\n\nShutting Down...\n");
+							while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);
+							ioLetter = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
+							
 							gRTX->K_release_msg_env(ioLetter);
 							kill(getpid(),SIGINT);
 						}

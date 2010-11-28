@@ -32,10 +32,15 @@ void i_timing_process()
 	if(gRTX->wallClock->increment())
 	{
 		tempMsg = gRTX->K_request_msg_env();
-		tempMsg->setOriginPid(PROC_TIMING);
-		tempMsg->setMsgData(gRTX->wallClock->toString() + "\n");
-		gRTX->K_send_console_chars(tempMsg);
-		gRTX->K_release_msg_env( getMessage(MsgEnv::DISPLAY_ACK,gRTX) );
+		if(tempMsg != NULL)
+		{
+			tempMsg->setOriginPid(PROC_TIMING);
+			tempMsg->setMsgData(gRTX->wallClock->toString() + "\n");
+		
+			while(gRTX->K_send_console_chars(tempMsg) == EXIT_ERROR);
+			tempMsg = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
+			gRTX->K_release_msg_env(tempMsg);
+		}
 	}
 }
 
