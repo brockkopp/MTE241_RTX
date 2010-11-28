@@ -622,63 +622,6 @@ string Queue::toString()
 	return ("{  }\n");
 }
 
-void Queue::printQueue() 
-{
-	if(!isEmpty())
-	{
-		MsgEnv* Temp = (MsgEnv*)(_rear);
-		int position = _length - 1;
-	
-		cout<<" { ";
-	
-		while(Temp != NULL)
-		{
-			cout<<" <-["
-					<<intToStr(position) 
-					<<": MsgType "			<< Temp->getMsgType()
-					<<"] ";
-
-			Temp = Temp->_link;
-			position--;
-		}
-		cout<<" }\n";
-	}
-	else
-		cout<<"{  }\n";
-}
-
-void Queue::printPCBQueue() 
-{
-	if(!isEmpty())
-	{
-		//cout<<__FILE__<<" : "<<__LINE__<<endl;
-		PCB* Temp = (PCB*)(_rear);
-	//	cout<<"Length of Queue: "<<get_length()<<"Temp is "<<(Temp == NULL ? "NULL\n" : "not NULL\n");
-	//	cout<<__FILE__<<" : "<<__LINE__<<endl;
-		int position = _length - 1;
-	
-		cout<<" { ";
-	
-		while(Temp != NULL)
-		{
-			//cout<<__FILE__<<" : "<<__LINE__<<endl;
-			cout<<" <-["
-					<<intToStr(position) 
-					<<": ProcName "			<<Temp->getName()
-					<<": ProcPri "			<<Temp->getPriority()
-					<<": ProcID " 			<<Temp->getId()
-					<<"] ";
-			//cout<<__FILE__<<" : "<<__LINE__<<endl;
-			Temp = Temp->_link;
-		//	cout<<__FILE__<<" : "<<__LINE__<<endl;
-			position--;
-		}
-		cout<<" }\n";
-	}
-	else
-		cout<<"{  }\n";
-}
-
 #if DEBUG_MODE
 void Queue::printTracker() 
 {
