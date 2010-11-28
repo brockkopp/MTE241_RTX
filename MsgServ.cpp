@@ -27,12 +27,12 @@ MsgServ::~MsgServ()
 
 int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 {
-	if(destPid >= 0 && destPid <= PROCESS_COUNT)
+	if(destPid >= 0 && destPid < PROCESS_COUNT)
 	{
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB;		
 		assure((tempPCB = gRTX->getCurrentPcb()) != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false); //ERic
-		
+
 		//insert destination and origin into msg envelope
 		msg->setDestPid(destPid);
 		msg->setOriginPid(tempPCB->getId());
@@ -40,19 +40,28 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		 
 		//retrieve destination process PCB
 		PCB* tempDestPCB;
-		assure(gRTX->getPcb(destPid, &tempDestPCB) == EXIT_SUCCESS,"Failed to retrieve dest. PCB",__FILE__,__LINE__,__func__,false);
+		assure(gRTX->getPcb(destPid, &tempDestPCB) == EXIT_SUCCESS,"Failed to retrieve dest. PCB",__FILE__,__LINE__,__func__,true);
 		//determine if process being sent to needs to be made ready
-		bool temp;
-		int tempStatus = tempDestPCB->getState();
-		if(tempStatus == BLOCKED_MSG_RECIEVE)
-			temp = _scheduler->unblock_process(tempDestPCB);
-		else if(tempStatus == SLEEPING)
-			if(msg->getMsgType() == 20)																		//wake_up
-				temp = _scheduler->unblock_process(tempDestPCB);				
+
+		int status = tempDestPCB->getState();
+		
+		if(status == BLOCKED_MSG_RECIEVE || 
+			 ( status == SLEEPING && msg->getMsgType() == MsgEnv::REQ_DELAY ))
+		{
+			cout << "wake-up pid:" << tempDestPCB->getId() << " from " << tempDestPCB->getStateName() << endl;
+			_scheduler->unblock_process(tempDestPCB);
+		}
 
 		//add msg to process mailbox
+		
+		if( msg->getMsgType() == MsgEnv::REQ_DELAY )
+		{
+			strToInt(msg->getMsgData(),&status);
+			msg->setMsgType(status);
+			msg->setMsgData("");
+		}
+		
 		tempDestPCB->addMail(msg);
-
 		return EXIT_SUCCESS;
 	}
 	return EXIT_ERROR;
@@ -72,8 +81,8 @@ MsgEnv* MsgServ::recieveMsg()
     		return NULL;
   		
   		//block calling process, this automatically calls a process_switch
-		_scheduler->block_process(BLOCKED_MSG_RECIEVE); 		
-
+  	if(gRTX->getCurrentPcb()->getState() != SLEEPING)
+			_scheduler->block_process(BLOCKED_MSG_RECIEVE); 		
 	}
 	//get mail
 	MsgEnv* tempMsg = tempPCB->retrieveMail();

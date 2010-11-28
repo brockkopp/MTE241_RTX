@@ -14,7 +14,7 @@ void i_timing_process()
 	//get new message envelopes from mailbox
 	MsgEnv* tempMsg;
 
-	while((tempMsg = tempPCB->retrieveMail()) != NULL) {
+	while((tempMsg = gRTX->K_receive_message()) != NULL) {
 		//set expire time, total RTX run time plus the requested delay time
 		gRTX->waitingProcesses->sortedEnqueue(tempMsg, gRTX->runTime + tempMsg->getTimeStamp());
 	}

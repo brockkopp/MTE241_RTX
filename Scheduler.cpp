@@ -240,6 +240,7 @@ int Scheduler::block_process (int reason)
 	}
 	else if (reason == SLEEPING){
 		target->setState( SLEEPING );
+		cout << "asleep";
 		return_value = _blockedMsgRecieve->enqueue( target );
 	}
 

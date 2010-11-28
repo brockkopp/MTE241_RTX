@@ -123,11 +123,11 @@ int RTX::atomic(bool on)
 }
 
 //Call MsgServ class function sendMsg
-int RTX::K_send_message(int dest_process_id, MsgEnv* msg_envelope)
+int RTX::K_send_message(int dest_process_id, MsgEnv* msgEnv)
 {
 	int ret;
 	atomic(true);
-	ret = _mailMan->sendMsg(dest_process_id, msg_envelope);
+	ret = _mailMan->sendMsg(dest_process_id, msgEnv);
 	atomic(false);
 	return ret;
 }
@@ -176,11 +176,9 @@ arguments:
 */
 int RTX::K_request_process_status(MsgEnv* msg) 
 {
-	if (msg == NULL) {
+	if (msg == NULL)
 			debugMsg("Called K_request_process_status without first allocating memory to the passed MsgEnv\n");
-		}
 	
-
 	atomic(true);
 	int ret = EXIT_ERROR;
 	if(msg != NULL)
@@ -222,12 +220,16 @@ int RTX::K_change_priority(int new_priority, int target_process_id)
 int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
 	atomic(true);
+	cout<<__FILE__<<":"<<__LINE__<<"::"<<msg_envelope<<endl;
 	int ret = EXIT_ERROR;
 	if(msg_envelope != NULL)
 	{
+		_scheduler->block_process(SLEEPING);
+		cout << "blocked\n";
 		//populate msg env Fields
-		msg_envelope->setTimeStamp(time_delay); 
-		msg_envelope->setMsgType(wakeup_code);
+		msg_envelope->setTimeStamp(time_delay);
+		msg_envelope->setMsgType(MsgEnv::REQ_DELAY);
+		msg_envelope->setMsgData(intToStr(wakeup_code));
 		//call Kernal send message to send to timing iProcess
 		ret = K_send_message(PROC_TIMING, msg_envelope);
 	}

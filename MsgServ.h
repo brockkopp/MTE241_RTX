@@ -1,6 +1,7 @@
 #ifndef H_MSG_SERV
 #define H_MSG_SERV
 
+#include "tools.h"
 #include "debug.h"
 #include "RTX.h"
 #include "lib/Queue.h"

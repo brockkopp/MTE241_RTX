@@ -55,7 +55,7 @@ void processCCI()
 						{
 							MsgEnv* myEnv = gRTX->K_request_msg_env();
 							myEnv->setDestPid(PROC_USER_A);
-							myEnv->setMsgType(0);
+							myEnv->setMsgType(MsgEnv::START_PROC);
 					
 							if(gRTX->K_send_message(PROC_USER_A, myEnv) != EXIT_SUCCESS)
 								message = "Message failed to send\n";	
@@ -142,6 +142,7 @@ void processCCI()
 					else if (input[0] == "r")
 					{
 						MsgEnv* breaker = gRTX->K_request_msg_env();
+						breaker = NULL;
 					}
 					#endif
 					else if(input[0] == "help")	//remove for demo

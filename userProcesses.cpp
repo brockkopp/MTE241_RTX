@@ -67,19 +67,11 @@ void userProcessB()
 
 void userProcessC()
 {
-//	while(true){
-//		cout << "\nuserC real output\n";
-//		gRTX->K_release_processor();
-//	}	
-
-	
 	int num = 0;
 	MsgEnv* myMsg;
-	//Queue* msgQ = new Queue(Queue::MSG_ENV);
 
 	while(true)
 	{
-//cout << "PROCESS C in loop!\n";		
 		myMsg = gRTX->K_receive_message();
 	
 		if( myMsg!= NULL && 
@@ -87,30 +79,24 @@ void userProcessC()
 			)
 		{
 			strToInt( myMsg->getMsgData(), &num );
-			
 			if(num%20 == 0 && num != 0)
 			{
-
-				myMsg->setMsgData("Process C");
+				
+				myMsg->setMsgData("Process C\n");
 				while(gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS);
 				getMessage(MsgEnv::DISPLAY_ACK,gRTX);
-
-				cout << "Sleep -- run time: " << gRTX->runTime << "  Num: "<<num << "\n";
-				gRTX->K_request_delay(100, 10, myMsg);
-
-//DEBUGGING LEAD
-// We may be stuckk on this next loop (inifitiely)
-				while((myMsg = getMessage(10,gRTX)) == NULL);
 				
-				cout << "WakeU -- run time: " << gRTX->runTime << "  Num: "<<num << "\n";
+				cout << "UP:start:"<<gRTX->runTime<<endl;
+				gRTX->K_request_delay(100, num, myMsg);
+				cout << "reqMsg\n";
+				while((myMsg = getMessage(num,gRTX)) == NULL)
+					gRTX->K_release_processor();
+				cout << "UP:done:"<<gRTX->runTime<<endl;
+				
 			}
 		}
-//			cout << "READY PROCS : \n" << gRTX->_scheduler->_readyProcs->toString();
-//			cout << "BLOCKED_MSG : \n" << gRTX->_scheduler->_blockedMsgRecieve->toString();
-//			cout << "BLOCKED_ENV : \n" << gRTX->_scheduler->_blockedEnv->toString();
 	
-	gRTX->K_release_msg_env(myMsg);
-	gRTX->K_release_processor();
+		gRTX->K_release_msg_env(myMsg);
+		gRTX->K_release_processor();
 	}
-
 }
