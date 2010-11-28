@@ -11,7 +11,7 @@ void processCCI()
 		string message;
 		int params;
 		MsgEnv* ioLetter = gRTX->K_request_msg_env();
-
+		bool started = false;
 
 		assure(ioLetter != NULL, "CCI ioLetter is NULL",__FILE__,__LINE__,__func__,true);
 
@@ -53,14 +53,20 @@ void processCCI()
 							message = "Too many parameters for 'Send Message' command\n";
 						else
 						{
-							MsgEnv* myEnv = gRTX->K_request_msg_env();
-							myEnv->setDestPid(PROC_USER_A);
-							myEnv->setMsgType(MsgEnv::START_PROC);
+							if(!started)
+							{
+								started = true;
+								MsgEnv* myEnv = gRTX->K_request_msg_env();
+								myEnv->setDestPid(PROC_USER_A);
+								myEnv->setMsgType(MsgEnv::START_PROC);
 					
-							if(gRTX->K_send_message(PROC_USER_A, myEnv) != EXIT_SUCCESS)
-								message = "Message failed to send\n";	
+								if(gRTX->K_send_message(PROC_USER_A, myEnv) != EXIT_SUCCESS)
+									message = "Message failed to send\n";	
+								else
+									message = "Sent message!\n";
+							}
 							else
-								message = "Sent message!\n";				
+								message = "User Process A already started\n";
 						}
 					}
 					else if(input[0] == "ps")

@@ -4,16 +4,9 @@ extern RTX* gRTX;
 
 void userProcessA()
 {
-
-//	while(true){
-//		cout << "\nuserA real output\n";
-//		gRTX->K_release_processor();
-//	}	
-
-	
 	//Recieve a msg
 	MsgEnv* myMsg = gRTX->K_receive_message();
-	gRTX->K_release_msg_env(myMsg);	
+	gRTX->K_release_msg_env(myMsg);
 	
 	string data;
 	int num = 0;
@@ -86,12 +79,12 @@ void userProcessC()
 				while(gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS);
 				getMessage(MsgEnv::DISPLAY_ACK,gRTX);
 				
-				cout << "UP:start:"<<gRTX->runTime<<endl;
+//				cout << "UP:start:"<<gRTX->runTime<<endl;
 				gRTX->K_request_delay(100, num, myMsg);
-				cout << "reqMsg\n";
+//				cout << "reqMsg\n";
 				while((myMsg = getMessage(num,gRTX)) == NULL)
 					gRTX->K_release_processor();
-				cout << "UP:done:"<<gRTX->runTime<<endl;
+//				cout << "UP:done:"<<gRTX->runTime<<endl;
 				
 			}
 		}

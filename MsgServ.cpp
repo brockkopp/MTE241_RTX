@@ -12,12 +12,9 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 	_freeEnvQ = new Queue(Queue::MSG_ENV);
 	
 	for(int i=0; i < MSG_COUNT; i++)
-		_freeEnvQ->enqueue(new MsgEnv());
+		_freeEnvQ->enqueue( new MsgEnv() );
 	
 	_envelopeTracker = new Queue(Queue::TRACKER);
-	
-	for(int i=0; i < MSG_COUNT; i++)
-		_freeEnvQ->enqueue( new MsgEnv() );
 }
 
 //DECONSTRUCTOR
@@ -25,7 +22,6 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 MsgServ::~MsgServ()
 {
 	delete _freeEnvQ;
-	
 	delete _envelopeTracker;
 }
 
@@ -47,37 +43,29 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		//retrieve destination process PCB
 		PCB* tempDestPCB;
 		assure(gRTX->getPcb(destPid, &tempDestPCB) == EXIT_SUCCESS,"Failed to retrieve dest. PCB",__FILE__,__LINE__,__func__,true);
-		//determine if process being sent to needs to be made ready
-//<<<<<<< HEAD
-
-		int status = tempDestPCB->getState();
 		
+		int status = tempDestPCB->getState();
 		if(status == BLOCKED_MSG_RECIEVE || 
 			 ( status == SLEEPING && msg->getMsgType() == MsgEnv::REQ_DELAY ))
 		{
-			cout << "wake-up pid:" << tempDestPCB->getId() << " from " << tempDestPCB->getStateName() << endl;
+//			cout << "wake-up pid:" << tempDestPCB->getId() << " from " << tempDestPCB->getStateName() << endl;
 			_scheduler->unblock_process(tempDestPCB);
 		}
-//=======
-//		bool temp;
-//		int tempStatus = tempDestPCB->getState();
-//		if(tempStatus == BLOCKED_MSG_RECIEVE)
-//			temp = _scheduler->unblock_process(tempDestPCB);
-//		else if(tempStatus == SLEEPING)
-//			if(msg->getMsgType() == MsgEnv::WAKEUP_CODE)																		//wake_up
-//				temp = _scheduler->unblock_process(tempDestPCB);				
-//>>>>>>> 7618021665723af0ca69ce7d017ec6cb37701563
-
-		//add msg to process mailbox
 		
-		if( msg->getMsgType() == MsgEnv::REQ_DELAY )
+		//determine if process being sent to needs to be made ready
+		if( msg->getDestPid() != PROC_TIMING &&
+			  msg->getMsgType() == MsgEnv::REQ_DELAY )
 		{
-			strToInt(msg->getMsgData(),&status);
-			msg->setMsgType(status);
+			int type;
+			strToInt(msg->getMsgData(),&type);
+			msg->setMsgType(type);
 			msg->setMsgData("");
+//			cout << "convert--"<<msg->getMsgTypeName()<<"::"<<msg->getMsgData()<<endl; 
 		}
-		
+	
 		tempDestPCB->addMail(msg);
+//		cout << gRTX->_pcbList[PROC_USER_C]->getStateName() << endl;		
+
 		return EXIT_SUCCESS;
 	}
 	return EXIT_ERROR;
@@ -104,7 +92,7 @@ MsgEnv* MsgServ::recieveMsg()
 	}
 	//get mail
 	MsgEnv* tempMsg = tempPCB->retrieveMail();
-		
+	
 	_msgTrace->addTrace(tempMsg, RECEIVE);
 	return tempMsg;
 }

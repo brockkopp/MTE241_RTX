@@ -240,7 +240,6 @@ int Scheduler::block_process (int reason)
 	}
 	else if (reason == SLEEPING){
 		target->setState( SLEEPING );
-		cout << "asleep";
 		return_value = _blockedMsgRecieve->enqueue( target );
 	}
 
@@ -261,7 +260,8 @@ return values:
 int Scheduler::unblock_process( PCB * target )
 {
 	//If process is blocked on msg recieve
-	if (target->getState() == BLOCKED_MSG_RECIEVE) {
+	if (target->getState() == BLOCKED_MSG_RECIEVE || 
+			target->getState() == SLEEPING) {
 			//Remove process from the blocked queue
 			_blockedMsgRecieve->pluck(target);
 			
@@ -310,7 +310,7 @@ int Scheduler::unblock_process( int reason )
 		PCB* target = _blockedEnv->dequeue_PCB();
 		
 		if (target) {
-			target->setState( READY );cout << "HERE 1\n queue length: " << _blockedEnv->get_length();
+			target->setState( READY );
 			return _readyProcs->pq_enqueue( target , target->getPriority());
 		}
 	}

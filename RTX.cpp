@@ -22,7 +22,6 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	for(int i=0; i < PROCESS_COUNT; i++)
 	{
 		_pcbList[i] = new PCB(initTable[i]);
-		
 		if ( _pcbList[i]->getProcessType() != PROCESS_I )
 			pcbTmpList->enqueue(_pcbList[i]);
 	}
@@ -221,18 +220,16 @@ int RTX::K_change_priority(int new_priority, int target_process_id)
 int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 {
 	atomic(true);
-	cout<<__FILE__<<":"<<__LINE__<<"::"<<msg_envelope<<endl;
 	int ret = EXIT_ERROR;
 	if(msg_envelope != NULL)
 	{
-		_scheduler->block_process(SLEEPING);
-		cout << "blocked\n";
 		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay);
 		msg_envelope->setMsgType(MsgEnv::REQ_DELAY);
 		msg_envelope->setMsgData(intToStr(wakeup_code));
 		//call Kernal send message to send to timing iProcess
 		ret = K_send_message(PROC_TIMING, msg_envelope);
+		_scheduler->block_process(SLEEPING);
 	}
 	atomic(false);	
 	return ret;
