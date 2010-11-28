@@ -33,7 +33,7 @@ class MsgServ
 		Queue* _freeEnvQ;
 		MsgTrace* _msgTrace;
 		Scheduler* _scheduler;
-		
+			
 		#if DEBUG_MODE
 			Queue* _envelopeTracker;
 		#endif

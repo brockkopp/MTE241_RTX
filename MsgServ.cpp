@@ -11,7 +11,10 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 	_freeEnvQ = new Queue(Queue::MSG_ENV);
 	
 	for(int i=0; i < MSG_COUNT; i++)
-		_freeEnvQ->enqueue( new MsgEnv() );
+	{
+		MsgEnv* temp = new MsgEnv();
+		_freeEnvQ->enqueue( (void**)(&temp) );
+	}
 #if DEBUG_MODE
 	_envelopeTracker = new Queue(Queue::TRACKER);
 #endif
@@ -111,7 +114,7 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 	#endif
 		
 	//return envelope to _freeEnvQ
-	_freeEnvQ->enqueue(msg);
+	_freeEnvQ->enqueue((void**)(&msg));
  
 	//unblock waiting process, if one is waiting   
 	int temp;

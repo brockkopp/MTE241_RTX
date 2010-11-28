@@ -23,7 +23,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	{
 		_pcbList[i] = new PCB(initTable[i]);
 		if ( _pcbList[i]->getProcessType() != PROCESS_I )
-			pcbTmpList->enqueue(_pcbList[i]);
+			pcbTmpList->enqueue((void**)(&(_pcbList[i])));
 	}
 	
 	_scheduler = new Scheduler(pcbTmpList);

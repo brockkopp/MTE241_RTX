@@ -34,10 +34,11 @@ PQ::~PQ()
 Enqueues newData into the queue with priorityLevel priority.
 Return true if enqueue is successful, return false otherwise
 */
-bool PQ::pq_enqueue (pItemType newData, int priorityLevel)
+bool PQ::pq_enqueue (PCB** newData, int priorityLevel)
 {
 	//Check to make sure that the priority level exists
-
+	//cout<<"In PQ. NewData = ";
+	//cout<<(*newData)->getName()<<endl;
 	int masterLength = sizeof(_master)/sizeof(_master[0]);
 
 	if (priorityLevel >= masterLength) 
@@ -47,35 +48,48 @@ bool PQ::pq_enqueue (pItemType newData, int priorityLevel)
 	}
 	
 	//Enqueue the data at the requested priority level.	
-	return (_master[priorityLevel]->enqueue(newData));	
+	//cout<<__FILE__<<" : "<<__LINE__<<" Before enqueue: "<<endl<<toString();
+	
+	bool result = _master[priorityLevel]->enqueue((void**)(newData));
+	//cout<<(result == true? "Enqueue SUCCESS\n" :  "Enqueue FAIL\n");
+	//cout<<__FILE__<<" : "<<__LINE__<<" Queue of priority level: "<<priorityLevel<<" :\n"<< _master[priorityLevel]->toString()<<endl;
+//	cout<<__FILE__<<" : "<<__LINE__<<" Master Queue :"<<toString()<<endl;
+	return (result);	
 }
 
 /*
 Dequeues a pointer to an pItemType. Returns null if there is nothing to dequeue.
 */
 
-pItemType PQ::pq_dequeue() 
+PCB* PQ::pq_dequeue() 
 {
 	int masterLength = sizeof(_master)/sizeof(_master[0]);
-	itemType returnVal;
+	PCB* returnVal;
+	//cout<<__FILE__<<" : "<<__LINE__<<endl;
+//	cout<<"Length: "<<masterLength<<endl;
 	for( int i = 0; i < masterLength; i++) 
 	{
-
+		//cout<<"Iteration "<<i<<" : "; _master[i]->printPCBQueue();
+		//cout<<"Attempt dequeue...\n";
 		returnVal = _master[i]->dequeue_PCB();
 		if (returnVal != NULL)
-			return static_cast<pItemType>(returnVal); //Not sure if this should be casted here but i added it anyway to make it work -Karl
+		{
+		//	cout<<"Found NOT NULL PCB\n";
+			return returnVal; //Not sure if this should be casted here but i added it anyway to make it work -Karl
+		}
+		//cout<<__FILE__" : "<<__LINE__<<" Null PCB - loopy...\n";
 	}
 	
 	return NULL; //The dequeue has failed, nothing to dequeue.	
 }
 
 //Plucks the value form the PQ. If value DNE, then it returns NULL
-pItemType PQ::pq_pluck( pItemType target) {
+PCB* PQ::pq_pluck( PCB** target ) {
 	int masterLength = sizeof(_master) / sizeof(_master[0]);
 
 	//Check which queue target is in. When it is found, pluck it from the queue.
 	for (int i=0; i<masterLength; i++) {
-		pItemType pluckedValue = _master[i]->pluck( target );
+		PCB* pluckedValue = _master[i]->pluck( target );
 		
 		if ( pluckedValue )
 			return pluckedValue;
@@ -92,7 +106,9 @@ string PQ::toString()
 	string output = "PQ:";
 	int size = (int)(sizeof(_master)/sizeof(_master[0]));
 	for(int i = 0; i < size; i++)
+	{
 		output += "\t" + _master[i]->toString() + "\n";
+	}
 	return output;
 }
 

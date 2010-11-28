@@ -9,6 +9,7 @@ MsgEnv::MsgEnv()
 	_timeStamp = 	-1;
 	_msgType = 		-1;
 	_msgData = 		"";
+	_link = NULL;
 }
 
 //returns desitination PID of the message this function is called on 
