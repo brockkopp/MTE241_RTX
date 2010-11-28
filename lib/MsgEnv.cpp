@@ -1,5 +1,7 @@
 #include "MsgEnv.h"
 
+//CONSTRUCTOR
+//initializes message envelope fields 
 MsgEnv::MsgEnv()
 {
 	_destPid = 		-1;
@@ -9,23 +11,13 @@ MsgEnv::MsgEnv()
 	_msgData = 		"";
 }
 
-int MsgEnv::initMsg(int destPid, int originPid, int msgType, string msgData)
-{
-	if(	
-			setDestPid(destPid) == EXIT_SUCCESS 			&&
-			setOriginPid(originPid) == EXIT_SUCCESS   &&
-			setMsgType(msgType) == EXIT_SUCCESS 			&&
-			setMsgData(msgData) == EXIT_SUCCESS
-		 )
-					return EXIT_SUCCESS;
-	return EXIT_ERROR;
-}
-
+//returns desitination PID of the message this function is called on 
 int MsgEnv::getDestPid()
 {
 	return _destPid;
 }
 
+//sets desitination PID of the message this function is called on 
 int MsgEnv::setDestPid(int newDestPid)
 {
 	//check if a valid destPID was passed
@@ -37,11 +29,13 @@ int MsgEnv::setDestPid(int newDestPid)
 	return EXIT_ERROR;
 }
 
+//returns origin PID of the message this function is called on 
 int MsgEnv::getOriginPid()
 {
 	return _originPid;
 }
 
+//sets origin PID of the message this function is called on 
 int MsgEnv::setOriginPid(int newOriginPid)
 {
 	//check if passed PID is valid
@@ -53,27 +47,32 @@ int MsgEnv::setOriginPid(int newOriginPid)
 	return EXIT_ERROR;
 }	
 
+//returns time stamp of the message this function is called on 
 int MsgEnv::getTimeStamp()
 {
 	return _timeStamp;
 }
 
+//sets time stamp of the message this function is called on 
 int MsgEnv::setTimeStamp(int newTimeStamp)
 {
 	_timeStamp = newTimeStamp;
 	return EXIT_SUCCESS;
 }
 
+//returns message type of the message this function is called on 
 int MsgEnv::getMsgType()
 {
 	return _msgType;
 }
 
+//sets message type of the message this function is called on 
 int MsgEnv::setMsgType(int newMsgType)
 {
 		_msgType = newMsgType;
 		return EXIT_SUCCESS;
 }
+
 string MsgEnv::getMsgTypeName()
 {
 	return getMsgTypeName(_msgType);
@@ -104,6 +103,7 @@ string MsgEnv::getMsgData()
 	return _msgData;
 }
 
+//sets message data of the message this function is called on 
 int MsgEnv::setMsgData(string msgInfo)
 {
 	_msgData = msgInfo;
