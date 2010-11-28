@@ -55,8 +55,7 @@ void i_keyboard_handler()
 	PCB* currPcb = gRTX->getCurrentPcb();
 	if(currPcb != NULL) // && (currPcb->checkMail() > 0)) //current PCB is valid
 	{
-		string* userMsg = new string();
-		*userMsg = gRxMemBuf->data;
+		string userMsg(gRxMemBuf->data);
 		
 		if(currPcb->checkMail() > 0)
 		{
@@ -66,7 +65,7 @@ void i_keyboard_handler()
 			}
 			while( retMsg == NULL);
 			int invoker = retMsg->getOriginPid();
-			retMsg->setMsgData(*userMsg);
+			retMsg->setMsgData(userMsg);
 			retMsg->setMsgType(retMsg->CONSOLE_INPUT_FIKB);
 			gRTX->K_send_message(invoker, retMsg);
 		}

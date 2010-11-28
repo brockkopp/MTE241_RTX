@@ -54,8 +54,8 @@ int main(int arg1, char* arg[])
 			cout << flush;
 			tx_mem_buf->busyFlag = 0; //indicate that the entire message has been transmitted and the crt process is no longer busy
 		}
-		else
-			usleep(1000);
+//		else
+			usleep(1);
 	}
 	while(1); //infinite loop
 	
