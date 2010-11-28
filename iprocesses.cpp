@@ -16,7 +16,6 @@ void i_timing_process()
 
 	while((tempMsg = gRTX->K_receive_message()) != NULL) {
 		//set expire time, total RTX run time plus the requested delay time
-		cout<<"enqueue:"<<tempMsg->getMsgTypeName()<<"::"<<tempMsg->getMsgData()<<endl;
 		gRTX->waitingProcesses->sortedEnqueue(tempMsg, gRTX->runTime + tempMsg->getTimeStamp());
 	}
 

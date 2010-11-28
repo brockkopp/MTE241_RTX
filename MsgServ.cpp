@@ -51,7 +51,6 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		if(status == BLOCKED_MSG_RECIEVE || 
 			 ( status == SLEEPING && msg->getMsgType() == MsgEnv::REQ_DELAY ))
 		{
-//			cout << "wake-up pid:" << tempDestPCB->getId() << " from " << tempDestPCB->getStateName() << endl;
 			_scheduler->unblock_process(tempDestPCB);
 		}
 		
@@ -63,11 +62,9 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 			strToInt(msg->getMsgData(),&type);
 			msg->setMsgType(type);
 			msg->setMsgData("");
-//			cout << "convert--"<<msg->getMsgTypeName()<<"::"<<msg->getMsgData()<<endl; 
 		}
 	
 		tempDestPCB->addMail(msg);
-//		cout << gRTX->_pcbList[PROC_USER_C]->getStateName() << endl;		
 
 		return EXIT_SUCCESS;
 	}

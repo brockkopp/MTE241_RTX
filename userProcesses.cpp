@@ -13,7 +13,6 @@ void userProcessA()
 	
 	while(true)
 	{
-//cout << "PROCESS A in loop!\n";	
 		myMsg = gRTX->K_request_msg_env();
 		myMsg->setMsgType(MsgEnv::COUNT_REPORT);
 		data = intToStr(num);
@@ -29,28 +28,9 @@ void userProcessA()
 void userProcessB()
 {
 
-//	while(true){
-//		cout << "\nuserB real output\n";
-//		gRTX->K_release_processor();
-//	}	
-
 	MsgEnv* myMsg;
 	while(true)
 	{
-//cout << "PROCESS B in loop!\n";	
-/* DELETE BLOCK */
-//		MsgEnv* ioLetter= gRTX->K_request_msg_env(  );	
-//		if ( ioLetter == NULL )
-//			cout << "LETTER IS NULL\n";
-//		else {
-//				cout << "test1 atomic\n";
-//				gRTX->K_request_delay(1,20,ioLetter);
-//				cout << "test mid\n";
-//				ioLetter = gRTX->K_receive_message();
-//				cout << "test2\n";	
-//		}
-/* END BLCOK */		
-		
 		myMsg = gRTX->K_receive_message();
 
 		gRTX->K_send_message(PROC_USER_C, myMsg);
@@ -78,14 +58,11 @@ void userProcessC()
 				myMsg->setMsgData("Process C\n");
 				while(gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS);
 				getMessage(MsgEnv::DISPLAY_ACK,gRTX);
-				
-//				cout << "UP:start:"<<gRTX->runTime<<endl;
+
 				gRTX->K_request_delay(100, num, myMsg);
-//				cout << "reqMsg\n";
+
 				while((myMsg = getMessage(num,gRTX)) == NULL)
-					gRTX->K_release_processor();
-//				cout << "UP:done:"<<gRTX->runTime<<endl;
-				
+					gRTX->K_release_processor();				
 			}
 		}
 	
