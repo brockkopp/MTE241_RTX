@@ -37,8 +37,6 @@ Return true if enqueue is successful, return false otherwise
 bool PQ::pq_enqueue (PCB** newData, int priorityLevel)
 {
 	//Check to make sure that the priority level exists
-	//cout<<"In PQ. NewData = ";
-	//cout<<(*newData)->getName()<<endl;
 	int masterLength = sizeof(_master)/sizeof(_master[0]);
 
 	if (priorityLevel >= masterLength) 
@@ -48,13 +46,7 @@ bool PQ::pq_enqueue (PCB** newData, int priorityLevel)
 	}
 	
 	//Enqueue the data at the requested priority level.	
-	//cout<<__FILE__<<" : "<<__LINE__<<" Before enqueue: "<<endl<<toString();
-	
-	bool result = _master[priorityLevel]->enqueue((void**)(newData));
-	//cout<<(result == true? "Enqueue SUCCESS\n" :  "Enqueue FAIL\n");
-	//cout<<__FILE__<<" : "<<__LINE__<<" Queue of priority level: "<<priorityLevel<<" :\n"<< _master[priorityLevel]->toString()<<endl;
-//	cout<<__FILE__<<" : "<<__LINE__<<" Master Queue :"<<toString()<<endl;
-	return (result);	
+	return (_master[priorityLevel]->enqueue((void**)(newData)));	
 }
 
 /*
@@ -65,19 +57,13 @@ PCB* PQ::pq_dequeue()
 {
 	int masterLength = sizeof(_master)/sizeof(_master[0]);
 	PCB* returnVal;
-	//cout<<__FILE__<<" : "<<__LINE__<<endl;
-//	cout<<"Length: "<<masterLength<<endl;
 	for( int i = 0; i < masterLength; i++) 
 	{
-		//cout<<"Iteration "<<i<<" : "; _master[i]->printPCBQueue();
-		//cout<<"Attempt dequeue...\n";
 		returnVal = _master[i]->dequeue_PCB();
 		if (returnVal != NULL)
 		{
-		//	cout<<"Found NOT NULL PCB\n";
 			return returnVal; //Not sure if this should be casted here but i added it anyway to make it work -Karl
 		}
-		//cout<<__FILE__" : "<<__LINE__<<" Null PCB - loopy...\n";
 	}
 	
 	return NULL; //The dequeue has failed, nothing to dequeue.	
