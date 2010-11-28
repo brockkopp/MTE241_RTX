@@ -39,12 +39,14 @@ int SignalHandler::setSigMasked(bool masked)
 	{
 		if(masked)
 		{
-//			debugMsg("\t\t\tAtomic(on)",0,1);
+//			if(gRTX != NULL)
+//				cout << gRTX->getCurrentPid() << " + " << gRTX->getCurrentPcb()->getAtomicCount() << endl;
 			sigprocmask(SIG_BLOCK, &_sigSetBlocked, NULL);
 		}
 		else
 		{
-//			debugMsg("\t\t\tAtomic(off)",0,1);
+//			if(gRTX != NULL)
+//				cout << gRTX->getCurrentPid() << " - " << gRTX->getCurrentPcb()->getAtomicCount() << endl;
 			sigprocmask(SIG_SETMASK, &_sigSetHandled, NULL);
 		}
 	}

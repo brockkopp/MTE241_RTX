@@ -41,8 +41,6 @@ struct Shmem
 int pidKB = 0, 
 	pidCRT = 0, 
 	pidRTX = 0;
-	
-
 
 int main(void)
 {

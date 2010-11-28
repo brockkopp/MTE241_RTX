@@ -23,8 +23,11 @@ noRunMsg:
 	@echo Execute '"make run"' to compile and execute
 	@echo
 
-clean:
+preclean:
 	@rm -f *.o *.out *.buf busyFlag #Delete everything!!!!
+	
+clean:
+	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ)#Delete everything!!!!
 
 memcheck: all
 	@valgrind --leak-check=yes --track-origins=yes --trace-children=yes ./RTX.out
