@@ -10,7 +10,5 @@
 int testParser();
 int testQueues();
 int testSignals();
-int testPQ();
-int testScheduler( Scheduler* S);
 
 #endif
