@@ -40,9 +40,10 @@ void processCCI()
 
 			assure(ioLetter != NULL,"CCI:45 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
 	
-			ioLetter->setMsgData("");			
-			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
-				usleep(100000); //no user input provided yet. Wait!	
+			ioLetter->setMsgData("");		
+			
+			MsgEnv* wakeupMsg;				
+			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR); /* Spin on waiting for consol chars */
 			
 			ioLetter->setOriginPid(gRTX->getCurrentPid());
 			ioLetter = gRTX->K_receive_message(); 
