@@ -73,7 +73,7 @@ int Scheduler::process_switch( ) {
 
 	context_switch( _readyProcs->pq_dequeue() );
 
-	return 1;
+	return EXIT_SUCCESS;
 }
 
 /*
@@ -85,10 +85,7 @@ arguments:
 int Scheduler::context_switch( PCB * nextProc ) 
 {
 	if (gRTX->getCurrentPcb()->saveContext() == 0) {
-//		//Put current proc onto ready queue
-//		gRTX->getCurrentPcb()->setState( READY );
-//		_readyProcs->pq_enqueue( gRTX->getCurrentPcb(), gRTX->getCurrentPcb()->getPriority());
-		
+
 		//Put the new pcb on the cpu
 		gRTX->setCurrentPcb( nextProc );
 		gRTX->getCurrentPcb()->setState( EXECUTING );
@@ -100,16 +97,6 @@ int Scheduler::context_switch( PCB * nextProc )
 	}
 	return 1;
 }
-
-//void context_switch(jmp_buf * previous,
-//return_code = setjmp(*previous);
-//if (return_code == 0)
-//{
-//longjmp(*next,1);
-
-
-
-
 
 /* Will change the priority of the target proc.
 
@@ -162,9 +149,7 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 	}
 	//Case 3: PCB is executing
 	else if ( gRTX->getCurrentPcb() == target ){
-		//Save context
-//		gRTX->getCurrentPcb()->saveContext(); <-- This should not be necissary since the process switch call will save the context of the PCB.
-		
+
 		//Remove from executing, put on ready queue
 		add_ready_process( target );
 		
@@ -190,7 +175,7 @@ arguments: target PCB to put on ready queue.
 int Scheduler::add_ready_process( PCB * target ) 
 {
 	if (gRTX->getCurrentPcb() == target){
-		return 0; //Failure, process is on CPU
+		return EXIT_ERROR; //Failure, process is on CPU
 	}
 
 	else {
@@ -202,7 +187,7 @@ int Scheduler::add_ready_process( PCB * target )
 		target->setState( READY );
 		_readyProcs->pq_pluck( target ); // <--- Just in case it already exists in the queue. *inefficient, intend to changed later.
 		_readyProcs->pq_enqueue( target, target->getPriority() );
-		return 1;
+		return EXIT_SUCCESS;
 	}
 }
 
@@ -354,25 +339,3 @@ PCB* Scheduler::get_blocked_on_env()
 {
 	return _blockedEnv->dequeue_PCB();
 }
-
-//PCB* Scheduler::get_current_process() {
-//	return gRTX->_currentProcess;
-//}
-
-//int Scheduler::setCurrentProcess(int pid)
-//{
-//	PCB* newProcess;
-//	gRTX->getPcb(pid,&newProcess);
-//	if(newProcess == NULL)
-//		return EXIT_ERROR;
-//	else
-//		return setCurrentProcess(newProcess);
-//}
-//int Scheduler::setCurrentProcess(PCB* newProcess)
-//{
-//	if(newProcess == NULL)
-//		return EXIT_ERROR;
-//		
-//	gRTX->_currentProcess = newProcess;
-//	return EXIT_SUCCESS;
-//}

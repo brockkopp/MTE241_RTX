@@ -15,6 +15,11 @@ void processCCI()
 
 		assure(ioLetter != NULL, "CCI ioLetter is NULL",__FILE__,__LINE__,__func__,true);
 
+		ioLetter->setMsgData("\n------------------------------------\n           RTX INITIALIZED\n------------------------------------\n\n");
+		while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);
+		ioLetter = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
+		
+
 		ualarm(TICK_TIME, TICK_TIME);
 	
 		while(true)
@@ -39,7 +44,7 @@ void processCCI()
 			ioLetter = gRTX->K_receive_message(); 
 			assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
 			command = ioLetter->getMsgData();	
-				
+
 			//check for an empty command!
 			if(command.length() > 0)
 			{

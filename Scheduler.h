@@ -1,7 +1,6 @@
 #ifndef H_SCHEDULER
 #define H_SCHEDULER
 
-
 #include <string>
 #include "debug.h"
 #include "lib/PCB.h"
@@ -42,12 +41,11 @@ class Scheduler {
 		int setCurrentProcess(int pid);
 		int setCurrentProcess(PCB* newProcess);
 
-    private:
-    	int context_switch( PCB * next_proc );
-    	bool _started;
+   private:
+    int context_switch( PCB * next_proc );
+    bool _started;
 
 		//Members
-      	//PCB * _currentProcess; // Executing state
 		PQ* _readyProcs; // Ready to execute state
     Queue* _blockedEnv; // Blocked on resource state
     Queue* _blockedMsgRecieve;

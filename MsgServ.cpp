@@ -13,8 +13,9 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 	
 	for(int i=0; i < MSG_COUNT; i++)
 		_freeEnvQ->enqueue( new MsgEnv() );
-	
+#if DEBUG_MODE
 	_envelopeTracker = new Queue(Queue::TRACKER);
+#endif
 }
 
 //DECONSTRUCTOR
@@ -22,7 +23,9 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 MsgServ::~MsgServ()
 {
 	delete _freeEnvQ;
+#if DEBUG_MODE
 	delete _envelopeTracker;
+#endif
 }
 
 //Facilitates the sending of messages between processes
@@ -156,5 +159,5 @@ MsgEnv* MsgServ::requestEnv()
 void MsgServ::readTracker()
 {
 	_envelopeTracker->printTracker();
-#endif
 }
+#endif
