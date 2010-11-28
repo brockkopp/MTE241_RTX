@@ -10,7 +10,7 @@ using namespace std;
 #define EXIT_SUCCESS 	0
 #define EXIT_ERROR	-1
 
-#define DEBUG_MODE	1
+#define DEBUG_MODE	0
 
 #define TESTS_MODE	0
 
