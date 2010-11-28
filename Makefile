@@ -9,25 +9,28 @@ CRT=CRT.out
 CRT_OBJ=crt.o debug.o
 
 ##Command List
-all: compileMsg clean $(KB) $(CRT) $(TITLE) clean noRunMsg
-
-run: all execute
+all: compileMsg preclean $(KB) $(CRT) $(TITLE) clean noRunMsg
 
 compileMsg:
 	@echo
 	@echo Starting compilation process...
 	@echo
 
-noRunMsg: 
+noRunMsg:
 	@echo
 	@echo Execute '"make run"' to compile and execute
 	@echo
 
-preclean:
-	@rm -f *.o *.out *.buf busyFlag #Delete everything!!!!
-	
+run: all execute
+
+preclean: clean_all
+	@rm -f $(TITLE) $(KB) $(CRT) $(OBJ) $(KB_OBJ) $(CRT_OBJ) *.buf busyFlag
+
 clean:
-	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ)#Delete everything!!!!
+	@rm -f $(OBJ) $(KB_OBJ) $(CRT_OBJ) #Delete all object files
+
+clean_all:
+	@rm -f *.o *.out #Delete everything!!!!
 
 memcheck: all
 	@valgrind --leak-check=yes --track-origins=yes --trace-children=yes ./RTX.out
