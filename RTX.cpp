@@ -23,7 +23,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	{
 		_pcbList[i] = new PCB(initTable[i]);
 		if ( _pcbList[i]->getProcessType() != PROCESS_I )
-			pcbTmpList->enqueue(_pcbList[i]);
+			pcbTmpList->enqueue((void**)(&(_pcbList[i])));
 	}
 	
 	_scheduler = new Scheduler(pcbTmpList);
@@ -303,7 +303,6 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 			{
 				if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
 				{
-					cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<<"I donno"<<endl<<flush;
 					res = EXIT_ERROR;
 				}
 				else //display_ack
@@ -313,12 +312,9 @@ int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
 			}
 			else //could be sending a null message
 			{
-				cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<<"Send Message Failed"<<endl<<flush;
 				res = EXIT_ERROR;
 			}
 		}
-		else
-			cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<<"Send Message Fails"<<endl<<flush;
 	}
 	return res;
 }

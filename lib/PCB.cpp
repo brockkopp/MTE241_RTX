@@ -30,6 +30,8 @@ PCB::PCB(PcbInfo* info)
 			gRTX->getCurrentPcb()->_fPtr();
 		}	
 	}
+	
+	_link = NULL;
 }
 
 /*~*~*~*~*~*~* Destructors *~*~*~*~*~*~*~*/
@@ -139,7 +141,7 @@ MsgEnv* PCB::retrieveMail( )
 //Enqueue message onto mailbox queue
 bool PCB::addMail( MsgEnv* message )
 {
-	return (_mailbox->enqueue(message));
+	return (_mailbox->enqueue((void**)(&message)));
 }
 
 //Returns the number of messages in the mailbox

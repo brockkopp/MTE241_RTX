@@ -17,12 +17,10 @@ MsgEnv* getMessage(int msgType, RTX* rtx)
 
 		while(ret != NULL && ret->getMsgType() != msgType)
 		{
-//			cout<<"loopy:" << ret->getMsgType() << "\n";
 			if(ret == startEnv)
 				ret = NULL;
 			else
 			{
-//				cout<<__FILE__<<":"<<__LINE__<<endl<<flush;
 				rtx->K_send_message(myPid,ret);		//Prevent looping on same message
 				ret = rtx->K_receive_message();
 			}

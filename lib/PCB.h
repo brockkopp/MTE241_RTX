@@ -66,5 +66,9 @@ class PCB
 		int _state;
 		Queue* _mailbox;
 		jmp_buf _localJmpBuf;
+		
+	protected:
+		PCB* _link;
+		friend class Queue;
 };
 #endif

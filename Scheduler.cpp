@@ -23,7 +23,7 @@ Scheduler::Scheduler(Queue* readyProcs)
 	while (!readyProcs->isEmpty())
 	{
 		temp = readyProcs->dequeue_PCB();
-		_readyProcs->pq_enqueue( temp, temp->getPriority() );
+		_readyProcs->pq_enqueue( &temp, temp->getPriority() );
 	}
 	_started = false;
 }
@@ -58,7 +58,8 @@ void Scheduler::release_processor( ) {
 				
 		//Put currentProcess on the ready queue.
 		gRTX->getCurrentPcb()->setState( READY );
-		_readyProcs->pq_enqueue( gRTX->getCurrentPcb(), gRTX->getCurrentPcb()->getPriority() );
+		PCB* temp = gRTX->getCurrentPcb();
+		_readyProcs->pq_enqueue( ((PCB**)(&temp)), gRTX->getCurrentPcb()->getPriority() );
 
 		process_switch();
 
@@ -117,7 +118,7 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 	//Case 1: PCB is on ready queue
 	
 	//If the target exists in the ready queue...
-	if ( _readyProcs->pq_pluck( target ) ) { 
+	if ( _readyProcs->pq_pluck( &target ) ) { 
 		/* _readyProcs is a PQ, therefore when we change priority we must pluck
 			the target and restore the target.
 		*/
@@ -126,13 +127,13 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 		target->setPriority( newPriority );
 		
 		//Re-enqueue the PCB
-		_readyProcs->pq_enqueue( target, target->getPriority() );
+		_readyProcs->pq_enqueue( &target, target->getPriority() );
 		
 		return EXIT_SUCCESS;
 	}
 	//Case 2a: PCB is on blockedEnv queue
 	
-	else if ( _blockedEnv->select( target ) ){
+	else if ( _blockedEnv->select( &target ) ){
 		//Change priority
 		target->setPriority( newPriority );
 		
@@ -140,7 +141,7 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 	}
 	
 	//Case 2b: PCB is on blockedMsg queue
-	else if ( _blockedMsgRecieve->select( target ) ){
+	else if ( _blockedMsgRecieve->select( &target ) ){
 
 		//Change priority
 		target->setPriority( newPriority );
@@ -180,13 +181,13 @@ int Scheduler::add_ready_process( PCB * target )
 
 	else {
 		/* Check if the process is on any blocked queues, if so, pluck it from there */
-		_blockedEnv->pluck( target );
-		_blockedMsgRecieve->pluck( target );
+		_blockedEnv->pluck( &target );
+		_blockedMsgRecieve->pluck( &target );
 		
 		/* Set the process state to READY and add it to the ready Procs queue */
 		target->setState( READY );
-		_readyProcs->pq_pluck( target ); // <--- Just in case it already exists in the queue. *inefficient, intend to changed later.
-		_readyProcs->pq_enqueue( target, target->getPriority() );
+		_readyProcs->pq_pluck( &target ); // <--- Just in case it already exists in the queue. *inefficient, intend to changed later.
+		_readyProcs->pq_enqueue( &target, target->getPriority() );
 		return EXIT_SUCCESS;
 	}
 }
@@ -217,15 +218,15 @@ int Scheduler::block_process (int reason)
 	if (reason == BLOCKED_ENV)
 	{
 		target->setState( BLOCKED_ENV );
-		return_value = _blockedEnv->enqueue( target );
+		return_value = _blockedEnv->enqueue( (void**)(&target) );
 	}	
 	else if (reason == BLOCKED_MSG_RECIEVE){
 		target->setState( BLOCKED_MSG_RECIEVE );
-		return_value = _blockedMsgRecieve->enqueue( target );
+		return_value = _blockedMsgRecieve->enqueue( (void**)(&target) );
 	}
 	else if (reason == SLEEPING){
 		target->setState( SLEEPING );
-		return_value = _blockedMsgRecieve->enqueue( target );
+		return_value = _blockedMsgRecieve->enqueue( (void**)(&target) );
 	}
 
 	//Put the next available process on the ready queue
@@ -248,23 +249,23 @@ int Scheduler::unblock_process( PCB * target )
 	if (target->getState() == BLOCKED_MSG_RECIEVE || 
 			target->getState() == SLEEPING) {
 			//Remove process from the blocked queue
-			_blockedMsgRecieve->pluck(target);
+			_blockedMsgRecieve->pluck(&target);
 			
 
 			if (target) {
 				target->setState( READY );
 				//Re-enqueue on ready queue
-				return _readyProcs->pq_enqueue( target , target->getPriority());
+				return _readyProcs->pq_enqueue( &target , target->getPriority());
 			}
 		}
 	
 	//If process is blocked on envelope
 	else if (target->getState() == BLOCKED_ENV) {
-		_blockedEnv->pluck(target);
+		_blockedEnv->pluck(&target);
 		
 		if (target) {
 			target->setState( READY );
-			return _readyProcs->pq_enqueue( target , target->getPriority());
+			return _readyProcs->pq_enqueue( &target , target->getPriority());
 		}
 	}
 	
@@ -286,7 +287,7 @@ int Scheduler::unblock_process( int reason )
 			if (target) {
 				target->setState( READY );
 				//Re-enqueue on ready queue
-				return _readyProcs->pq_enqueue( target , target->getPriority());
+				return _readyProcs->pq_enqueue( &target , target->getPriority());
 			}
 		}
 	
@@ -296,7 +297,7 @@ int Scheduler::unblock_process( int reason )
 		
 		if (target) {
 			target->setState( READY );
-			return _readyProcs->pq_enqueue( target , target->getPriority());
+			return _readyProcs->pq_enqueue( &target , target->getPriority());
 		}
 	}
 	//Process was not blocked in the first place...

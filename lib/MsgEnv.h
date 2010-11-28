@@ -10,9 +10,13 @@ class MsgEnv
 	private:
 		int _destPid;
 		int _originPid;
-		int _timeStamp;
 		int _msgType;
 		string _msgData;
+		
+	protected:
+		MsgEnv* _link;
+		int _timeStamp;
+		friend class Queue;
 		
 	public:
 		//message types		
