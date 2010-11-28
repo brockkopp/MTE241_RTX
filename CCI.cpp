@@ -54,7 +54,6 @@ void processCCI()
 						else
 						{
 							MsgEnv* myEnv = gRTX->K_request_msg_env();
-							myEnv->setDestPid(PROC_USER_A);
 							myEnv->setMsgType(0);
 					
 							if(gRTX->K_send_message(PROC_USER_A, myEnv) != EXIT_SUCCESS)
