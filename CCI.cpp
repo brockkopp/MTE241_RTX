@@ -15,46 +15,44 @@ void processCCI()
 
 		assure(ioLetter != NULL, "CCI ioLetter is NULL",__FILE__,__LINE__,__func__,true);
 
-		ioLetter->setMsgData("\nRTX Initializing...\n\n");
-		while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);
-		ioLetter = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
-		
+		ioLetter->setMsgData("\nRTX Initializing...\n");
+		assure(gRTX->K_send_console_chars(ioLetter) != EXIT_ERROR,"Send console chars failed",__FILE__,__LINE__,__func__,true);
+		while( (ioLetter = getAck(gRTX)) == NULL )
+			cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<< "OHH, MY, GOD... Ohh no she didn't\n";
 
 		ualarm(TICK_TIME, TICK_TIME);
 	
 		ioLetter->setMsgData("\nType 'help' at any point for a list of possible commands\n\n");
-		while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);
-		ioLetter = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
+		assure(gRTX->K_send_console_chars(ioLetter) != EXIT_ERROR,"Send console chars failed",__FILE__,__LINE__,__func__,true);
+		while( (ioLetter = getAck(gRTX)) == NULL )
+			cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<< "OHH, MY, GOD... Ohh no she didn't\n";
 		
 		while(true)
 		{
 			command = "";
 			input[0] = input[1] = input[2] = "";
 			message = "";	
-				
-				ioLetter->setOriginPid(gRTX->getCurrentPid());
+			
 			ioLetter->setMsgData(">RTX$ ");
-			while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR); //if exiting while loop, sure that message type is display_ack
+			assure(gRTX->K_send_console_chars(ioLetter) != EXIT_ERROR,"Send console chars failed",__FILE__,__LINE__,__func__,true);
+			while( (ioLetter = getAck(gRTX)) == NULL )
+				cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<< "OHH, MY, GOD... Ohh no she didn't\n";
 
-			ioLetter = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
-
-			assure(ioLetter != NULL,"CCI:45 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
+			assure(ioLetter != NULL,"Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
 	
 			ioLetter->setMsgData("");			
-			if(gRTX->K_get_console_chars(ioLetter) != EXIT_SUCCESS)	
-				cout << "CCI.cpp:Ang Wins!\n\n\n!";
-//			while(gRTX->K_get_console_chars(ioLetter) == EXIT_ERROR)
-//				usleep(100000); //no user input provided yet. Wait!	
+			assure(gRTX->K_get_console_chars(ioLetter) == EXIT_SUCCESS,"Get console chars failed",__FILE__,__LINE__,__func__,true);
 			
-			ioLetter->setOriginPid(gRTX->getCurrentPid());
+
 			ioLetter = gRTX->K_receive_message(); 
-			assure(ioLetter != NULL,"CCI:53 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
+			assure(ioLetter != NULL,"Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
 			command = ioLetter->getMsgData();	
 
 			//check for an empty command!
 			if(command.length() > 0)
 			{
 				params = parseString( command, input, ' ', 3);
+//				params = parseString( command, input, ' ', 3, true);
 
 				if(params >= 1 && params <= 3)
 				{
@@ -99,6 +97,7 @@ void processCCI()
 						if(params > 2)
 							message = "Too many parameters for 'Set Clock' command\n";
 						else if(parseString(input[1],time,':',3) != 3 || gRTX->wallClock->setTime(time) != EXIT_SUCCESS)
+//						else if(parseString(input[1],time,':',3, true) != 3 || gRTX->wallClock->setTime(time) != EXIT_SUCCESS)
 							message = "Invalid time format\n";
 					}
 					else if(input[0] == "cd")
@@ -135,9 +134,11 @@ void processCCI()
 							message = "Too many parameters for 'Terminate' command\n";
 						else
 						{
-							ioLetter->setMsgData("\n\nShutting Down...\n");
-							while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);
-							ioLetter = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
+//							ioLetter->setMsgData("\nShutting Down...\n");
+//							if( gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR )
+//								cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<<"GetConsoleCharsFailed"<<endl;
+//							while( (ioLetter = getAck(gRTX)) == NULL )
+//								cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<< "OHH, MY, GOD... Ohh no she didn't\n";
 							
 							gRTX->K_release_msg_env(ioLetter);
 							kill(getpid(),SIGINT);
@@ -197,8 +198,9 @@ void processCCI()
 				if(message.length() > 0)
 				{
 					ioLetter->setMsgData(message);
-					while(gRTX->K_send_console_chars(ioLetter) == EXIT_ERROR);
-					ioLetter = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
+					assure(gRTX->K_send_console_chars(ioLetter) != EXIT_ERROR,"Send console chars failed",__FILE__,__LINE__,__func__,true);
+					while( (ioLetter = getAck(gRTX)) == NULL )
+						cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<< "OHH, MY, GOD... Ohh no she didn't\n";
 
 					assure(ioLetter != NULL,"CCI:182 Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);
 				}

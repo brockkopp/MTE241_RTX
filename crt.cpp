@@ -5,6 +5,7 @@
 
 void die(int signal)
 {
+	//cout << "\n\nRTOS shutting down...\n"<<flush;
 	exit(0); //don't have to do anything since the RTX cleans up the shared memory
 }
 
@@ -38,9 +39,11 @@ int main(int arg1, char* arg[])
 	//polling shared memory to see what has to be printed to the screen
 	do
 	{
-		cout << flush;
+		//cout << flush;
 		if(tx_mem_buf->busyFlag == 1) //synchronized with crt_i_process; set to 1 once iprocess started inputting values
 		{
+//			cout << "printing..." << endl << flush;
+			
 			int indexInBuf = 0;
 			char c = tx_mem_buf->data[indexInBuf];
 			while (c != '\0') //will also stop if '\n' is used
@@ -53,11 +56,12 @@ int main(int arg1, char* arg[])
 			}
 			cout << flush;
 			tx_mem_buf->busyFlag = 0; //indicate that the entire message has been transmitted and the crt process is no longer busy
+//			cout << "done printing" << endl << flush;
 		}
-//		else
+		else
 			usleep(1);
 	}
-	while(1); //infinite loop
+	while(true); //infinite loop
 	
 	return 0;
 }

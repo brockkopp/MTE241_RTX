@@ -40,6 +40,7 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 	_signalHandler->setSigMasked(false);
 
 	_started = false;
+	_semSend = false;
 
 	debugMsg("RTX Init Done",0,2);
 }
@@ -246,77 +247,38 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
  * After tranmission is complete, the same envelope is returned to invoking process with message_type "display_ack" as confirmation
  * Inovking process does not block! So if the CRT is busy, will return EXIT_ERROR and invoking process must loop to ensure transmission is complete
  * Returns EXIT_SUCCESS if successful, EXIT_ERROR otherwise (eg. if message not terminated with null char or transmission fails */
-int RTX::K_send_console_chars(MsgEnv* msg_envelope)
+int RTX::K_send_console_chars(MsgEnv* msgEnv)
 {
 	int ret = EXIT_ERROR;
-	if(msg_envelope != NULL) //error check
+		
+	if(msgEnv != NULL) //error check
 	{
-		//validated that message is in correct format
-		//int invoker = msg_envelope->getOriginPid();
-		int invoker = getCurrentPid();
-		string content = msg_envelope->getMsgData();
-		//implement multi-line display	
-		int lineCount = countChars(content,'\n');
-		if(lineCount == 0)
+		while(_semSend);
+		_semSend = true;
+		
+		msgEnv->setOriginPid( getCurrentPid() );
+		
+		msgEnv->setMsgType(msgEnv->TO_CRT);
+
+		if(K_send_message(PROC_CRT, msgEnv) != EXIT_ERROR)
 		{
-			msg_envelope->setMsgData(content);
-			ret = send_chars_to_screen(msg_envelope);
+			kill(getpid(), SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  
+
+			if( (msgEnv = getMessage(MsgEnv::DISPLAY_ACK,this)) == NULL)
+				if( (msgEnv = getMessage(MsgEnv::DISPLAY_FAIL,this)) == NULL)
+					msgEnv = getMessage(MsgEnv::BUFFER_OVERFLOW,this);
+
+			if(assure(msgEnv != NULL,"iProc_CRT did not return env",__FILE__,__LINE__,__func__,false) &&
+				 msgEnv->getMsgType() == msgEnv->DISPLAY_ACK)	
+					ret = EXIT_SUCCESS;
 		}
 		else
-		{	
-			string lines[lineCount];
-			string thisLine = "";
-			parseString(content, lines, '\n', lineCount);
-	
-			for(int i = 0; i < lineCount; i++)
-			{
-				thisLine = (lines[i] + '\n');
-				msg_envelope->setMsgData(thisLine);
-				//ret = send_chars_to_screen(msg_envelope);
-				do { ret = send_chars_to_screen(msg_envelope); } while(ret == EXIT_ERROR);
-				usleep(100000);
-			}
-			msg_envelope->setMsgData(content); //reset data to original before breaking it down
-		}	
-		K_send_message(invoker, msg_envelope); //msg_envelope is modified by send_chars_to_screen
+			msgEnv->setMsgType(msgEnv->DISPLAY_FAIL);
+		
+		if(msgEnv != NULL)
+			K_send_message(getCurrentPid(), msgEnv);
 	}
 	return ret;
-}
-
-int RTX::send_chars_to_screen(MsgEnv* msg_envelope)
-{
-	int res = EXIT_ERROR;
-
-	if(msg_envelope != NULL)
-	{
-		int iCRTId = getpid(); //send a signal to the RTX
-		//send message to i_crt_handler to deal with transmission of the message to the console
-		msg_envelope->setMsgType(msg_envelope->TO_CRT);
-
-		if(K_send_message(PROC_CRT, msg_envelope) != EXIT_ERROR)
-		{
-			kill(iCRTId, SIGUSR2); //send signal to i_crt_handler who will handle transmitting the message	  		  	  	
-
-			msg_envelope = getMessage(MsgEnv::DISPLAY_ACK,this);
-			
-			if(msg_envelope != NULL)
-			{
-				if(msg_envelope->getMsgType() == msg_envelope->BUFFER_OVERFLOW || msg_envelope->getMsgType() == msg_envelope->DISPLAY_FAIL)
-				{
-					res = EXIT_ERROR;
-				}
-				else //display_ack
-				{
-					res = EXIT_SUCCESS;
-				}
-			}
-			else //could be sending a null message
-			{
-				res = EXIT_ERROR;
-			}
-		}
-	}
-	return res;
 }
 
 /* Invoking process provides a message envelope (previously allocated)

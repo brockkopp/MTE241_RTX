@@ -30,6 +30,16 @@ MsgEnv* getMessage(int msgType, RTX* rtx)
 	return ret;
 }
 
+MsgEnv* getAck( RTX* rtx )
+{
+	MsgEnv* msgEnv;
+	if( (msgEnv = getMessage(MsgEnv::DISPLAY_ACK,rtx)) == NULL)
+		if( (msgEnv = getMessage(MsgEnv::DISPLAY_FAIL,rtx)) == NULL)
+			msgEnv = getMessage(MsgEnv::BUFFER_OVERFLOW,rtx);
+
+	return msgEnv;
+}
+
 string intToStr(int num)
 {
 	stringstream temp;
@@ -89,6 +99,41 @@ int parseString( string input, string output[], char token, int maxCount)
 			//Loop until next non-token character in input string
 			while(input[strPos++] == token)
 				prevPos = strPos;
+		}
+		else
+			strPos++;
+	}
+
+	if(strPos < input.length())
+		return -1;
+	else
+		return tokenCnt;
+}
+
+int parseString( string input, string output[], char token, int maxCount, bool removeChar)
+{
+	unsigned int strPos = 0;
+	unsigned int prevPos = 0;
+	int tokenCnt = 0;
+
+	//Search until finished string or output[] is full
+	while(strPos <= input.length() && tokenCnt < maxCount)
+	{
+		//if token is found, or end of string
+		if(input[strPos] == token || strPos == input.length())
+		{
+			//Store string (without token)
+			if(removeChar)
+				output[tokenCnt] = input.substr(prevPos, strPos++ - prevPos);
+			else
+				output[tokenCnt] = input.substr(prevPos, ++strPos - prevPos);
+
+			prevPos = strPos;
+			tokenCnt ++;
+			
+			//Loop until next non-token character in input string
+			while(removeChar && input[strPos++] == token)
+				prevPos = strPos;			
 		}
 		else
 			strPos++;

@@ -93,14 +93,17 @@ void i_crt_handler()
 	MsgEnv* retMsg = NULL;
 	int invoker;
 	PCB* currPcb;
-	if((currPcb = gRTX->getCurrentPcb()) != NULL && (*currPcb).checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
+	if((currPcb = gRTX->getCurrentPcb()) != NULL && currPcb->checkMail() > 0) //current PCB is valid && Someone is trying to send chars to the console
 	{
 		retMsg = gRTX->K_receive_message(); //won't be null because already checked if mailbox was empty
 
 		if(retMsg == NULL || retMsg->getMsgData() == "") //make the check anyways
 		{		
-			retMsg = NULL;
-	   		gRTX->K_send_message(getpid(), retMsg); //send a NULL envelope if there's an error	   		
+			if(retMsg != NULL)
+			{
+				retMsg->setMsgType(MsgEnv::DISPLAY_FAIL);
+				gRTX->K_send_message(getpid(), retMsg);
+			}
 			return;
 		}
 
@@ -114,25 +117,40 @@ void i_crt_handler()
 		}	
 		else //CRT is NOT busy - perform transmission
 		{
-			if(msgToConsole.size() > MAXDATA) //buffer would overflows
-			{
-				//don't bother copying message into buffer; partial messages are not acceptable. Invoking process must do it line by line
-				retMsg->setMsgType(retMsg->BUFFER_OVERFLOW);
-			}
-			else //CRT is NOT busy - perform transmission
-			{
-				gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
-				int indexInBuf = 0; //start writing from beginning of the shmem
+			int lineCount = countChars(msgToConsole,'\n');
+			
+			if(msgToConsole[msgToConsole.length() - 1] != '\n')
+				lineCount++;
 				
-				for(unsigned int i = 0; i < msgToConsole.size(); i++) //copy message to shared memory
+			string lines[lineCount];
+			string thisLine;
+			parseString(msgToConsole, lines, '\n', lineCount, false);
+
+			for(int i = 0; i < lineCount; i++)
+			{
+				while(gTxMemBuf->busyFlag == 1);
+				thisLine = (lines[i]);
+				if(thisLine.size() > MAXDATA) //buffer would overflows
 				{
-					gTxMemBuf->data[indexInBuf] = msgToConsole[i];
-					indexInBuf++;
+					//don't bother copying message into buffer; partial messages are not acceptable. Invoking process must do it line by line
+					retMsg->setMsgType(retMsg->BUFFER_OVERFLOW);
+					break;
 				}
-				gTxMemBuf->data[indexInBuf] = '\0'; 
-				//CRT process will set busyFlag back to 0 once it has taken everything out of the buffer
-				//So can assume that once things are in the buffer, they have been "successfully transmitted"
-				retMsg->setMsgType(retMsg->DISPLAY_ACK); 
+				else //CRT is NOT busy - perform transmission
+				{
+					int indexInBuf = 0; //start writing from beginning of the shmem
+			
+					for(unsigned int i = 0; i < thisLine.size(); i++) //copy message to shared memory
+					{
+						gTxMemBuf->data[indexInBuf] = thisLine[i];
+						indexInBuf++;
+					}
+					gTxMemBuf->data[indexInBuf] = '\0'; 
+					gTxMemBuf->busyFlag = 1; //set buffer to be busy because we're about to transmit something
+					//CRT process will set busyFlag back to 0 once it has taken everything out of the buffer
+					//So can assume that once things are in the buffer, they have been "successfully transmitted"
+					retMsg->setMsgType(retMsg->DISPLAY_ACK); 
+				}
 			}
 		}		
 		gRTX->K_send_message(invoker, retMsg);	
@@ -142,6 +160,6 @@ void i_crt_handler()
 		assure(false,"Output streaming has messed up royally",__FILE__,__LINE__,__func__,true);
 	}
 	gRTX->atomic(false);
-	
+	gRTX->_semSend = false;
 	return;	
 }

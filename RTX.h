@@ -94,6 +94,7 @@ class RTX
 		MsgTrace*			_msgTrace;
 		MsgServ* 			_mailMan;
 		bool					_started;
+		bool					_semSend;
 				
 		int send_chars_to_screen(MsgEnv* msg_envelope);
 		

@@ -54,11 +54,9 @@ void userProcessC()
 			strToInt( myMsg->getMsgData(), &num );
 			if(num%20 == 0 && num != 0)
 			{
-				
 				myMsg->setMsgData("Process C\n");
 				while(gRTX->K_send_console_chars(myMsg) != EXIT_SUCCESS);
 				getMessage(MsgEnv::DISPLAY_ACK,gRTX);
-
 				gRTX->K_request_delay(100, num, myMsg);
 
 				while((myMsg = getMessage(num,gRTX)) == NULL)
