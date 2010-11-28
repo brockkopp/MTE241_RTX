@@ -8,16 +8,14 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 {
 	_scheduler = scheduler;
 	_msgTrace = msgTrace;
-
 	_freeEnvQ = new Queue(Queue::MSG_ENV);
-	
-	for(int i=0; i < MSG_COUNT; i++)
-		_freeEnvQ->enqueue(new MsgEnv());
-	
 	_envelopeTracker = new Queue(Queue::TRACKER);
 	
 	for(int i=0; i < MSG_COUNT; i++)
-		_freeEnvQ->enqueue( new MsgEnv() );
+	{
+		_freeEnvQ->enqueue(new MsgEnv());
+		_freeEnvQ->enqueue(new MsgEnv());
+	}
 }
 
 //DECONSTRUCTOR
@@ -25,7 +23,6 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 MsgServ::~MsgServ()
 {
 	delete _freeEnvQ;
-	
 	delete _envelopeTracker;
 }
 
@@ -53,7 +50,7 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 		if(tempStatus == BLOCKED_MSG_RECIEVE)
 			temp = _scheduler->unblock_process(tempDestPCB);
 		else if(tempStatus == SLEEPING)
-			if(msg->getMsgType() == MsgEnv::WAKEUP_CODE)																		//wake_up
+			if(msg->getMsgType() == MsgEnv::WAKEUP_CODE)																		
 				temp = _scheduler->unblock_process(tempDestPCB);				
 
 		//add msg to process mailbox
@@ -69,7 +66,6 @@ int MsgServ::sendMsg(int destPid, MsgEnv* msg)
 MsgEnv* MsgServ::recieveMsg()
 {
 	//retrieve PCB of currently excecuting process 
-
 	PCB* tempPCB = gRTX->getCurrentPcb();
 	assure(tempPCB != NULL, "Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
 
@@ -79,13 +75,11 @@ MsgEnv* MsgServ::recieveMsg()
 		if (tempPCB->getProcessType() == PROCESS_I)
     		return NULL;
   		
-  		//block calling process, this automatically calls a process_switch
+  	//block calling process, this automatically calls a process_switch
 		_scheduler->block_process(BLOCKED_MSG_RECIEVE); 		
-
 	}
 	//get mail
 	MsgEnv* tempMsg = tempPCB->retrieveMail();
-		
 	_msgTrace->addTrace(tempMsg, RECEIVE);
 	return tempMsg;
 }
