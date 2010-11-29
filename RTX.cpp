@@ -48,14 +48,8 @@ RTX::RTX(PcbInfo* initTable[], SignalHandler* signalHandler)
 RTX::~RTX()
 {
 	_signalHandler->setSigMasked(true);
-	//Free resources held by each RTX member, allocated in the RTX constructor
-
-	//delete _mailMan;
-	//delete _scheduler;
-	//delete _signalHandler;
 }
 
-//assure(gRTX->getCurrentPcb(&tempPCB) == EXIT_SUCCESS,"Failed to retrieve PCB",__FILE__,__LINE__,__func__,false);
 int RTX::getPcb(int pid, PCB** pcb)
 {
 	int ret = EXIT_SUCCESS;
@@ -127,7 +121,6 @@ int RTX::K_send_message(int dest_process_id, MsgEnv* msgEnv)
 {
 	int ret;
 	atomic(true);
-//	if(dest_process_id == PROC_USER_C)
 	ret = _mailMan->sendMsg(dest_process_id, msgEnv);
 	atomic(false);
 	return ret;
@@ -183,7 +176,7 @@ int RTX::K_request_process_status(MsgEnv* msg)
 	int ret = EXIT_ERROR;
 	if(msg != NULL)
 	{
-//		atomic(true);
+		atomic(true);
 		string output = "\tPID\tPRIORITY  STATUS\n\t---\t------\t  --------\n";
 		
 		PCB* curr;
@@ -193,7 +186,7 @@ int RTX::K_request_process_status(MsgEnv* msg)
 		msg->setDestPid(msg->getOriginPid());		//Waiting on Message implementation
 		msg->setMsgData(output);
 		ret = EXIT_SUCCESS;
-//		atomic(false);
+		atomic(false);
 	}
 	else
 		debugMsg("Called K_request_process_status without first allocating memory to the passed MsgEnv\n");
@@ -231,12 +224,11 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 		atomic(true);
 		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay);
-
 		msg_envelope->setMsgType(MsgEnv::REQ_DELAY);
 		msg_envelope->setMsgData(intToStr(wakeup_code));
 		
-		
-		//call Kernal send message to send to timing iProcess
+	//call Kernal send message to send to timing iProcess
+
 		ret = K_send_message(PROC_TIMING, msg_envelope);
 		_scheduler->block_process(SLEEPING);
 		atomic(false);	

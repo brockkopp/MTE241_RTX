@@ -18,7 +18,6 @@ Scheduler::Scheduler(Queue* readyProcs)
 	_cpuTrace = "CPU trace does not track iniz of procs\n";
 	
 	//Add all readyProcs to the ready queue.
-	//int numProcs =	readyProcs->get_length();
 	PCB* temp;
 	while (!readyProcs->isEmpty())
 	{
@@ -53,7 +52,6 @@ void Scheduler::start()
 void Scheduler::release_processor( ) { 
 
 	//Save the context of the currently executing proc.
-	//Do some crazy context save shinanigans need to be done here???
 	if (gRTX->getCurrentPcb()->saveContext() == 0 ) {
 				
 		//Put currentProcess on the ready queue.
@@ -90,7 +88,6 @@ int Scheduler::context_switch( PCB * nextProc )
 		//Put the new pcb on the cpu
 		gRTX->setCurrentPcb( nextProc );
 		gRTX->getCurrentPcb()->setState( EXECUTING );
-		//gRTX->_signalHandler->setSigMasked(nextProc->getAtomicCount() > 0);	//Set appropriate atomic state
 		
 		//Put process on CPU trace (for debugging etc...) and restore its context.
 		_cpuTrace += gRTX->getCurrentPcb()->getName() + "\n";
