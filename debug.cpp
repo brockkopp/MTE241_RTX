@@ -4,7 +4,7 @@ void debugMsg(string message)
 {
 	//Assure that this is not in demonstration mode
 #if DEBUG_MODE == 1
-	cout << message << flush;
+//	cout << message << flush;
 #endif
 }
 
@@ -12,7 +12,7 @@ void debugMsg(int message)
 {
 	//Assure that this is not in demonstration mode
 #if DEBUG_MODE == 1
-	cout << message << flush;
+//	cout << message << flush;
 #endif
 }
 

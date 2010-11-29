@@ -103,7 +103,6 @@ bool Queue::sortedEnqueue( MsgEnv** newMsg )
 {
 
 	int timeStamp = (*newMsg)->_timeStamp;
-//	cout<<"In SortedEnqueue... timeStamp = "<<timeStamp<<endl;
 
 	if(newMsg == NULL)
 		return false;
@@ -626,32 +625,3 @@ string Queue::toString()
 	}
 	return ("{  }\n");
 }
-
-#if DEBUG_MODE
-void Queue::printTracker() 
-{
-	if(!isEmpty())
-	{
-		envTrack* Temp = (envTrack*)(_rear);
-		int position = _length - 1;
-	
-		cout<<" {\n";
-	
-		while(Temp != NULL)
-		{
-			cout<<"\t<-["
-					<<intToStr(position) 
-					<<": A_ID "			<< Temp->allocatorID
-					<<": D_ID "			<< Temp->receiverID
-					<<": EnvAddr "	<< Temp->address
-					<<"]\n";
-
-			Temp = Temp->_link;
-			position--;
-		}
-		cout<<" }\n";
-	}
-	cout<<"{  }\n";
-}
-#endif
-

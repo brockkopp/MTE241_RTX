@@ -101,7 +101,6 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 {
 	if (msg == NULL)
 		return EXIT_ERROR;
-	
 	if(msg == _kernelEnv)
 	{
 		_sKerEnvInUse = false;
@@ -122,6 +121,7 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 //If the queue is empty, the process is blocked
 MsgEnv* MsgServ::requestEnv()
 {
+
 	if( _freeEnvQ->isEmpty()) 
 	{
 		if( gRTX->getCurrentPcb()->getProcessType() == PROCESS_I)
