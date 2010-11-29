@@ -15,7 +15,7 @@ class WallClock
 		void setDisplayed(bool isDisplayed);
 		string toString();
 		
-//	private:
+	private:
 		unsigned int _hours;
 		unsigned int _minutes;
 		unsigned int _seconds;

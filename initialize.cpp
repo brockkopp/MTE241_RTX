@@ -2,10 +2,8 @@
 #include "RTX.h"
 #include "CCI.h"
 #include "SignalHandler.h"
-#include "tests.h"
 #include "Shmem.h"
 
-/* Not sure it'salright to include .cpp's need to review this --Karl */
 #include "iprocesses.h"
 #include "userProcesses.h"
 
@@ -22,7 +20,6 @@ inputBuffer* gRxMemBuf;
 inputBuffer* gTxMemBuf;
 
 //Private method declarations
-void doTests();
 int initializeShmem();
 int cleanupShmem();
 int createInitTable(PcbInfo** initTable);
@@ -87,48 +84,13 @@ int main(void)
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gRTX = new RTX(initTable, sigHandler);
-	//processCCI();		//TESTING ONLY -- SHOULD BE PROCESS
 
-#if TESTS_MODE == 1
-	doTests();
-#endif
 	//Start scheduler. Put the first process onto the CPU
 	gRTX->start_execution();
 
 	//	Signal cci init failed, program should not normally reach this point
 
-	//assure(processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
-
 	die(-1);
-}
-
-void doTests()
-{
-	/*
-	debugMsg("Testing...",1,1);
-	debugMsg("\tParser Test:\t");    
-	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tSignal Test:\t");    
-	   debugMsg((testSignals() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-
-//	debugMsg("\tQueue Test: \t");    
-//	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-//	
-	debugMsg("\tMessaging Test:\t"); 
-	   debugMsg("Not Implemented\n");
-//	debugMsg("\tScheduler Test:\t");   
-//	   debugMsg((testScheduler( gRTX->getScheduler() ) == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tPQ Test:\t");   
-	   debugMsg((testPQ() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
- 	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
- 	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-
-	  */ 
-
 }
 
 void die(int sigNum)
@@ -264,45 +226,45 @@ int createInitTable(PcbInfo** initTable)
 			initTable[i]->stackSize = STACK_SIZE;
 		}
 
-		initTable[0]->name =			"i_timing";	
+		initTable[0]->name =					"i_timing";	
 		initTable[0]->priority =    	0;
 		initTable[0]->processType = 	PROCESS_I;
-		initTable[0]->address = 		&(i_timing_process);
+		initTable[0]->address = 			&(i_timing_process);
 
-		initTable[1]->name =			"i_kb";	
+		initTable[1]->name =					"i_kb";	
 		initTable[1]->priority =    	0;
 		initTable[1]->processType = 	PROCESS_I;
-		initTable[1]->address = 		&(i_keyboard_handler);
+		initTable[1]->address = 			&(i_keyboard_handler);
 
-		initTable[2]->name =			"i_crt";	
+		initTable[2]->name =					"i_crt";	
 		initTable[2]->priority =    	0;
 		initTable[2]->processType = 	PROCESS_I;
-		initTable[2]->address = 		&(i_crt_handler);
+		initTable[2]->address = 			&(i_crt_handler);
 
-		initTable[3]->name =			"null_proc";	
+		initTable[3]->name =					"null_proc";	
 		initTable[3]->priority =    	3;
 		initTable[3]->processType = 	PROCESS_N;
-		initTable[3]->address = 		&(RTX::null_proc);
+		initTable[3]->address = 			&(RTX::null_proc);
 
-		initTable[4]->name =			"userA";	
+		initTable[4]->name =					"userA";	
 		initTable[4]->priority =    	2;
 		initTable[4]->processType = 	PROCESS_U;
-		initTable[4]->address = 		&(userProcessA);
+		initTable[4]->address = 			&(userProcessA);
 
-		initTable[5]->name =			"userB";	
+		initTable[5]->name =					"userB";	
 		initTable[5]->priority =    	2;
 		initTable[5]->processType = 	PROCESS_U;
-		initTable[5]->address = 		&(userProcessB);
+		initTable[5]->address = 			&(userProcessB);
 
-		initTable[6]->name =			"userC";	
+		initTable[6]->name =					"userC";	
 		initTable[6]->priority =    	2;
 		initTable[6]->processType = 	PROCESS_U;
-		initTable[6]->address = 		&(userProcessC);
+		initTable[6]->address = 			&(userProcessC);
 		
-		initTable[7]->name =			"CCI";	
+		initTable[7]->name =					"CCI";	
 		initTable[7]->priority =    	2;
 		initTable[7]->processType = 	PROCESS_K;
-		initTable[7]->address = 		&(processCCI);
+		initTable[7]->address = 			&(processCCI);
 
 	}
 	catch(int e)

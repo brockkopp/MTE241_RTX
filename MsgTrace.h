@@ -8,7 +8,6 @@
 #define SEND 0
 #define RECEIVE 1
 
-
 class MsgTrace
 {
 	public:

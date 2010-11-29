@@ -18,7 +18,6 @@ Scheduler::Scheduler(Queue* readyProcs)
 	_cpuTrace = "CPU trace does not track iniz of procs\n";
 	
 	//Add all readyProcs to the ready queue.
-	//int numProcs =	readyProcs->get_length();
 	PCB* temp;
 	while (!readyProcs->isEmpty())
 	{
@@ -50,10 +49,9 @@ void Scheduler::start()
 ///*
 //Yields the CPU to the next available process, if there is one waiting.
 //*/
-void Scheduler::release_processor( ) { 
+int Scheduler::release_processor( ) { 
 
 	//Save the context of the currently executing proc.
-	//Do some crazy context save shinanigans need to be done here???
 	if (gRTX->getCurrentPcb()->saveContext() == 0 ) {
 				
 		//Put currentProcess on the ready queue.
@@ -61,17 +59,17 @@ void Scheduler::release_processor( ) {
 		PCB* temp = gRTX->getCurrentPcb();
 		_readyProcs->pq_enqueue( ((PCB**)(&temp)), gRTX->getCurrentPcb()->getPriority() );
 
-		process_switch();
-
+		return process_switch();
 	}
+	return EXIT_SUCCESS;
 }
 
 /*
 Switches the currently executing process off the CPU and replaces it 
 with the next available ready process.
 */
-int Scheduler::process_switch( ) {
-
+int Scheduler::process_switch( ) 
+{
 	context_switch( _readyProcs->pq_dequeue() );
 
 	return EXIT_SUCCESS;
@@ -90,13 +88,12 @@ int Scheduler::context_switch( PCB * nextProc )
 		//Put the new pcb on the cpu
 		gRTX->setCurrentPcb( nextProc );
 		gRTX->getCurrentPcb()->setState( EXECUTING );
-		//gRTX->_signalHandler->setSigMasked(nextProc->getAtomicCount() > 0);	//Set appropriate atomic state
 		
 		//Put process on CPU trace (for debugging etc...) and restore its context.
 		_cpuTrace += gRTX->getCurrentPcb()->getName() + "\n";
 		gRTX->getCurrentPcb()->restoreContext();
 	}
-	return 1;
+	return EXIT_SUCCESS;
 }
 
 /* Will change the priority of the target proc.
@@ -112,7 +109,10 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 //	int oldPri = target->get_priority();
 	
 	//Validate priority
-	if ( !(newPriority <= 4 && newPriority >= 0) )
+	if ( target == NULL || newPriority > 3 || newPriority < 0)
+		return EXIT_ERROR;
+		
+	else if(target->getProcessType() == PROCESS_N)
 		return EXIT_ERROR;
 		
 	//Case 1: PCB is on ready queue
