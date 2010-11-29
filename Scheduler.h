@@ -26,7 +26,7 @@ class Scheduler {
 		
 			
 	protected:
-		void release_processor( );   
+		int release_processor( );   
 		int change_priority( PCB * target, int newPriority );
 		int process_switch( );
 
