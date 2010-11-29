@@ -49,7 +49,6 @@ void i_timing_process()
  * K_get_console_chars extracts user inputs from the global queue as necessary */
 void i_keyboard_handler()
 {
-	gRTX->atomic(true);
 	MsgEnv* retMsg = NULL;
 	PCB* currPcb = gRTX->getCurrentPcb();
 	if(currPcb != NULL) //current PCB is valid
@@ -72,9 +71,9 @@ void i_keyboard_handler()
 	}
 	else
 	{
-			assure(false,"Input streaming has messed up royally",__FILE__,__LINE__,__func__,true);
+			assure(false,"Input returned without requesting process",__FILE__,__LINE__,__func__,false);
+			gRxMemBuf->busyFlag = 0;
 	}
-	gRTX->atomic(false);
 	return;
 }
 
@@ -86,8 +85,6 @@ void i_keyboard_handler()
  * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
-	gRTX->atomic(true);
-	
 	MsgEnv* retMsg = NULL;
 	int invoker;
 	PCB* currPcb;
@@ -155,9 +152,9 @@ void i_crt_handler()
 	}
 	else //an error occurred
 	{
-		assure(false,"Output streaming has messed up royally",__FILE__,__LINE__,__func__,true);
+		assure(false,"Output requested with NULL/invalid pcb state",__FILE__,__LINE__,__func__,true);
+		gTxMemBuf->busyFlag = 0;
 	}
-	gRTX->atomic(false);
 	gRTX->_semSend = false;
 	return;	
 }

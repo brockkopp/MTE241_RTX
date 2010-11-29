@@ -68,8 +68,8 @@ void Scheduler::release_processor( ) {
 Switches the currently executing process off the CPU and replaces it 
 with the next available ready process.
 */
-int Scheduler::process_switch( ) {
-
+int Scheduler::process_switch( ) 
+{
 	context_switch( _readyProcs->pq_dequeue() );
 
 	return EXIT_SUCCESS;
@@ -93,7 +93,7 @@ int Scheduler::context_switch( PCB * nextProc )
 		_cpuTrace += gRTX->getCurrentPcb()->getName() + "\n";
 		gRTX->getCurrentPcb()->restoreContext();
 	}
-	return 1;
+	return EXIT_SUCCESS;
 }
 
 /* Will change the priority of the target proc.

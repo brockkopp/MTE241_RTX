@@ -38,39 +38,50 @@ int main(int arg1, char* arg[])
 	char userInput;
 	do
 	{
-		userInput = getchar();
-		if (userInput == '\n') //indicates end of message. Keyboard process must add information to the shared memory and send a signal to the RTX
+		try
 		{
-			rx_mem_buf->data[indexInBuf] = '\0';
-			rx_mem_buf->busyFlag = 1; //set flag that keyboard is "busy" i.e. trying to transmit something from shared memory to parent process
-			
-			kill(parentPid, SIGUSR1); //send a signal to the RTX indicating that data has been provided by the user -> COMPLETE MESSAGE SENT
-			//do not reset indexInBuf until the i_keyboard_handler resets the busyFlag after extracting all information from shmem
-			while(rx_mem_buf->busyFlag == 1) //wait for i_keyboard_handler to process signal
+			userInput = getchar();
+			if (userInput == '\n') //indicates end of message. Keyboard process must add information to the shared memory and send a signal to the RTX
 			{
-				usleep(1000); //wait 10^3 usec  !!!This may be considered an error on some systems; must be min 1000000 sometimes!
-			}
-			//at this point, after leaving the while loop, this means the i_keyboard_handler has extracted information from the shared memory and reset the busy flag
-			//this means the keyboard process is ready to take in more information! Reset the indexInBuf:
-			indexInBuf = 0; 
-		}	
-		else //user is still inputting data...
-		{
-			rx_mem_buf->data[indexInBuf] = userInput;
-			indexInBuf++;
-			//check if memory is full!
-			if(indexInBuf == MAXDATA)
-			{
+				rx_mem_buf->data[indexInBuf] = '\0';
 				rx_mem_buf->busyFlag = 1; //set flag that keyboard is "busy" i.e. trying to transmit something from shared memory to parent process
-				kill(parentPid, SIGUSR1); //send a signal to the RTX indicating that data has been provided by the user -> MEMORY IS FULL!
-				while(rx_mem_buf->busyFlag == 1) //wait for i_keyboard_handler to process signal and resets the busyFlag after extracting all information from shmem
+				kill(parentPid, SIGUSR1); //send a signal to the RTX indicating that data has been provided by the user -> COMPLETE MESSAGE SENT
+				//do not reset indexInBuf until the i_keyboard_handler resets the busyFlag after extracting all information from shmem
+				while(rx_mem_buf->busyFlag == 1) //wait for i_keyboard_handler to process signal
 				{
-					usleep(1000); //wait 10^5 usec, or 0.1sec   !!!This may be considered an error on some systems; must be min 1000000 sometimes!
+					usleep(1000);
 				}
-			}			
+				//at this point, after leaving the while loop, this means the i_keyboard_handler has extracted information from the shared memory and reset the busy flag
+				//this means the keyboard process is ready to take in more information! Reset the indexInBuf:
+				indexInBuf = 0; 
+			}	
+			else //user is still inputting data...
+			{
+				rx_mem_buf->data[indexInBuf] = userInput;
+				indexInBuf++;
+				//check if memory is full!
+				if(indexInBuf > (MAXDATA - 2))
+				{
+					rx_mem_buf->data[MAXDATA - 1] = '\0';
+					rx_mem_buf->busyFlag = 1; //set flag that keyboard is "busy" i.e. trying to transmit something from shared memory to parent process
+					kill(parentPid, SIGUSR1); //send a signal to the RTX indicating that data has been provided by the user -> MEMORY IS FULL!
+					//wait for i_keyboard_handler to process signal and resets the busyFlag after extracting all information from shmem
+					while(getchar() != '\n');	//Remove overflow information
+					while(rx_mem_buf->busyFlag == 1) 
+					{
+						usleep(1000);
+					}
+					indexInBuf = 0;
+				}			
+			}
+		}
+		catch(int e)
+		{
+			indexInBuf = 0;
+			rx_mem_buf->busyFlag = 0;
 		}
 	}	
-	while(1);  //an infinite loop - exit when parent signals us
+	while(true);  //an infinite loop - exit when parent signals us
 
 	return EXIT_ERROR; //should never reach here
 }

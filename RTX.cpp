@@ -293,6 +293,7 @@ int RTX::K_get_console_chars(MsgEnv* msg_envelope)
 		{
 			msg_envelope = K_receive_message(); //message will be sent by iprocess
 			string message = msg_envelope->getMsgData();
+			
 			msg_envelope->setMsgType(msg_envelope->CONSOLE_INPUT);	
 			res = K_send_message(invoker, msg_envelope);
 		}
