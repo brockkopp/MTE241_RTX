@@ -2,7 +2,6 @@
 #include "RTX.h"
 #include "CCI.h"
 #include "SignalHandler.h"
-#include "tests.h"
 #include "Shmem.h"
 
 #include "iprocesses.h"
@@ -21,7 +20,6 @@ inputBuffer* gRxMemBuf;
 inputBuffer* gTxMemBuf;
 
 //Private method declarations
-void doTests();
 int initializeShmem();
 int cleanupShmem();
 int createInitTable(PcbInfo** initTable);
@@ -87,44 +85,12 @@ int main(void)
 
 	gRTX = new RTX(initTable, sigHandler);
 
-#if TESTS_MODE == 1
-	doTests();
-#endif
 	//Start scheduler. Put the first process onto the CPU
 	gRTX->start_execution();
 
 	//	Signal cci init failed, program should not normally reach this point
 
 	die(-1);
-}
-
-void doTests()
-{
-	/*
-	debugMsg("Testing...",1,1);
-	debugMsg("\tParser Test:\t");    
-	   debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tSignal Test:\t");    
-	   debugMsg((testSignals() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-
-//	debugMsg("\tQueue Test: \t");    
-//	   debugMsg((testQueues() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-//	
-	debugMsg("\tMessaging Test:\t"); 
-	   debugMsg("Not Implemented\n");
-//	debugMsg("\tScheduler Test:\t");   
-//	   debugMsg((testScheduler( gRTX->getScheduler() ) == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tPQ Test:\t");   
-	   debugMsg((testPQ() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
- 	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
- 	debugMsg("\tAnother Test:\t");   
-	   debugMsg("Not Implemented\n",0,2);//debugMsg((testParser() == EXIT_SUCCESS) ? "Pass" : "Fail",0,1);
-
-	  */ 
-
 }
 
 void die(int sigNum)

@@ -1,11 +1,65 @@
-YEAH, We've just used GIT
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
+        MTE 241 -- COMPUTER STRUCTURES AND REAL-TIME OPERATING SYSTEMS
+           
+                    REAL TIME OPERATING SYSTEM PROJECT
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is Ange's edition :)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+              T26
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                           
+Brock Kopp              20293031
+Karl Price              20315158
+Angelica Ruszkowski     20300871
+Eric Vandenberg         20314487       
 
-Brian's changing etc.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Quickstart
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Extract .zip archive
+2. make
+3. ./RTX.out
 
-THE DEVELOPMENT BRANCH HAS BEEN CREATED!!!!
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        Directory Contents
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
 
-This should be the master branch.. check it!
+MTE241_RTX
+        CCI.cpp
+        CCI.h
+        crt.cpp
+        debug.cpp
+        debug.h
+        initialize.cpp
+        iprocesses.cpp
+        iprocesses.h
+        keyboard.cpp
+        Makefile
+        MsgServ.cpp
+        MsgServ.h
+        MsgTrace.cpp
+        MsgTrace.h
+        README
+        RTX.cpp
+        RTX.h
+        Scheduler.cpp
+        Scheduler.h
+        Shmem.h
+        SignalHandler.cpp
+        SignalHandler.h
+        tools.cpp
+        tools.h
+        userProcesses.cpp
+        userProcesses.h
 
-Eric was here update!
+lib
+        MsgEnv.cpp
+        MsgEnv.h
+        PCB.cpp
+        PCB.h
+        PcbInfo.h
+        PQ.cpp
+        PQ.h
+        Queue.cpp
+        Queue.h
+        WallClock.cpp
+        WallClock.h
