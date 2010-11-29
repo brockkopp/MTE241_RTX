@@ -90,7 +90,7 @@ int Scheduler::context_switch( PCB * nextProc )
 		//Put the new pcb on the cpu
 		gRTX->setCurrentPcb( nextProc );
 		gRTX->getCurrentPcb()->setState( EXECUTING );
-		gRTX->_signalHandler->setSigMasked(nextProc->getAtomicCount() > 0);	//Set appropriate atomic state
+		//gRTX->_signalHandler->setSigMasked(nextProc->getAtomicCount() > 0);	//Set appropriate atomic state
 		
 		//Put process on CPU trace (for debugging etc...) and restore its context.
 		_cpuTrace += gRTX->getCurrentPcb()->getName() + "\n";
@@ -320,8 +320,14 @@ PCB* tmpPcb;
 	// Ensure that PCB exists. State validation is done in PCB set fxn.
 	if(tmpPcb == NULL)
 		return EXIT_ERROR;
+	else if(tmpPcb->setState(state) == EXIT_SUCCESS)
+	{
+		if(state == EXECUTING)
+			gRTX->_signalHandler->setSigMasked(tmpPcb->getAtomicCount() > 0);
+		return EXIT_SUCCESS;		
+	}
 	else
-		return tmpPcb->setState(state);		
+		return EXIT_ERROR;
 }
 
 int Scheduler::is_blocked( PCB * target ) 

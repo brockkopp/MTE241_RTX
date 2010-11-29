@@ -35,22 +35,15 @@ SignalHandler::SignalHandler()
 int SignalHandler::setSigMasked(bool masked)
 {
 	int ret = EXIT_SUCCESS;
+
 	try
 	{
 		if(masked)
-		{
-//			if(gRTX != NULL)
-//				cout << gRTX->getCurrentPid() << " + " << gRTX->getCurrentPcb()->getAtomicCount() << endl;
 			sigprocmask(SIG_BLOCK, &_sigSetBlocked, NULL);
-		}
 		else
-		{
-//			if(gRTX != NULL)
-//				cout << gRTX->getCurrentPid() << " - " << gRTX->getCurrentPcb()->getAtomicCount() << endl;
 			sigprocmask(SIG_SETMASK, &_sigSetHandled, NULL);
-		}
 	}
-	catch(int e	)
+	catch(int e)
 	{
 		ret = EXIT_ERROR;
 	}
@@ -60,7 +53,6 @@ int SignalHandler::setSigMasked(bool masked)
 
 void SignalHandler::handler( int sigNum )
 {
-
 	int prevProc = gRTX->getCurrentPid();
 	//-1 Fatal since no process's stack to run on
 	assure(prevProc >= 0, "No Process on CPU during i_process call. Sig(" + intToStr(sigNum) + ")",__FILE__,__LINE__,__func__,true);
