@@ -104,6 +104,11 @@ void processCCI()
 						else
 							gRTX->wallClock->setDisplayed(true);
 					}
+					else if(input[0] == "a")
+					{
+						message = intToStr(gRTX->_semSend) + "\n";
+						//message = intToStr(gRTX->getCurrentPcb()->getAtomicCount());
+					}
 					else if(input[0] == "ct")
 					{
 						if(params > 1)

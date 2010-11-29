@@ -15,3 +15,6 @@
 
 #Compiled Object Files
 *.o
+
+#Runtime ECELinux Files
+.nfs*

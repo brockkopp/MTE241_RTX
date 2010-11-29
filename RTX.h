@@ -24,7 +24,7 @@ class WallClock;
 //RTX Global Constants
 
 #define PROCESS_COUNT 8			//Total number of processes existing in the RTX
-#define MSG_COUNT			50
+#define MSG_COUNT			22
 #define TICK_TIME			100000 	// = 100mSec
 
 //Constants used to denote process types
