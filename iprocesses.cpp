@@ -18,7 +18,6 @@ void i_timing_process()
 		tempMsg->setTimeStamp( gRTX->runTime + tempMsg->getTimeStamp() );
 		gRTX->waitingProcesses->sortedEnqueue(&tempMsg);
 	}
-
 	//check if first envelope in waiting Q has expired, send wake up msg if true
  	while(gRTX->waitingProcesses->get_front() != NULL &&
  			  gRTX->waitingProcesses->get_front()->getTimeStamp() <= gRTX->runTime
