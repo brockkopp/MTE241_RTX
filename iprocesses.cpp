@@ -18,14 +18,6 @@ void i_timing_process()
 		tempMsg->setTimeStamp( gRTX->runTime + tempMsg->getTimeStamp() );
 		gRTX->waitingProcesses->sortedEnqueue(&tempMsg);
 	}
-
-/* DELETE BLOCK */
-if (gRTX->waitingProcesses->get_front() != NULL) {
-
-}
-/* END BLOCK */
-
-
 	//check if first envelope in waiting Q has expired, send wake up msg if true
  	while(gRTX->waitingProcesses->get_front() != NULL &&
  			  gRTX->waitingProcesses->get_front()->getTimeStamp() <= gRTX->runTime
@@ -45,9 +37,7 @@ if (gRTX->waitingProcesses->get_front() != NULL) {
 			assure(gRTX->K_send_console_chars(tempMsg) != EXIT_ERROR,"Send console chars failed",__FILE__,__LINE__,__func__,true);
 			while( (tempMsg = getAck(gRTX)) == NULL )
 				debugMsg("ClockDisplay looping on Ack\n");		
-//			while(gRTX->K_send_console_chars(tempMsg) == EXIT_ERROR);
-//			tempMsg = getMessage(MsgEnv::DISPLAY_ACK,gRTX);
-//			gRTX->K_release_msg_env(tempMsg);
+			gRTX->K_release_msg_env(tempMsg);
 		}
 		
 	}

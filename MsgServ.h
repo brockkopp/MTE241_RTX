@@ -28,9 +28,11 @@ class MsgServ
 		MsgEnv* requestEnv();
 
 	private:
-		Queue* _freeEnvQ;
-		MsgTrace* _msgTrace;
-		Scheduler* _scheduler;
+		Queue* 			_freeEnvQ;
+		MsgTrace* 	_msgTrace;
+		Scheduler* 	_scheduler;
+		MsgEnv*			_kernelEnv;
+		bool				_sKerEnvInUse;
 };
 
 #endif

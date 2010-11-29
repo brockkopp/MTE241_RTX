@@ -9,7 +9,8 @@ MsgServ::MsgServ(Scheduler* scheduler, MsgTrace* msgTrace)
 	_scheduler = scheduler;
 	_msgTrace = msgTrace;
 	_freeEnvQ = new Queue(Queue::MSG_ENV);
-	
+	_kernelEnv = new MsgEnv();
+	_sKerEnvInUse = false;
 	for(int i=0; i < MSG_COUNT; i++)
 	{
 		MsgEnv* temp = new MsgEnv();
@@ -100,23 +101,19 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 {
 	if (msg == NULL)
 		return EXIT_ERROR;
-		
-	#if DEBUG_MODE
-//		_envelopeTracker->pluck_Track(msg);
-	#endif
-		
-	//return envelope to _freeEnvQ
-	_freeEnvQ->enqueue((void**)(&msg));
- 
-	//unblock waiting process, if one is waiting   
-	int temp;
-	temp = _scheduler->unblock_process( BLOCKED_ENV );
-	
-	
-	
-	if(!temp)
-		return EXIT_ERROR;
-		
+	if(msg == _kernelEnv)
+	{
+		_sKerEnvInUse = false;
+	}
+	else
+	{
+		//return envelope to _freeEnvQ
+		_freeEnvQ->enqueue((void**)(&msg));
+	 
+		//unblock waiting process, if one is waiting   
+		if(_scheduler->unblock_process( BLOCKED_ENV ) != EXIT_SUCCESS)
+			return EXIT_ERROR;
+	}			
 	return EXIT_SUCCESS;
 }
 
@@ -125,15 +122,25 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 MsgEnv* MsgServ::requestEnv()
 {
 
-	while( _freeEnvQ->isEmpty() ) 
+	if( _freeEnvQ->isEmpty()) 
 	{
+		if( gRTX->getCurrentPcb()->getProcessType() == PROCESS_I)
+		{
+			if(!_sKerEnvInUse)
+			{
+				_sKerEnvInUse = true; 
+				return _kernelEnv;
+			}
+			else	//i_process cannot be blocked
+			{
+				return NULL;
+			}
+		}
+
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB = gRTX->getCurrentPcb();
 		assure(tempPCB != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);
-		//i_process cannot be blocked
-		if (tempPCB->getProcessType() == PROCESS_I)
-    		return NULL;
-	
+		
 		//block process if no envelope is available. This chains into a context switch.
  		_scheduler->block_process(BLOCKED_ENV); 			
 	}
