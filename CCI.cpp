@@ -18,14 +18,12 @@ void processCCI()
 		ioLetter->setMsgData("\nRTX Initializing...\n");
 		assure(gRTX->K_send_console_chars(ioLetter) != EXIT_ERROR,"Send console chars failed",__FILE__,__LINE__,__func__,true);
 		while( (ioLetter = getAck(gRTX)) == NULL );
-//			cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<< "OHH, MY, GOD... Ohh no she didn't\n";
 
 		ualarm(TICK_TIME, TICK_TIME);
 	
 		ioLetter->setMsgData("\nType 'help' at any point for a list of possible commands\n\n");
 		assure(gRTX->K_send_console_chars(ioLetter) != EXIT_ERROR,"Send console chars failed",__FILE__,__LINE__,__func__,true);
 		while( (ioLetter = getAck(gRTX)) == NULL );
-		//	cout<<__FILE__<<":"<<__LINE__<<"::"<<__func__<< "OHH, MY, GOD... Ohh no she didn't\n";
 		
 		while(true)
 		{
@@ -52,7 +50,6 @@ void processCCI()
 			if(command.length() > 0)
 			{
 				params = parseString( command, input, ' ', 3);
-//				params = parseString( command, input, ' ', 3, true);
 
 				if(params >= 1 && params <= 3)
 				{
@@ -94,7 +91,6 @@ void processCCI()
 						if(params > 2)
 							message = "Too many parameters for 'Set Clock' command\n";
 						else if(parseString(input[1],time,':',3) != 3 || gRTX->wallClock->setTime(time) != EXIT_SUCCESS)
-//						else if(parseString(input[1],time,':',3, true) != 3 || gRTX->wallClock->setTime(time) != EXIT_SUCCESS)
 							message = "Invalid time format\n";
 					}
 					else if(input[0] == "cd")
@@ -107,7 +103,6 @@ void processCCI()
 					else if(input[0] == "a")
 					{
 						message = intToStr(gRTX->_semSend) + "\n";
-						//message = intToStr(gRTX->getCurrentPcb()->getAtomicCount());
 					}
 					else if(input[0] == "ct")
 					{

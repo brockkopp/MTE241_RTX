@@ -6,12 +6,7 @@
 #include "RTX.h"
 #include "lib/Queue.h"
 #include "MsgTrace.h"
-#include "lib/PCB.h"
-
-
-//taken out since these are defined in the PCB class, just want to make sure it fully works before deleting
-//#define BLOCKED_MSG_RECIEVE 2
-//#define SLEEPING 3							
+#include "lib/PCB.h"			
 
 class Scheduler;
 class MsgTrace;

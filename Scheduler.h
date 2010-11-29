@@ -8,7 +8,6 @@
 #include "lib/Queue.h"
 #include "RTX.h"
 
-//class RTX;
 class PCB;
 class Queue;
 class PQ;

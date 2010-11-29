@@ -103,7 +103,6 @@ bool Queue::sortedEnqueue( MsgEnv** newMsg )
 {
 
 	int timeStamp = (*newMsg)->_timeStamp;
-//	cout<<"In SortedEnqueue... timeStamp = "<<timeStamp<<endl;
 
 	if(newMsg == NULL)
 		return false;
@@ -180,8 +179,6 @@ MsgEnv* Queue::dequeue_MsgEnv()
 	{
 		MsgEnv** currentNode = (MsgEnv**)(&(_rear));
 
-		//Deal with special case of length = 1
-	//	if ( get_length() == 1 ) 
 		if( _rear == _front )
 		{
 			retData = *currentNode;
@@ -215,8 +212,6 @@ PCB* Queue::dequeue_PCB()
 	{
 		PCB** currentNode = (PCB**)(&(_rear));
 
-		//Deal with special case of length = 1
-		//	if ( get_length() == 1 ) 
 		if( _rear == _front )
 		{
 			retData = *currentNode;
