@@ -49,7 +49,7 @@ void processCCI()
 			//check for an empty command!
 			if(command.length() > 0)
 			{
-				params = parseString( command, input, ' ', 3);
+				params = parseString( command, input, ' ', 3, true);
 
 				if(params >= 1 && params <= 3)
 				{
@@ -90,7 +90,7 @@ void processCCI()
 						string time[3];				
 						if(params > 2)
 							message = "Too many parameters for 'Set Clock' command\n";
-						else if(parseString(input[1],time,':',3) != 3 || gRTX->wallClock->setTime(time) != EXIT_SUCCESS)
+						else if(parseString(input[1],time,':',3, true) != 3 || gRTX->wallClock->setTime(time) != EXIT_SUCCESS)
 							message = "Invalid time format\n";
 					}
 					else if(input[0] == "cd")
@@ -99,10 +99,6 @@ void processCCI()
 							message = "Too many parameters for 'Display Clock' command\n";
 						else
 							gRTX->wallClock->setDisplayed(true);
-					}
-					else if(input[0] == "a")
-					{
-						message = intToStr(gRTX->_semSend) + "\n";
 					}
 					else if(input[0] == "ct")
 					{
@@ -150,7 +146,9 @@ void processCCI()
 							message = "Invalid parameters\n";
 						else if(gRTX->getPcb(pid,&pcb) != EXIT_SUCCESS)
 							message = "Invalid process id\n";
-						else if(pcb->setPriority(priority) != EXIT_SUCCESS)
+						else if(pcb->getProcessType() == PROCESS_N)
+							message = "You cannot change the NULL process's priority\n";
+						else if(gRTX->K_change_priority(priority, pid) != EXIT_SUCCESS)
 							message = "Invalid priority\n";
 					}
 					else if(input[0] == "help")
