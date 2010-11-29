@@ -22,7 +22,7 @@ class PQ {
   	int length();
   
   private:
-		Queue* _master[ PRIORITY_LEVELS ]; //<-- I still believe this should not be hardcoded (!) --Karl
+		Queue* _master[ PRIORITY_LEVELS ]; 
 };
 
 #endif

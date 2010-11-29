@@ -51,7 +51,7 @@ class PCB
 		bool addMail( MsgEnv* message );
 		int checkMail( ); //returns number of messages in mailbox
 
-//	private:
+	private:
 
 		void initContext(int stackSize);
 

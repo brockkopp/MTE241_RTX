@@ -4,7 +4,6 @@
 #include "SignalHandler.h"
 #include "Shmem.h"
 
-/* Not sure it'salright to include .cpp's need to review this --Karl */
 #include "iprocesses.h"
 #include "userProcesses.h"
 
@@ -85,14 +84,11 @@ int main(void)
 	debugMsg("Type help at any time to list possible CCI commands",0,1);	
 
 	gRTX = new RTX(initTable, sigHandler);
-	//processCCI();		//TESTING ONLY -- SHOULD BE PROCESS
 
 	//Start scheduler. Put the first process onto the CPU
 	gRTX->start_execution();
 
 	//	Signal cci init failed, program should not normally reach this point
-
-	//assure(processCCI() == EXIT_SUCCESS,"CCI exited unexpectedly",__FILE__,__LINE__,__func__,true);
 
 	die(-1);
 }

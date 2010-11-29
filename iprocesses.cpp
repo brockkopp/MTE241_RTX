@@ -49,11 +49,10 @@ void i_timing_process()
  * K_get_console_chars extracts user inputs from the global queue as necessary */
 void i_keyboard_handler()
 {
-	//debugMsg("\nSignal Received: SIGUSR1: KB",0,1);
 	gRTX->atomic(true);
 	MsgEnv* retMsg = NULL;
 	PCB* currPcb = gRTX->getCurrentPcb();
-	if(currPcb != NULL) // && (currPcb->checkMail() > 0)) //current PCB is valid
+	if(currPcb != NULL) //current PCB is valid
 	{
 		string userMsg(gRxMemBuf->data);
 		
@@ -87,7 +86,6 @@ void i_keyboard_handler()
  * If the transmission completes successfully, i_crt_handler will return an acknowledgement envelope */
 void i_crt_handler()
 {
-	//debugMsg("\nSignal Received: SIGUSR2: CRT",0,1);
 	gRTX->atomic(true);
 	
 	MsgEnv* retMsg = NULL;
