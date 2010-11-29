@@ -5,7 +5,6 @@
 
 void die(int signal)
 {
-	//cout << "\n\nRTOS shutting down...\n"<<flush;
 	exit(0); //don't have to do anything since the RTX cleans up the shared memory
 }
 

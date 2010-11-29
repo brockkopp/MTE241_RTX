@@ -54,7 +54,6 @@ int testQueues()
 		debugMsg("QUEUE TEST\n--------------------------\n\nInstantiate Queue...\n");
 
 		Queue* q = new Queue(1);
-		cout<<q->toString();
 		debugMsg("\nTest isEmpty...");
 		int test = q->isEmpty();
 		debugMsg(((test==1) ? "YES" : "NO" ));
@@ -62,7 +61,6 @@ int testQueues()
 
 //		debugMsg("\nTest Enqueue...\n");
 //		q->enqueue((void**)(&test1));
-//		cout<<q->toString();
 //		
 //		debugMsg("\nTest getLength...Length = ");
 //		debugMsg(intToStr(q->get_length()));
@@ -73,14 +71,12 @@ int testQueues()
 //		debugMsg("Dequeued Value: ");
 //		debugMsg(intToStr(deq->getMsgType()));
 //		debugMsg("\n");
-//		cout<<q->toString();
 //		
 //		debugMsg("\nPopulate Queue...\n");
 //		q->enqueue((void**)(&test1));
 //		q->enqueue((void**)(&test2));
 //		q->enqueue((void**)(&test3));
 //		q->enqueue((void**)(&test4));
-//		cout<<q->toString();
 //		debugMsg("Length = ");
 //		debugMsg(intToStr((q->get_length())));
 //		debugMsg("..........");
@@ -103,19 +99,15 @@ int testQueues()
 //	
 //		debugMsg("\n\nTest Replace...Replace 3 with 5\n");
 //		debugMsg((q->replace((void**)(&test3), (void**)(&test5)) == 1?"PASS\n":"FAIL\n"));
-//		cout<<q->toString();
 //		
 //		debugMsg("\n\nTest Replace...Replace 1 with 3\n");
 //		debugMsg((q->replace((void**)(&test1), (void**)(&test3)) == 1?"PASS\n":"FAIL\n"));
-//		cout<<q->toString();
 //		
 //		debugMsg("\n\nTest Replace...Replace 4 with 1\n");
 //		debugMsg((q->replace((void**)(&test4), (void**)(&test1)) == 1?"PASS\n":"FAIL\n"));
-//		cout<<q->toString();
 //		
 //		debugMsg("\nTest Bad Replace...Replace 6 with 5\n");
 //		debugMsg((q->replace((void**)(&test6), (void**)(&test5)) == 1?"PASS\n":"FAIL\n"));
-//		cout<<q->toString();
 //		
 //		debugMsg("\nTest Select...select 4\nSelected Value...");
 //		MsgEnv* res = q->select(&test4);
@@ -140,7 +132,6 @@ int testQueues()
 //		}
 //		else
 //			debugMsg("Failed pluck\n");
-//		cout<<q->toString();
 //		
 //		debugMsg("\nTest Bad Pluck...Pluck 6\nPlucked Value...");
 //		res = q->pluck(&test6);
@@ -151,7 +142,6 @@ int testQueues()
 //		}
 //		else
 //			debugMsg("Failed pluck\n");
-//		cout<<q->toString();
 		#endif
 	
 	
@@ -161,7 +151,6 @@ int testQueues()
 	newMsg->setMsgData( "TEST ENV" );
 	newMsg->setTimeStamp( 190 );
 	q->sortedEnqueue((&newMsg));
-	cout << q->toString();
 	
 		
 	debugMsg("Sorted Enqueue 175\n");
@@ -169,7 +158,6 @@ int testQueues()
 	newMsg1->setMsgData( "TEST ENV" );
 	newMsg1->setTimeStamp( 175 );
 	q->sortedEnqueue((&newMsg1));
-	cout << q->toString();
 	
 		
 	debugMsg("Sorted Enqueue 200\n");
@@ -177,7 +165,6 @@ int testQueues()
 	newMsg2->setMsgData( "TEST ENV" );
 	newMsg2->setTimeStamp( 200 );
 	q->sortedEnqueue((&newMsg2));
-	cout << q->toString();
 	
 		
 	debugMsg("Sorted Enqueue 195\n");
@@ -185,7 +172,6 @@ int testQueues()
 	newMsg3->setMsgData( "TEST ENV" );
 	newMsg3->setTimeStamp( 195 );
 	q->sortedEnqueue((&newMsg3));
-	cout << q->toString();
 	
 		
 	debugMsg("Sorted Enqueue 30\n");
@@ -193,7 +179,6 @@ int testQueues()
 	newMsg4->setMsgData( "TEST ENV" );
 	newMsg4->setTimeStamp( 30 );
 	q->sortedEnqueue((&newMsg4));
-	cout << q->toString();
 	
 	}
 	catch(char* err){ret = EXIT_ERROR; }

@@ -98,7 +98,6 @@ MsgEnv* MsgServ::recieveMsg()
 //This function also checks if another process is waiting for a message envelope and unblocks if necessary
 int MsgServ::releaseEnv(MsgEnv* msg)
 {
-//cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length before release: " << _freeEnvQ->get_length() << "\n";
 	if (msg == NULL)
 		return EXIT_ERROR;
 		
@@ -113,7 +112,6 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 	int temp;
 	temp = _scheduler->unblock_process( BLOCKED_ENV );
 	
-//cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length after release: " << _freeEnvQ->get_length() << "\n";
 	
 	
 	if(!temp)
@@ -127,10 +125,8 @@ int MsgServ::releaseEnv(MsgEnv* msg)
 MsgEnv* MsgServ::requestEnv()
 {
 
-//cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << " freeEnvQ length before request: " << _freeEnvQ->get_length() << "\n";
 	while( _freeEnvQ->isEmpty() ) 
 	{
-//cout << "CurrProc: " << gRTX->getCurrentPcb()->getName() << "   Queue is empty!\n";
 		//retrieve PCB of currently excecuting process 
 		PCB* tempPCB = gRTX->getCurrentPcb();
 		assure(tempPCB != NULL,"Failed to retrieve current PCB",__FILE__,__LINE__,__func__,false);

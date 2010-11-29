@@ -21,11 +21,6 @@ void i_timing_process()
 
 /* DELETE BLOCK */
 if (gRTX->waitingProcesses->get_front() != NULL) {
-//	cout << "Waiting msg stamp: " << gRTX->waitingProcesses->get_front()->getTimeStamp() << "\n";
-//	cout << "RTX time					: " << gRTX->runTime << "\n";
-//	cout << "Waiting msg data : " << gRTX->waitingProcesses->get_front()->getMsgData() << "\n";
-//	cout << "Waiting msg type : " << gRTX->waitingProcesses->get_front()->getMsgType() << "\n";
-	gRTX->waitingProcesses->toString();
 
 }
 /* END BLOCK */

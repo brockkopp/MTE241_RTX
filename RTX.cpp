@@ -128,7 +128,6 @@ int RTX::K_send_message(int dest_process_id, MsgEnv* msgEnv)
 	int ret;
 	atomic(true);
 //	if(dest_process_id == PROC_USER_C)
-//		cout << "sndMsg: " << msgEnv << endl;
 	ret = _mailMan->sendMsg(dest_process_id, msgEnv);
 	atomic(false);
 	return ret;
@@ -150,7 +149,6 @@ MsgEnv* RTX::K_request_msg_env()
 	MsgEnv* ret;
 	atomic(true);
 	ret = _mailMan->requestEnv();
-//	cout << "req: " << ret << endl;
 	atomic(false);
 	return ret;
 }
@@ -233,14 +231,10 @@ int RTX::K_request_delay(int time_delay, int wakeup_code, MsgEnv* msg_envelope)
 		atomic(true);
 		//populate msg env Fields
 		msg_envelope->setTimeStamp(time_delay);
-//cout << "Time Delay : " << time_delay << "\n";
-//cout << "Set stamp  : " << msg_envelope->getTimeStamp() << "\n";
 
 		msg_envelope->setMsgType(MsgEnv::REQ_DELAY);
 		msg_envelope->setMsgData(intToStr(wakeup_code));
 		
-//cout << "Set data   : " << msg_envelope->getMsgData() << "\n";
-//cout << "Set Type   : " << msg_envelope->getMsgType() << "\n";		
 		
 		//call Kernal send message to send to timing iProcess
 		ret = K_send_message(PROC_TIMING, msg_envelope);
