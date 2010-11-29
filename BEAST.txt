@@ -1,6 +1,0 @@
-
-RTX Initializing...
-
-Type 'help' at any point for a list of possible commands
-
->RTX$ 
