@@ -49,7 +49,7 @@ void Scheduler::start()
 ///*
 //Yields the CPU to the next available process, if there is one waiting.
 //*/
-void Scheduler::release_processor( ) { 
+int Scheduler::release_processor( ) { 
 
 	//Save the context of the currently executing proc.
 	if (gRTX->getCurrentPcb()->saveContext() == 0 ) {
@@ -59,9 +59,9 @@ void Scheduler::release_processor( ) {
 		PCB* temp = gRTX->getCurrentPcb();
 		_readyProcs->pq_enqueue( ((PCB**)(&temp)), gRTX->getCurrentPcb()->getPriority() );
 
-		process_switch();
-
+		return process_switch();
 	}
+	return EXIT_SUCCESS;
 }
 
 /*

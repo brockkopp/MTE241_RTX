@@ -40,8 +40,6 @@ void processCCI()
 			
 			ioLetter->setMsgData("");			
 			assure(gRTX->K_get_console_chars(ioLetter) == EXIT_SUCCESS,"Get console chars failed",__FILE__,__LINE__,__func__,true);
-			
-
 			ioLetter = gRTX->K_receive_message(); 
 			assure(ioLetter != NULL,"Failed to receive message after IO dealings!",__FILE__,__LINE__,__func__,true);					
 			command = ioLetter->getMsgData();	
@@ -50,7 +48,6 @@ void processCCI()
 			if(command.length() > 0)
 			{
 				params = parseString( command, input, ' ', 3, true);
-
 				if(params >= 1 && params <= 3)
 				{
 					if(input[0] == "s")
@@ -169,10 +166,10 @@ void processCCI()
 						}
 					}			
 					else
-						message = "Invalid Command Identifier: '" + input[0] + "'\n";
+						message = "Invalid Command Identifier\n";
 				}
 				else
-					message = "Invalid Command String\n";
+					message = "Invalid Input Format\n";
 					
 				if(message.length() > 0)
 				{
