@@ -112,7 +112,10 @@ int Scheduler::change_priority( PCB * target, int newPriority )
 //	int oldPri = target->get_priority();
 	
 	//Validate priority
-	if ( !(newPriority <= 4 && newPriority >= 0) )
+	if ( target == NULL || newPriority > 3 || newPriority < 0)
+		return EXIT_ERROR;
+		
+	else if(target->getProcessType() == PROCESS_N)
 		return EXIT_ERROR;
 		
 	//Case 1: PCB is on ready queue
