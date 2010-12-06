@@ -1,65 +1,19 @@
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
-        MTE 241 -- COMPUTER STRUCTURES AND REAL-TIME OPERATING SYSTEMS
-           
-                    REAL TIME OPERATING SYSTEM PROJECT
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MTE241 Real-Time Operating System
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-              T26
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                           
-Brock Kopp              20293031
-Karl Price              20315158
-Angelica Ruszkowski     20300871
-Eric Vandenberg         20314487       
+This source code is intended to be used for reference only. The authors of this
+code do not condone using this in any manner which violates University of 
+Waterloo policy.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Quickstart
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-1. Extract .zip archive
-2. make
-3. ./RTX.out
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Directory Contents
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-MTE241_RTX
-        CCI.cpp
-        CCI.h
-        crt.cpp
-        debug.cpp
-        debug.h
-        initialize.cpp
-        iprocesses.cpp
-        iprocesses.h
-        keyboard.cpp
-        Makefile
-        MsgServ.cpp
-        MsgServ.h
-        MsgTrace.cpp
-        MsgTrace.h
-        README
-        RTX.cpp
-        RTX.h
-        Scheduler.cpp
-        Scheduler.h
-        Shmem.h
-        SignalHandler.cpp
-        SignalHandler.h
-        tools.cpp
-        tools.h
-        userProcesses.cpp
-        userProcesses.h
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-lib
-        MsgEnv.cpp
-        MsgEnv.h
-        PCB.cpp
-        PCB.h
-        PcbInfo.h
-        PQ.cpp
-        PQ.h
-        Queue.cpp
-        Queue.h
-        WallClock.cpp
-        WallClock.h
